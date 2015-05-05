@@ -1,0 +1,27 @@
+{
+  "name": "aireas-data-pg",
+  "version": "0.6.1",
+  "description": "AiREAS",
+  "main": "aireas-data.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+  },
+  "dependencies" : {
+    "cookie-parser" : "latest",
+    "express-session" : "latest",
+    "request" : "latest",
+    "express" : "latest",
+    "handlebars" : "latest",
+    "moment" : "latest",
+    "nodemailer" : "latest",
+    "pg" : "latest",
+    "uid-safe" : "latest"
+  },
+  "keywords": [
+    "aireas"
+  ],
+  "author": "Scapeler",
+  "license": "ISC"
+}

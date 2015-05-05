@@ -1,0 +1,185 @@
+/*
+** Module: node-apri-aireas-signal
+**
+**
+**
+**
+*/
+
+// **********************************************************************************
+"use strict"; // This is for your code to comply with the ECMAScript 5 standard.
+
+var handlebarsx 	= require('handlebars');
+var moment 			= require('moment');
+
+var fs 				= require('fs');
+var pg 				= require('pg');
+var nodemailer 		= require('nodemailer');
+
+var sqlConnString;
+var transporter, emails, templateWijkSource, templateWijk, sql;
+var checkSignalValues, sendMail;
+
+// **********************************************************************************
+
+module.exports = {
+
+	init: function (options) {
+	
+		sqlConnString = options.configParameter.databaseType + '://' + 
+			options.configParameter.databaseAccount + ':' + 
+			options.configParameter.databasePassword + '@' + 
+			options.configParameter.databaseServer + '/' +
+			options.systemCode + '_' + options.configParameter.databaseName;
+			
+		transporter 		= nodemailer.createTransport();
+		checkSignalValues 	= this.checkSignalValues;
+		sendMail 			= this.sendMail;
+
+		emails = [
+			{emailAddress: 'awiel@scapeler.com', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 5, 10,  15, 20, 25] } ] }
+		]
+
+		templateWijkSource	= "<h1>Informatie over daling of stijging meetwaarde luchtkwaliteit</h1><p>Datum: {{data.signalDateTimeStr}}</p> \
+    {{#each data}}<h2>Signaal voor wijk '{{wk_naam}}'</h2><p>{{message}}</p> \
+	Gemeente: {{gm_naam}} ({{gm_code}})<BR/> \
+	Wijk: {{wk_naam}}<BR/> \
+	Inwoners: {{aant_inw}}<BR/> \
+	Vorige waarde: {{scaqi_prev}}<BR/> \
+	Actuele waarde: <B>{{scaqi}}</B><BR/> \
+	{{/each}}</div><BR/>";
+	
+		templateWijk		= handlebarsx.compile(templateWijkSource);				
+
+		sql = "select gm_naam, max(wijk.gm_code) gm_code, max(wijk.wk_naam) wk_naam, \
+  max(avg.avg_pm_all_hr) ScAQI, \
+  max(avg_prev.avg_pm_all_hr) ScAQI_prev, \
+  max(avg.retrieveddate) retrieveddate, \
+  max(aant_inw) aant_inw \
+from  grid_gem_cell cell \
+, grid_gem_cell_avg avg \
+, grid_gem_cell_avg avg_prev \
+, cbswijk2012 wijk \
+where 1=1 \
+and cell.gid = avg.grid_gem_cell_gid \
+and cell.gid = avg_prev.grid_gem_cell_gid \
+and avg.retrieveddate >= current_timestamp - interval '10 minutes'  \
+and avg_prev.retrieveddate >= current_timestamp - interval '20 minutes' \
+and avg_prev.retrieveddate < current_timestamp - interval '10 minutes' \
+and wijk.gm_code='GM0772' \
+and wijk.wk_code = cell.wk_code \
+group by wijk.gm_naam, wijk.wk_code \
+order by wijk.gm_naam, wijk.wk_code ";
+
+
+	this.executeSql(sql, function(err, result) {
+		var i,j;
+		var signal;	
+		var _outRecords;
+	
+		var _result = result.rows; //JSON.parse(result);
+
+		for (i =0;i< emails.length;i++) {
+			var email = emails[i];
+			console.log('Signal function started for emailaddress: ' + email.emailAddress);
+			var municipal = email.municipals[0];
+		
+			var _outRecords = [];
+			_outRecords.signalDateTime = new Date();
+			_outRecords.signalDateTimeStr = moment(_outRecords.signalDateTime).format("DD-MM-YYYY, HH:mm");
+				
+			for (j=0;j<_result.length;j++) {
+				var _record 	= _result[j];
+				var _scaqi 		= parseFloat(_record.scaqi);
+				var _scaqi_prev = parseFloat(_record.scaqi_prev);
+				console.log('process record ' + (j+1) + ' ' + _scaqi_prev + ' -> ' + _scaqi + ' for ' + _record.wk_naam);
+			
+				if (_scaqi == _scaqi_prev) continue;
+							
+				var outRecord = {};
+				
+				var signalResult = checkSignalValues(municipal.signalValues, _scaqi_prev, _scaqi);
+					
+				if (signalResult.signalValue) { 
+					if (signalResult.direction == 'up') {
+						outRecord.message = " Index voor luchtkwaliteit is gestegen boven grenswaarde " + signalResult.signalValue;	
+					}
+					if (signalResult.direction == 'down') {
+						outRecord.message = " Index voor luchtkwaliteit is gedaald onder grenswaarde " + signalResult.signalValue;					
+					}
+					outRecord.gm_code 		= _record.gm_code;
+					outRecord.gm_naam 		= _record.gm_naam; 
+					outRecord.wk_naam 		= _record.wk_naam; 
+					outRecord.aant_inw		= parseInt(_record.aant_inw);
+					outRecord.scaqi 		= _scaqi;
+					outRecord.scaqi_prev 	= _scaqi_prev;
+					if (outRecord.message) _outRecords.push(outRecord);
+				}
+			}
+			
+			if (_outRecords.length>0) {
+				sendMail(email.emailAddress, 'AiREAS Signaal from system: ' + options.systemCode , _outRecords );
+			}
+		}
+		}); // end of inner function
+	},
+	
+	executeSql: function(query, callback) {
+		console.log('sql start: ');
+		var client = new pg.Client(sqlConnString);
+		client.connect(function(err) {
+  			if(err) {
+  	 	 		return console.error('could not connect to postgres', err);
+  			}
+  			client.query(query, function(err, result) {
+   		 		if(err) {
+      				return console.error('error running query', err);
+    			}
+		//    		console.log('sql result: ' + result);
+				callback(err, result);
+    			client.end();
+  			});
+		});
+	},
+
+	sendMail: function(to_email, subject, data) { 
+		console.log('Sending mail to: ' + to_email + ' Subject: ' +
+			subject + ' Date: ' + data.signalDateTimeStr );
+	
+		var templateResultHtml = templateWijk({
+	  		data: data
+		});
+
+		transporter.sendMail({
+    		from: 'awiel@scapeler.com',
+    		to: to_email,
+    		subject: subject,
+    		html: templateResultHtml
+		});
+	},
+
+	checkSignalValues: function(signalValues, scaqi_prev, scaqi) { 
+		var result = {};
+		if (signalValues == null || signalValues == [] ) {
+			signalValues = [ 10 ];  //default signalValue
+		}
+	
+		for (var i=0; i<signalValues.length;i++) {
+			var _signalValue = signalValues[i];
+			if (scaqi_prev < _signalValue && _signalValue <= scaqi ) {   // prev  signal  act
+				result.direction = 'up';
+				result.signalValue = _signalValue;
+				console.log(' up found for signal ' + _signalValue );
+				break;
+			}
+			if (scaqi < _signalValue && _signalValue <= scaqi_prev ) {   //  act   signal  prev
+				result.direction = 'down';
+				result.signalValue = _signalValue;
+				console.log(' down found for signal ' + _signalValue );
+				break;
+			}
+		}
+		return result;
+	}
+
+} // end of module.exports

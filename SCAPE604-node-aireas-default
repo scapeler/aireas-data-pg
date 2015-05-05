@@ -1,0 +1,2 @@
+# sourced by /etc/init.d/SCAPE604-node-aireas
+NODEJS_EXEC=/opt/SCAPE604/scape-aireas/node-aireas.sh
