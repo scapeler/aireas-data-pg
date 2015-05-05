@@ -6,12 +6,21 @@ AiREAS data retrieval and publish service based on PostgreSQL/PostGIS
 
 Install Ubuntu 14.04 LTS
 
-# Install database
+# Install software
 
-Install PostgreSQL/PostGIS database
 Install Git: sudo apt-get install git
 Install Nodejs
 
+# Install database
+
+Install PostgreSQL/PostGIS database
+execute sql-scripts in package/pgplsql
+
+Download and insert CBS-data into database (CBS 2012)
+
+plus:
+- add grid definition
+- insert cells of grid (depends on airea envelope. Scripts depend on CBS-data, only for the Netherlands)
 
 # Install package
 
