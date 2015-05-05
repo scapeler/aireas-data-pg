@@ -1,0 +1,23 @@
+{
+    "system": {
+        "systemName": "apri",
+        "systemCode": "SCAPE604",
+        "systemListenPort": "3000",
+        "serviceType": "node-apri", 
+        "versionStr": "",
+        "version": {
+            "l1": 0,
+            "l2": 0,
+            "l3": 1
+        }
+    },
+	"parameter" : {
+        "databaseType": "postgres",
+        "databaseServer": "ip-address",
+        "databaseName": "db",
+        "databaseAccount": "account",
+        "databasePassword": "password"
+	},
+	"modules":[
+	]
+}

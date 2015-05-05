@@ -9,9 +9,9 @@
   "repository": {
   },
   "dependencies" : {
+    "request" : "latest",
     "cookie-parser" : "latest",
     "express-session" : "latest",
-    "request" : "latest",
     "express" : "latest",
     "handlebars" : "latest",
     "moment" : "latest",
