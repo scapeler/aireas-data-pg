@@ -2,6 +2,8 @@
 AiREAS data retrieval and publish service based on PostgreSQL/PostGIS 
 
 
+THIS IS WORK IN PROGRESS !!
+
 # Install server
 
 - Install Ubuntu 14.04 LTS
