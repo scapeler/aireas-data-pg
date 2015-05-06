@@ -250,6 +250,24 @@ app.get('/'+_systemCode+'/data/aireas/:getFunction/:airbox', function(req, res) 
 		return;
   }
 
+
+  if (req.params.getFunction == 'setBuurtRookRisicoMarker') {
+		apriAireasGetPg.setBuurtRookRisicoMarker({lat:req.query.lat, lng:req.query.lng, markerDate: req.query.markerDate
+			}, function(err, result) {
+			var _outRecord = {};
+			if (err == null) {
+				_outRecord.markerOk = true;
+			} else {
+				_outRecord.markerOk = false;
+			}
+			var outRecord = JSON.stringify(_outRecord);
+			res.contentType('application/json');
+ 			res.send(outRecord);
+		});
+		return;
+  }
+
+
   if (req.params.getFunction == 'getCbsBuurtInfo') {
 		apriAireasGetPg.getBuurtInfo({gm_naam: req.params.gemeente }, function(err, result) {
 			var _outRecords = [];
@@ -327,6 +345,133 @@ app.get('/'+_systemCode+'/data/aireas/:getFunction/:airbox', function(req, res) 
 
   res.contentType('text/plain');
   res.send('Wrong get function: ' + req.params.getFunction);
+});
+
+
+app.get('/'+_systemCode+'/data/nsl/:getFunction/:object', function(req, res) {
+  	console.log("data request: " + req.url );
+
+	// measures = maatregelen
+  	if ( req.params.getFunction == 'getNslMeasuresInfo') {
+		apriNslGetPg.getNslMeasuresInfo({getFunction: req.params.getFunction }, function(err, result) {
+			var _outRecords = [];
+			var _result = result.rows; //JSON.parse(result);
+			for (var i=0;i<_result.length;i++) {
+				var outRecord = {};
+				outRecord.geometry = JSON.parse(_result[i].geom);
+				outRecord.type = 'Feature';
+
+				outRecord.properties = {};
+				outRecord.properties.maatr_id 	= _result[i].maatr_id;
+				outRecord.properties.naam 		= _result[i].naam; 
+				outRecord.properties.overheid 	= _result[i].overheid; 
+				outRecord.properties.gm_naam 	= _result[i].gm_naam; 
+				outRecord.properties.categorie 	= _result[i].categorie; 
+				outRecord.properties.stof 		= _result[i].stof; 
+				outRecord.properties.factor 	= parseFloat(_result[i].factor); 
+				outRecord.properties.generiek 	= _result[i].generiek; 
+				outRecord.properties.voertuig 	= _result[i].voertuig; 
+				outRecord.properties.snelheid 	= _result[i].snelheid; 
+				outRecord.properties.actie 		= _result[i].actie; 
+				outRecord.properties.gewijzigd 	= _result[i].gewijzigd; 
+
+				_outRecords.push(outRecord);
+			}
+			var outRecords = JSON.stringify(_outRecords);
+			res.contentType('application/json');
+ 			res.send(outRecords);
+		});
+		return;
+  	}
+  
+	// result = volgens rekenmodel berekende waarden o.a voor pm10, pm25
+  	if ( req.params.getFunction == 'getNslResultSpmiAvgInfo') {
+		apriNslGetPg.getNslResultSpmiAvgInfo({getFunction: req.params.getFunction, rekenJaar: req.query.rekenjaar }, function(err, result) {
+			var _outRecords = [];
+			var _result = result.rows; //JSON.parse(result);
+			for (var i=0;i<_result.length;i++) {
+				var outRecord = {};
+				outRecord.geometry = JSON.parse(_result[i].geom);
+				outRecord.type = 'Feature';
+
+				outRecord.properties = {};
+				outRecord.properties.rekenjaar 	= _result[i].rekenjaar;
+				outRecord.properties.spmi_avg 	= _result[i].spmi_avg;
+
+				_outRecords.push(outRecord);
+			}
+			var outRecords = JSON.stringify(_outRecords);
+			res.contentType('application/json');
+ 			res.send(outRecords);
+		});
+		return;
+  	}
+  
+  
+  	res.contentType('text/plain');
+  	res.send('NSL Wrong get function: ' + req.params.getFunction);
+});
+
+app.get('/'+_systemCode+'/data/om/:getFunction/:object', function(req, res) {
+  	console.log("data request: " + req.url );
+
+	// measures = maatregelen
+	if ( req.params.getFunction == 'getActualMeasures' ) {
+	
+		var _param 							= {};
+		_param.name 						= 'Observation';
+		_param.getFunction					= req.params.getFunction;
+		_param.name 						= "test O&M";
+		_param.description					= "This is a test for creating O&M";
+		_param.timePeriodBeginPosition		= "periodBeginPos";
+		_param.timePeriodEndPosition		= "periodEndPos";
+		_param.timePosition					= "timePos";
+		_param.omObservedProperty			= {};
+		_param.omObservedProperty.xLinkHref = "urn:example:RelativeHumidity";
+		
+		_param.omFeatureOfInterestXLinkHref	= "http://my.example.org/wfs%26request=getFeature%26;featureid=789002";
+		_param.omFeatureOfInterestXLinkRole	= "urn:ogc:def:featureType:NWS:station";
+		
+		_param.omResultXLinkHref			= "http://my.example.org/results%3f798002%26property=RH";
+		_param.omResultXLinkRole			= "application/xmpp";
+		
+		iotOM.initObservation(_param, function(err, result) {
+			var _outRecords = [];
+			var _result = result.rows; 
+			for (var i=0;i<_result.length;i++) {
+				var outRecord = {};
+				outRecord.geometry = JSON.parse(_result[i].geom4326);
+				//outRecord.geometry.coordinates[0] = ""+outRecord.geometry.coordinates[0];
+				//outRecord.geometry.coordinates[1] = ""+outRecord.geometry.coordinates[1];
+				outRecord.type = 'Feature';
+
+				outRecord.properties = {};
+				outRecord.properties.gid 		= _result[i].gid;
+				outRecord.properties.airbox 		= _result[i].airbox; 
+				outRecord.properties.retrieveddate	= _result[i].retrieveddate;
+
+				outRecord.properties.gpslat 	= parseFloat(_result[i].gpslatfloat);
+				outRecord.properties.gpslng 	= parseFloat(_result[i].gpslngfloat);
+				outRecord.properties.pm1 		= parseFloat(_result[i].pm1float);
+				outRecord.properties.pm25 		= parseFloat(_result[i].pm25float);
+				outRecord.properties.pm10 		= parseFloat(_result[i].pm10float);
+				outRecord.properties.ufp 		= parseFloat(_result[i].ufpfloat);
+				outRecord.properties.ozon 		= parseFloat(_result[i].ozonfloat);
+				outRecord.properties.hum 		= parseFloat(_result[i].humfloat);
+				outRecord.properties.celc 		= parseFloat(_result[i].celcfloat);
+
+				_outRecords.push(outRecord);
+			}
+			var outRecords = JSON.stringify(_outRecords);
+			res.contentType('application/json');
+ 			res.send(outRecords);
+		});
+		return;
+	}
+  
+  
+  	res.contentType('text/plain');
+  	res.send('OM Wrong get function: ' + req.params.getFunction);
 });
 
 

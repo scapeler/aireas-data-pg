@@ -47,6 +47,138 @@ module.exports = {
 
     portletCache: [],
 
+
+    getBuurtRookRisicoInfo: function (param, callback) {
+		var _airbox = "";
+
+		// zonder gemiddelde meetwaarde
+		var querySelect = " select bu.bu_code, bu.gm_code, bu.bu_naam, \
+  ST_AsGeoJSON(bu.geom4326) geom, count(srm.gid) aantal_markers ";
+
+		var queryFrom = 
+				" from cbsbuurt2012 bu LEFT OUTER JOIN smoke_risc_marker srm on ST_Contains(bu.geom4326, srm.geom) ";
+		var queryWhere = //" WHERE 1400 > ST_Distance( GEOGRAPHY(wk.geom4326), GEOGRAPHY(ST_GeomFromText('POINT( 5.4526519775390625 51.448658120386)', 4326) ) ) "; 
+				" where bu.gm_naam = 'Eindhoven' "; 
+		var queryGroupBy = " group by bu.bu_code, bu.gm_code, bu.geom4326, bu.bu_naam ; ";
+		//var queryOrderBy = " order by bu_naam ; ";
+
+		console.log('Postgres sql start execute');
+//		if (param && param.airbox && param.airbox != '*') {
+//			_airbox = " and airbox = '" + param.airbox + "' ";			
+//		}
+		var query = querySelect + queryFrom + queryWhere + queryGroupBy;
+			//_airbox +
+			//queryOrderBy;
+		console.log('Query: ' + query);
+		executeSql(query, callback);
+		
+		
+/*
+select bu.bu_code, count(srm.gid) aantal_markers , bu.geom4326, bu.bu_naam 
+  from cbsbuurt2012 bu
+  LEFT OUTER JOIN smoke_risc_marker srm on ST_Contains(bu.geom4326, srm.geom)
+where bu.gm_naam = 'Eindhoven' 
+--and bu.bu_code = bu.bu_code
+group by bu.bu_code, bu.geom4326, bu.bu_naam, bu.gm_naam
+*/	
+
+        return;
+	},
+
+    setBuurtRookRisicoMarker: function (param, callback) {
+
+		// zonder gemiddelde meetwaarde
+		var query = " INSERT INTO smoke_risc_marker (marker_date, geom, creation_date) VALUES (" + 
+			//param.markerDate +
+			" current_timestamp " + 
+			", ST_GeomFromText( 'POINT("+ param.lng + " " + param.lat + " )', 4326), current_timestamp );"; 
+
+		console.log('Postgres sql start execute');
+		console.log('Query: ' + query);
+		executeSql(query, callback);
+
+        return;
+	},
+
+
+
+    getBuurtInfo: function (param, callback) {
+		var _airbox = "";
+
+		// zonder gemiddelde meetwaarde
+		var querySelect = " select bu.bu_naam, bu.wk_code, bu.gm_naam, bu.p_00_14_jr, bu.p_15_24_jr, bu.p_25_44_jr, bu.p_45_64_jr, bu.p_65_eo_jr, \
+  ST_AsGeoJSON(geom4326) geom ";
+
+
+
+/*		
+" select '{ properties: { ' || \
+  '  bu_naam: ' || bu.bu_naam || \
+  ', wk_naam: ' || bu.wk_code || \
+  ', gm_naam: ' || bu.gm_naam ||\
+  ', p_00_14_jr: ' || bu.p_00_14_jr ||\
+  ', p_15_24_jr: ' || bu.p_15_24_jr ||\
+  ', p_25_44_jr: ' || bu.p_25_44_jr ||\
+  ', p_45_64_jr: ' || bu.p_45_64_jr ||\
+  ', p_65_eo_jr: ' || bu.p_65_eo_jr ||\
+  '} ,geodata:' || \
+  ST_AsGeoJSON(geom) ||\
+'}' record ";
+*/
+		var queryFrom = 
+				" from cbsbuurt2012 bu ";
+		var queryWhere = 
+				"where bu.gm_naam = 'Eindhoven' ";
+		var queryOrderBy = " order by bu_naam ; ";
+
+		console.log('Postgres sql start execute');
+		if (param && param.airbox && param.airbox != '*') {
+			_airbox = " and airbox = '" + param.airbox + "' ";			
+		}
+		var query = querySelect + queryFrom + queryWhere + _airbox + queryOrderBy;
+		console.log('Query: ' + query);
+		executeSql(query, callback);
+
+        return;
+	},
+
+	getGemInfo: function (param, callback) {
+
+		var querySelect = " select gm.gm_naam, gm.gm_code,  \
+  			ST_AsGeoJSON(ST_Envelope(ST_Transform(gm.geom,4326))) AS envelope_geom, \
+			ST_AsGeoJSON(ST_Transform(gm.geom,4326)) AS geom ";
+
+		var queryFrom 		=	" from cbsgem2012 gm ";
+		var queryWhere 		= "where gm.gm_naam = 'Eindhoven' ";
+		var queryOrderBy 	= " order by gm_naam ; ";
+
+		console.log('Postgres sql start execute');
+
+		var query = querySelect + queryFrom + queryWhere + queryOrderBy;
+		console.log('Query: ' + query);
+		executeSql(query, callback);
+
+        return;
+
+	},
+
+	getCbsGemeenten: function (param, callback) {
+
+		var querySelect 	= " select gm.gm_naam, gm.gm_code ";
+		var queryFrom 		= " from cbsgem2012 gm ";
+		var queryWhere 		= " where gm.gm_naam is not null ";
+		var queryOrderBy 	= " order by gm_naam ; ";
+
+		console.log('Postgres sql start execute');
+
+		var query = querySelect + queryFrom + queryWhere + queryOrderBy;
+		console.log('Query: ' + query);
+		executeSql(query, callback);
+
+        return;
+	},
+
+
     getGridGemAireasInfo: function (param, req_query, callback) {
 		var _airbox = "";
 
