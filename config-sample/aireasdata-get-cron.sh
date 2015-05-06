@@ -10,7 +10,7 @@ echo "Start procedure on: " `date` >>$LOGFILE
 mkdir -p $SYSTEMPATH/$SYSTEMCODE/aireas/aireas/tmp
 mkdir -p $SYSTEMPATH/$SYSTEMCODE/log
 
-cd  $SYSTEMPATH/$SYSTEMCODE/scape-aireas
+cd  $SYSTEMPATH/$SYSTEMCODE/aireas-data-pg
 /usr/local/sbin/node index.js aireas-data >>$LOGFILE
 /usr/local/sbin/node index.js aireas2json.js >>$LOGFILE
 /usr/local/sbin/node index.js aireas2sql.js >>$LOGFILE 2>>$LOGFILE

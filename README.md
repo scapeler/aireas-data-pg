@@ -37,7 +37,9 @@ clone Github repository:
 	change database settings ip/account/password in apri-system.json
 	
 Automatic start data retrieval
-	add this line to crontab:
+	add script to root crontab:
+	sudo su -
+	crontab -e
 	*/10 * * * * /opt/SCAPE604/config/aireasdata-get-cron.sh
 
 # Copyright and disclaimer
