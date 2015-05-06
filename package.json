@@ -11,12 +11,12 @@
   "dependencies" : {
     "request" : "latest",
     "pg" : "latest",
-    "cookie-parser" : "latest",
-    "express-session" : "latest",
-    "express" : "latest",
     "handlebars" : "latest",
     "moment" : "latest",
     "nodemailer" : "latest",
+    "cookie-parser" : "latest",
+    "express-session" : "latest",
+    "express" : "latest",
     "uid-safe" : "latest"
   },
   "keywords": [
