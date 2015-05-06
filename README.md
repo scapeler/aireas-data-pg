@@ -43,6 +43,9 @@ Automatic start data retrieval
 	sudo su -
 	crontab -e
 	*/10 * * * * /opt/SCAPE604/config/aireasdata-get-cron.sh
+	
+Automatic data service / API
+	sudo cp /opt/SCAPE604/aireas-data-pg/node-aireas.conf /etc/init/.	
 
 # Copyright and disclaimer
 

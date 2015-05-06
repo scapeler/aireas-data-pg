@@ -13,7 +13,11 @@
     "pg" : "latest",
     "handlebars" : "latest",
     "moment" : "latest",
-    "nodemailer" : "latest"
+    "nodemailer" : "latest",
+    "express" : "latest",
+    "cookie-parser" : "latest",
+	"express-session" : "latest",
+    "uid-safe" : "latest"
   },
   "keywords": [
     "aireas"
