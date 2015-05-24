@@ -181,12 +181,17 @@ group by bu.bu_code, bu.geom4326, bu.bu_naam, bu.gm_naam
 
     getGridGemAireasInfo: function (param, req_query, callback) {
 		var _airbox = "";
+		
+		if (req_query.avgType == undefined) {
+			req_query.avgType = 'SPMI';
+		}
 
 		var querySelect = " select grid.gm_code, grid.gm_naam, to_char(cellunion.retrieveddate AT TIME ZONE 'UTC', 'YYYY-MM-DDT')||to_char(cellunion.retrieveddate AT TIME ZONE 'UTC','HH24:MI:SS.MSZ') AS retrieveddate, \
   			ST_AsGeoJSON(ST_Transform(cellunion.union_geom, 4326)) geom, \
 			ST_AsGeoJSON(ST_Transform(ST_Centroid(cellunion.union_geom), 4326)) centroid, \
 			cell.cell_x, cell.cell_y, \
-			cellunion.avg_pm1_hr, cellunion.avg_pm25_hr, cellunion.avg_pm10_hr, cellunion.avg_pm_all_hr ";
+			cellunion.avg_type, cellunion.avg_hr ";
+//			cellunion.avg_pm1_hr, cellunion.avg_pm25_hr, cellunion.avg_pm10_hr, cellunion.avg_pm_all_hr ";
 			
 
 		retrieveddateMaxConstraintStr = "";  // 2014-11-09T09:30:01.376Z
@@ -199,6 +204,7 @@ group by bu.bu_code, bu.geom4326, bu.bu_naam, bu.gm_naam
 
 		var queryFrom = " from grid_gem grid, grid_gem_cell cell, grid_gem_cell_union cellunion  ";
 		var queryWhere = " where grid.gm_naam = 'Eindhoven' and grid.grid_code = 'EHV20141104:1' and grid.grid_code = cell.grid_code and cell.gid = cellunion.grid_gem_cell_gid ";
+			queryWhere += " and cellunion.avg_type = '" + req_query.avgType + "' ";
 			queryWhere += " and cellunion.retrieveddate = (select max(retrieveddate) from grid_gem_cell_union cellunion2 where 1=1 " + retrieveddateMaxConstraintStr + ")";
 
 		//	queryWhere += " and ST_Intersects(grid.cell_geom, a1.geom) ";
