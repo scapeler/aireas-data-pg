@@ -169,10 +169,13 @@ app.get('/'+_systemCode+'/data/aireas/:getFunction/:airbox', function(req, res) 
 				outRecord.properties.gm_naam 		= _result[i].gm_naam; 
 				outRecord.properties.retrieveddate	= _result[i].retrieveddate;
 
-				outRecord.properties.avg_pm1_hr 	= parseFloat(_result[i].avg_pm1_hr);
-				outRecord.properties.avg_pm25_hr 	= parseFloat(_result[i].avg_pm25_hr);
-				outRecord.properties.avg_pm10_hr 	= parseFloat(_result[i].avg_pm10_hr);
-				outRecord.properties.avg_pm_all_hr 	= parseFloat(_result[i].avg_pm_all_hr);
+				outRecord.properties.avg_type 		= _result[i].avg_type;
+				outRecord.properties.avg_hr 		= parseFloat(_result[i].avg_hr);
+
+				//outRecord.properties.avg_pm1_hr 	= parseFloat(_result[i].avg_pm1_hr);
+				//outRecord.properties.avg_pm25_hr 	= parseFloat(_result[i].avg_pm25_hr);
+				//outRecord.properties.avg_pm10_hr 	= parseFloat(_result[i].avg_pm10_hr);
+				//outRecord.properties.avg_pm_all_hr 	= parseFloat(_result[i].avg_pm_all_hr);
 				outRecord.properties.cell_x 		= parseFloat(_result[i].cell_x);
 				outRecord.properties.cell_y 		= parseFloat(_result[i].cell_y);
 
