@@ -198,7 +198,7 @@ BEGIN
 				avg_hr,
 --				avg_pm1_hr, avg_pm25_hr, avg_pm10_hr, avg_pm_all_hr, avg_ufp_hr, avg_ozon_hr, avg_hum_hr, avg_celc_hr,
 				creation_date, union_geom) 
-				SELECT min(grid_gem_cell_gid), max(retrieveddate), "SPMI",
+				SELECT min(grid_gem_cell_gid), max(retrieveddate), ''SPMI'',
 --				  max(avg_pm1_hr), max(avg_pm25_hr), max(avg_pm10_hr),
 --				  --round(avg_pm_all_hr+MOD(((avg_pm_all_hr-round(avg_pm_all_hr))*10),2)/10,1),
 				  round(avg_pm_all_hr,0),
@@ -217,7 +217,7 @@ BEGIN
 				avg_type,
 				avg_hr,
 				creation_date, union_geom) 
-				SELECT min(grid_gem_cell_gid), max(retrieveddate), "PM1",
+				SELECT min(grid_gem_cell_gid), max(retrieveddate), ''PM1'',
 				  round(avg_pm1_hr,0),
 				  current_timestamp,
 				  ST_Union(cell.cell_geom)
@@ -232,7 +232,7 @@ BEGIN
 				avg_type,
 				avg_hr,
 				creation_date, union_geom) 
-				SELECT min(grid_gem_cell_gid), max(retrieveddate), "PM25",
+				SELECT min(grid_gem_cell_gid), max(retrieveddate), ''PM25'',
 				  round(avg_pm25_hr,0),
 				  current_timestamp,
 				  ST_Union(cell.cell_geom)
@@ -247,7 +247,7 @@ BEGIN
 				avg_type,
 				avg_hr,
 				creation_date, union_geom) 
-				SELECT min(grid_gem_cell_gid), max(retrieveddate), "PM10",
+				SELECT min(grid_gem_cell_gid), max(retrieveddate), ''PM10'',
 				  round(avg_pm10_hr,0),
 				  current_timestamp,
 				  ST_Union(cell.cell_geom)
@@ -262,7 +262,7 @@ BEGIN
 				avg_type,
 				avg_hr,
 				creation_date, union_geom) 
-				SELECT min(grid_gem_cell_gid), max(retrieveddate), "UFP",
+				SELECT min(grid_gem_cell_gid), max(retrieveddate), ''UFP'',
 				  round(avg_ufp_hr,0),
 				  current_timestamp,
 				  ST_Union(cell.cell_geom)
@@ -277,7 +277,7 @@ BEGIN
 				avg_type,
 				avg_hr,
 				creation_date, union_geom) 
-				SELECT min(grid_gem_cell_gid), max(retrieveddate), "OZON",
+				SELECT min(grid_gem_cell_gid), max(retrieveddate), ''OZON'',
 				  round(avg_ozon_hr,0),
 				  current_timestamp,
 				  ST_Union(cell.cell_geom)
@@ -292,7 +292,7 @@ BEGIN
 				avg_type,
 				avg_hr,
 				creation_date, union_geom) 
-				SELECT min(grid_gem_cell_gid), max(retrieveddate), "HUM",
+				SELECT min(grid_gem_cell_gid), max(retrieveddate), ''HUM'',
 				  round(avg_hum_hr,0),
 				  current_timestamp,
 				  ST_Union(cell.cell_geom)
@@ -307,7 +307,7 @@ BEGIN
 				avg_type,
 				avg_hr,
 				creation_date, union_geom) 
-				SELECT min(grid_gem_cell_gid), max(retrieveddate), "CELC",
+				SELECT min(grid_gem_cell_gid), max(retrieveddate), ''CELC'',
 				  round(avg_celc_hr,0),
 				  current_timestamp,
 				  ST_Union(cell.cell_geom)
