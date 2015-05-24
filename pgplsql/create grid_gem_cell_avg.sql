@@ -15,6 +15,10 @@ create table public.grid_gem_cell_avg (
   avg_pm25_hr numeric NOT NULL,
   avg_pm10_hr numeric NOT NULL,
   avg_pm_all_hr numeric NOT NULL,
+  avg_ufp_hr numeric NOT NULL,
+  avg_ozon_hr numeric NOT NULL,
+  avg_hum_hr numeric NOT NULL,
+  avg_celc_hr numeric NOT NULL,
   creation_date timestamp with time zone,
   CONSTRAINT grid_gem_cell_avg_pkey PRIMARY KEY (gid)
 )
