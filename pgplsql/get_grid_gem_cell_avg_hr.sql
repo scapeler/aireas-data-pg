@@ -48,7 +48,7 @@ BEGIN
 		WHERE 1=1 
 		 AND cellair.grid_gem_cell_gid = $2
 		 AND a1.retrieveddate <= $1 
-		 AND a1.retrieveddate >= current_timestamp - INTERVAL ''1 hour'' 
+		 AND a1.retrieveddate >= current_timestamp - INTERVAL ''00:30:00'' 
 		 AND a1.airbox = cellair.airbox
 		 AND ROUND(CAST(ST_Distance(GEOGRAPHY(a1.geom), GEOGRAPHY(cellair.airbox_geom)) AS NUMERIC), 5) < 30
 		 AND cellair.factor_distance < 250'
@@ -72,7 +72,7 @@ BEGIN
 		WHERE 1=1 
 		 AND cellair.grid_gem_cell_gid = $2
 		 AND a1.retrieveddate <= $1 
-		 AND a1.retrieveddate >= current_timestamp - INTERVAL ''1 hour'' 
+		 AND a1.retrieveddate >= current_timestamp - INTERVAL ''00:30:00'' 
 		 AND a1.airbox = cellair.airbox
 		 AND ROUND(CAST(ST_Distance(GEOGRAPHY(a1.geom), GEOGRAPHY(cellair.airbox_geom)) AS NUMERIC), 5) < 30
 		 AND (cellair.factor_distance >= 250 and cellair.factor_distance < 500 ) '
@@ -97,7 +97,7 @@ BEGIN
 		WHERE 1=1 
 		 AND cellair.grid_gem_cell_gid = $2
 		 AND a1.retrieveddate <= $1 
-		 AND a1.retrieveddate >= current_timestamp - INTERVAL ''1 hour'' 
+		 AND a1.retrieveddate >= current_timestamp - INTERVAL ''00:30:00'' 
 		 AND a1.airbox = cellair.airbox
 		 AND ROUND(CAST(ST_Distance(GEOGRAPHY(a1.geom), GEOGRAPHY(cellair.airbox_geom)) AS NUMERIC), 5) < 30
 		 AND (cellair.factor_distance >= 500 and cellair.factor_distance < 1000 ) '
@@ -122,7 +122,7 @@ BEGIN
 		WHERE 1=1 
 		 AND cellair.grid_gem_cell_gid = $2
 		 AND a1.retrieveddate <= $1 
-		 AND a1.retrieveddate >= current_timestamp - INTERVAL ''1 hour'' 
+		 AND a1.retrieveddate >= current_timestamp - INTERVAL ''00:30:00'' 
 		 AND a1.airbox = cellair.airbox
 		 AND ROUND(CAST(ST_Distance(GEOGRAPHY(a1.geom), GEOGRAPHY(cellair.airbox_geom)) AS NUMERIC), 5) < 30
 		 AND (cellair.factor_distance >= 1000 and cellair.factor_distance < 1500 ) '
@@ -147,7 +147,7 @@ BEGIN
 		WHERE 1=1 
 		 AND cellair.grid_gem_cell_gid = $2
 		 AND a1.retrieveddate <= $1 
-		 AND a1.retrieveddate >= current_timestamp - INTERVAL ''1 hour'' 
+		 AND a1.retrieveddate >= current_timestamp - INTERVAL ''00:30:00'' 
 		 AND a1.airbox = cellair.airbox
 		 AND ROUND(CAST(ST_Distance(GEOGRAPHY(a1.geom), GEOGRAPHY(cellair.airbox_geom)) AS NUMERIC), 5) < 30
 		 AND (cellair.factor_distance >= 1500 and cellair.factor_distance < 2000 ) '
@@ -172,7 +172,7 @@ BEGIN
 		WHERE 1=1 
 		 AND cellair.grid_gem_cell_gid = $2
 		 AND a1.retrieveddate <= $1 
-		 AND a1.retrieveddate >= current_timestamp - INTERVAL ''1 hour'' 
+		 AND a1.retrieveddate >= current_timestamp - INTERVAL ''00:30:00'' 
 		 AND a1.airbox = cellair.airbox
 		 AND ROUND(CAST(ST_Distance(GEOGRAPHY(a1.geom), GEOGRAPHY(cellair.airbox_geom)) AS NUMERIC), 5) < 30
 		 AND (cellair.factor_distance >= 2000 and cellair.factor_distance < 4000 ) '
