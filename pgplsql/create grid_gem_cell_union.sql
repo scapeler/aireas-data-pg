@@ -13,7 +13,7 @@ create table public.grid_gem_cell_union (
   grid_gem_cell_gid integer NOT NULL,
   retrieveddate timestamp with time zone,
   avg_type character varying(60),
-  avg_hr numeric NOT NULL,
+  avg_avg numeric NOT NULL,
 --  avg_pm1_hr numeric NOT NULL,
 --  avg_pm25_hr numeric NOT NULL,
 --  avg_pm10_hr numeric NOT NULL,

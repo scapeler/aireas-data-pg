@@ -190,7 +190,7 @@ group by bu.bu_code, bu.geom4326, bu.bu_naam, bu.gm_naam
   			ST_AsGeoJSON(ST_Transform(cellunion.union_geom, 4326)) geom, \
 			ST_AsGeoJSON(ST_Transform(ST_Centroid(cellunion.union_geom), 4326)) centroid, \
 			cell.cell_x, cell.cell_y, \
-			cellunion.avg_type, cellunion.avg_hr ";
+			cellunion.avg_type, cellunion.avg_avg ";
 //			cellunion.avg_pm1_hr, cellunion.avg_pm25_hr, cellunion.avg_pm10_hr, cellunion.avg_pm_all_hr ";
 			
 

@@ -10,6 +10,14 @@ DECLARE
   grid record;
   grid_gem_cell record;
   air record;
+  air_pm1 record;
+  air_pm25 record;
+  air_pm10 record;
+  air_spmi record;
+  air_ufp record;
+  air_ozon record;
+  air_hum record;
+  air_celc record;
   retrieveddate_selection timestamp with time zone;
   retrieveddate_already_calculated timestamp with time zone;
 BEGIN
@@ -34,6 +42,106 @@ BEGIN
 	FOR grid_gem_cell IN EXECUTE 'SELECT * FROM grid_gem_cell WHERE grid_code = $1'
 		USING grid.grid_code
 	LOOP
+	
+	
+		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg from get_grid_gem_cell_avg($1,$2,$3) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric )'
+			USING 'PM1',retrieveddate_selection, grid_gem_cell.gid
+			INTO air;
+		IF (air.retrieveddate = retrieveddate_selection AND air.avg_avg > 0) THEN
+			EXECUTE 'INSERT INTO grid_gem_cell_avg ( grid_gem_cell_gid, retrieveddate, avg_type, 
+				avg_avg, creation_date) 
+				VALUES ( 
+				$1, $2, $3, $4, $5)'
+			USING grid_gem_cell.gid, retrieveddate_selection,air.avg_type,
+			 air.avg_avg, current_timestamp;
+		END IF;	
+			
+		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg from get_grid_gem_cell_avg($1,$2,$3) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric )'
+			USING 'PM25',retrieveddate_selection, grid_gem_cell.gid
+			INTO air;
+		IF (air.retrieveddate = retrieveddate_selection AND air.avg_avg > 0) THEN
+			EXECUTE 'INSERT INTO grid_gem_cell_avg ( grid_gem_cell_gid, retrieveddate, avg_type, 
+				avg_avg, creation_date) 
+				VALUES ( 
+				$1, $2, $3, $4, $5)'
+			USING grid_gem_cell.gid, retrieveddate_selection,air.avg_type,
+			 air.avg_avg, current_timestamp;
+		END IF;	
+
+		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg from get_grid_gem_cell_avg($1,$2,$3) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric )'
+			USING 'PM10',retrieveddate_selection, grid_gem_cell.gid
+			INTO air;
+		IF (air.retrieveddate = retrieveddate_selection AND air.avg_avg > 0) THEN
+			EXECUTE 'INSERT INTO grid_gem_cell_avg ( grid_gem_cell_gid, retrieveddate, avg_type, 
+				avg_avg, creation_date) 
+				VALUES ( 
+				$1, $2, $3, $4, $5)'
+			USING grid_gem_cell.gid, retrieveddate_selection,air.avg_type,
+			 air.avg_avg, current_timestamp;
+		END IF;	
+
+		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg from get_grid_gem_cell_avg($1,$2,$3) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric )'
+			USING 'SPMI',retrieveddate_selection, grid_gem_cell.gid
+			INTO air;
+		IF (air.retrieveddate = retrieveddate_selection AND air.avg_avg > 0) THEN
+			EXECUTE 'INSERT INTO grid_gem_cell_avg ( grid_gem_cell_gid, retrieveddate, avg_type, 
+				avg_avg, creation_date) 
+				VALUES ( 
+				$1, $2, $3, $4, $5)'
+			USING grid_gem_cell.gid, retrieveddate_selection,air.avg_type,
+			 air.avg_avg, current_timestamp;
+		END IF;	
+
+		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg from get_grid_gem_cell_avg($1,$2,$3) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric )'
+			USING 'UFP',retrieveddate_selection, grid_gem_cell.gid
+			INTO air;
+		IF (air.retrieveddate = retrieveddate_selection AND air.avg_avg > 0) THEN
+			EXECUTE 'INSERT INTO grid_gem_cell_avg ( grid_gem_cell_gid, retrieveddate, avg_type, 
+				avg_avg, creation_date) 
+				VALUES ( 
+				$1, $2, $3, $4, $5)'
+			USING grid_gem_cell.gid, retrieveddate_selection,air.avg_type,
+			 air.avg_avg, current_timestamp;
+		END IF;	
+
+		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg from get_grid_gem_cell_avg($1,$2,$3) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric )'
+			USING 'OZON',retrieveddate_selection, grid_gem_cell.gid
+			INTO air;
+		IF (air.retrieveddate = retrieveddate_selection AND air.avg_avg > 0) THEN
+			EXECUTE 'INSERT INTO grid_gem_cell_avg ( grid_gem_cell_gid, retrieveddate, avg_type, 
+				avg_avg, creation_date) 
+				VALUES ( 
+				$1, $2, $3, $4, $5)'
+			USING grid_gem_cell.gid, retrieveddate_selection,air.avg_type,
+			 air.avg_avg, current_timestamp;
+		END IF;	
+
+		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg from get_grid_gem_cell_avg($1,$2,$3) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric )'
+			USING 'HUM',retrieveddate_selection, grid_gem_cell.gid
+			INTO air;
+		IF (air.retrieveddate = retrieveddate_selection AND air.avg_avg > 0) THEN
+			EXECUTE 'INSERT INTO grid_gem_cell_avg ( grid_gem_cell_gid, retrieveddate, avg_type, 
+				avg_avg, creation_date) 
+				VALUES ( 
+				$1, $2, $3, $4, $5)'
+			USING grid_gem_cell.gid, retrieveddate_selection,air.avg_type,
+			 air.avg_avg, current_timestamp;
+		END IF;	
+
+		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg from get_grid_gem_cell_avg($1,$2,$3) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric )'
+			USING 'CELC',retrieveddate_selection, grid_gem_cell.gid
+			INTO air;
+		IF (air.retrieveddate = retrieveddate_selection AND air.avg_avg > 0) THEN
+			EXECUTE 'INSERT INTO grid_gem_cell_avg ( grid_gem_cell_gid, retrieveddate, avg_type, 
+				avg_avg, creation_date) 
+				VALUES ( 
+				$1, $2, $3, $4, $5)'
+			USING grid_gem_cell.gid, retrieveddate_selection,air.avg_type,
+			 air.avg_avg, current_timestamp;
+		END IF;	
+		
+/*
+
 		EXECUTE 'SELECT max(retrieveddate) retrieveddate, 
 		ROUND(CAST(AVG(pm1float) as numeric), 1) AS avg_pm1_hr,
 		ROUND(CAST(AVG(pm25float) as numeric), 1) AS avg_pm25_hr,
@@ -180,8 +288,7 @@ BEGIN
 		INTO air;
 		END IF;
 
-
-		IF (air.retrieveddate = retrieveddate_selection AND air.avg_pm_all_hr > 0) THEN
+		IF (air.retrieveddate = retrieveddate_selection AND air.avg_avg > 0) THEN
 			EXECUTE 'INSERT INTO grid_gem_cell_avg (grid_gem_cell_gid, retrieveddate, 
 				avg_pm1_hr, avg_pm25_hr, avg_pm10_hr, avg_pm_all_hr, avg_ufp_hr, avg_ozon_hr, avg_hum_hr, avg_celc_hr, creation_date) VALUES ( 
 				$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)'
@@ -189,20 +296,19 @@ BEGIN
 			 air.avg_pm1_hr, air.avg_pm25_hr, air.avg_pm10_hr, air.avg_pm_all_hr, air.avg_ufp_hr, air.avg_ozon_hr, air.avg_hum_hr, air.avg_celc_hr,
 			 current_timestamp;
 		END IF;
+*/
+
 
 	END LOOP;
+
 
 	-- rounded avg_pm_all_hr to 1 decimal in 5 steps (0.0, 0.2, 0.4, 0.6, 0.8)
 	EXECUTE 'INSERT INTO grid_gem_cell_union (grid_gem_cell_gid, retrieveddate, 
 				avg_type,
-				avg_hr,
---				avg_pm1_hr, avg_pm25_hr, avg_pm10_hr, avg_pm_all_hr, avg_ufp_hr, avg_ozon_hr, avg_hum_hr, avg_celc_hr,
+				avg_avg,
 				creation_date, union_geom) 
-				SELECT min(grid_gem_cell_gid), max(retrieveddate), ''SPMI'',
---				  max(avg_pm1_hr), max(avg_pm25_hr), max(avg_pm10_hr),
---				  --round(avg_pm_all_hr+MOD(((avg_pm_all_hr-round(avg_pm_all_hr))*10),2)/10,1),
-				  round(avg_pm_all_hr,0),
---				  max(avg_ufp_hr), max(avg_ozon_hr), max(avg_hum_hr), max(avg_celc_hr),
+				SELECT min(grid_gem_cell_gid), max(retrieveddate), avg.avg_type,
+				  round(avg_avg,0),
 				  current_timestamp,
 				  ST_Union(cell.cell_geom)
 				FROM grid_gem_cell_avg avg,
@@ -210,9 +316,10 @@ BEGIN
 				WHERE retrieveddate = $1
 				AND avg.grid_gem_cell_gid = cell.gid
 				-- GROUP BY round(avg_pm_all_hr+MOD(((avg_pm_all_hr-round(avg_pm_all_hr))*10),2)/10,1)
-				GROUP BY round(avg_pm_all_hr,0) '
+				GROUP BY avg.avg_type, round(avg_avg,0) '
 			USING retrieveddate_selection;
 
+/*
 	EXECUTE 'INSERT INTO grid_gem_cell_union (grid_gem_cell_gid, retrieveddate, 
 				avg_type,
 				avg_hr,
@@ -318,7 +425,7 @@ BEGIN
 				GROUP BY round(avg_celc_hr,0) '
 			USING retrieveddate_selection;
 
-	
+*/	
 	END IF;
  
     --RETURN void;
