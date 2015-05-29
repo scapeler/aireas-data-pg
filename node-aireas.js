@@ -170,7 +170,7 @@ app.get('/'+_systemCode+'/data/aireas/:getFunction/:airbox', function(req, res) 
 				outRecord.properties.retrieveddate	= _result[i].retrieveddate;
 
 				outRecord.properties.avg_type 		= _result[i].avg_type;
-				outRecord.properties.avg_hr 		= parseFloat(_result[i].avg_hr);
+				outRecord.properties.avg_avg		= parseFloat(_result[i].avg_avg);
 
 				//outRecord.properties.avg_pm1_hr 	= parseFloat(_result[i].avg_pm1_hr);
 				//outRecord.properties.avg_pm25_hr 	= parseFloat(_result[i].avg_pm25_hr);
