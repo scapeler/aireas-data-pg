@@ -58,29 +58,17 @@ module.exports = {
 		var queryFrom = 
 				" from cbsbuurt2012 bu LEFT OUTER JOIN smoke_risc_marker srm on ST_Contains(bu.geom4326, srm.geom) ";
 		var queryWhere = //" WHERE 1400 > ST_Distance( GEOGRAPHY(wk.geom4326), GEOGRAPHY(ST_GeomFromText('POINT( 5.4526519775390625 51.448658120386)', 4326) ) ) "; 
-				" where bu.gm_naam = 'Eindhoven' "; 
+				" where bu.gm_naam = 'Eindhoven' and srm.marker_date >= current_timestamp - INTERVAL '04:00:00'"; 
 		var queryGroupBy = " group by bu.bu_code, bu.gm_code, bu.geom4326, bu.bu_naam ; ";
 		//var queryOrderBy = " order by bu_naam ; ";
 
 		console.log('Postgres sql start execute');
-//		if (param && param.airbox && param.airbox != '*') {
-//			_airbox = " and airbox = '" + param.airbox + "' ";			
-//		}
+
 		var query = querySelect + queryFrom + queryWhere + queryGroupBy;
 			//_airbox +
 			//queryOrderBy;
 		console.log('Query: ' + query);
 		executeSql(query, callback);
-		
-		
-/*
-select bu.bu_code, count(srm.gid) aantal_markers , bu.geom4326, bu.bu_naam 
-  from cbsbuurt2012 bu
-  LEFT OUTER JOIN smoke_risc_marker srm on ST_Contains(bu.geom4326, srm.geom)
-where bu.gm_naam = 'Eindhoven' 
---and bu.bu_code = bu.bu_code
-group by bu.bu_code, bu.geom4326, bu.bu_naam, bu.gm_naam
-*/	
 
         return;
 	},
