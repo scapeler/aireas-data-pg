@@ -132,12 +132,12 @@ order by wijk.gm_naam, wijk.wk_code ";
   	 	 		return console.error('could not connect to postgres', err);
   			}
   			client.query(query, function(err, result) {
+    			client.end();
    		 		if(err) {
       				return console.error('error running query', err);
     			}
 		//    		console.log('sql result: ' + result);
 				callback(err, result);
-    			client.end();
   			});
 		});
 	},
