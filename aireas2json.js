@@ -73,17 +73,18 @@ module.exports = {
 		for(i=0;i<tmpArray.length-1;i++) {  
 
 //			inpRecordArray 		= tmpArray[i].split(':(');
-			inpRecordArray 		= tmpArray[i].split('[');
+//			inpRecordArray 		= tmpArray[i].split('[');
+			inpRecordArray 		= tmpArray[i]);
 
 			_dataRecord			= {};
 //			_dataRecord.airBox	= inpRecordArray[0];
 
-			inpMetingenArray 	= inpRecordArray[1].split(',');
-	
-			_waardeDataRecord 	= [];
-			for(j=0;j<inpMetingenArray.length;j++) {
-				_waardeDataRecord[j] = inpMetingenArray[j];// parseFloat(inpMetingenArray[j]);
-			}
+//			inpMetingenArray 	= inpRecordArray[1].split(',');
+			_waardeDataRecord	= tmpArray[i];	
+//			_waardeDataRecord 	= [];
+//			for(j=0;j<inpMetingenArray.length;j++) {
+//				_waardeDataRecord[j] = inpMetingenArray[j];// parseFloat(inpMetingenArray[j]);
+//			}
 						
 			_dataRecord.airbox 	= _waardeDataRecord[0];
 			_dataRecord.retrievedDate 	= dateRetrieved;
