@@ -82,11 +82,11 @@ module.exports = {
 //			_dataRecord.airBox	= inpRecordArray[0];
 
 //			inpMetingenArray 	= inpRecordArray[1].split(',');
-			_waardeDataRecord	= tmpArray[i];	
-			_waardeDataRecord 	= [];
-			for(j=0;j<inpMetingenArray.length;j++) {
-				_waardeDataRecord[j] = inpRecordArray[j];// parseFloat(inpMetingenArray[j]);
-			}
+			_waardeDataRecord	= inpRecordArray;	
+//			_waardeDataRecord 	= [];
+//			for(j=0;j<inpMetingenArray.length;j++) {
+//				_waardeDataRecord[j] = inpRecordArray[j];// parseFloat(inpMetingenArray[j]);
+//			}
 						
 			_dataRecord.airbox 	= _waardeDataRecord[0];
 			_dataRecord.retrievedDate 	= Date.parse(_waardeDataRecord[1]);
