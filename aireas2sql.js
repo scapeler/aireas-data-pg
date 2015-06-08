@@ -188,8 +188,8 @@ module.exports = {
 
 
 			outputRecord = "\nINSERT INTO aireas ( airbox, retrieveddatechar, measuredatechar, retrieveddate, measuredate, " + 
-				" gpslat, gpslng, lat, lng, pm1, pm25, pm10, ufp, ozon, hum, celc, " + 
-				" gpslatfloat, gpslngfloat, pm1float, pm25float, pm10float, ufpfloat, ozonfloat, humfloat, celcfloat," + 
+				" gpslat, gpslng, lat, lng, pm1, pm25, pm10, ufp, ozon, hum, celc, no2" + 
+				" gpslatfloat, gpslngfloat, pm1float, pm25float, pm10float, ufpfloat, ozonfloat, humfloat, celcfloat, no2float" + 
 				" geom28992, geom ) VALUES (\n" +
 					"'" + 	inputRecord.airbox 			+ "', " +
 					"'" + 	inputRecord.retrievedDate 	+ "', " +
