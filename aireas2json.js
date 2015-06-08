@@ -43,6 +43,7 @@ module.exports = {
 			inpRecordPM1, inpRecordPM25, inpRecordPM10, 
 			inpRecordUFP, inpRecordOZON, inpRecordHUM, inpRecordCELC;
 
+		var inRecord1 = _datFile.replace(/\'/,'"');
 		var inRecord = JSON.parse(_datFile);
 		console.log(inRecord);
 		console.log(inRecord.airboxes);
