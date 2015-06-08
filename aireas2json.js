@@ -116,7 +116,7 @@ module.exports = {
 			_dataRecord.OZONFloat 	= parseFloat(_waardeDataRecord[6]);
 			_dataRecord.HUMFloat 	= parseFloat(_waardeDataRecord[7]);
 			_dataRecord.CELCFloat 	= parseFloat(_waardeDataRecord[8]);
-			_dataRecord.NO2		 	= parseFloat(_waardeDataRecord[9]);
+			_dataRecord.NO2Float 	= parseFloat(_waardeDataRecord[9]);
 
 			dataRecords.push(_dataRecord);
 

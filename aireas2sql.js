@@ -191,11 +191,11 @@ module.exports = {
 				" gpslat, gpslng, lat, lng, pm1, pm25, pm10, ufp, ozon, hum, celc, " + 
 				" gpslatfloat, gpslngfloat, pm1float, pm25float, pm10float, ufpfloat, ozonfloat, humfloat, celcfloat," + 
 				" geom28992, geom ) VALUES (\n" +
-					"'" + 	inputRecord.airBox 			+ "', " +
+					"'" + 	inputRecord.airbox 			+ "', " +
 					"'" + 	inputRecord.retrievedDate 	+ "', " +
 					"'" + 	inputRecord.measureDate 	+ "', " +
 					"'" +	inputRecord.retrievedDate 	+ "', " + 	// timestamp with time zone,
-							_measureDate			 	+ ", \n" +	// timestamp with time zone,
+					"'" + 	_measureDate			 	+ "', \n" +	// timestamp with time zone,
 					"'" + 	inputRecord.gpsLat 			+ "', " +
 					"'" + 	inputRecord.gpsLng 			+ "', " +
 							inputRecord.lat 			+ ", "  +
