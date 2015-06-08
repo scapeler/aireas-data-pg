@@ -51,7 +51,7 @@ module.exports = {
 		console.log(inRecord.airboxes[0]);
 		
 		
-		tmpArray = inRecord.airboxes[0];
+		tmpArray = inRecord.airboxes;
 		
 
 /*
@@ -76,15 +76,17 @@ module.exports = {
 //			inpRecordArray 		= tmpArray[i].split('[');
 			inpRecordArray 		= tmpArray[i];
 
+			console.log(inpRecordArray);
+
 			_dataRecord			= {};
 //			_dataRecord.airBox	= inpRecordArray[0];
 
 //			inpMetingenArray 	= inpRecordArray[1].split(',');
 			_waardeDataRecord	= tmpArray[i];	
-//			_waardeDataRecord 	= [];
-//			for(j=0;j<inpMetingenArray.length;j++) {
-//				_waardeDataRecord[j] = inpMetingenArray[j];// parseFloat(inpMetingenArray[j]);
-//			}
+			_waardeDataRecord 	= [];
+			for(j=0;j<inpMetingenArray.length;j++) {
+				_waardeDataRecord[j] = inpRecordArray[j];// parseFloat(inpMetingenArray[j]);
+			}
 						
 			_dataRecord.airbox 	= _waardeDataRecord[0];
 			_dataRecord.retrievedDate 	= Date.parse(_waardeDataRecord[1]);
