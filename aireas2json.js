@@ -45,7 +45,7 @@ module.exports = {
 
 		
 		var inRecord1 = "" + _datFile.toString();
-		var inRecord2 = _datFile.replace(/\'/g,'"');
+		var inRecord2 = inRecord1.replace(/\'/g,'"');
 		var inRecord = JSON.parse(inRecord2);
 //		console.log(inRecord);
 //		console.log(inRecord.airboxes);
