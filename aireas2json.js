@@ -46,9 +46,9 @@ module.exports = {
 		var inRecord1 = "" + _datFile.toString();
 		var inRecord2 = inRecord1.replace(/\'/g,'"');
 		var inRecord = JSON.parse(inRecord2);
-		console.log(inRecord);
-		console.log(inRecord.airboxes);
-		console.log(inRecord.airboxes[0]);
+//		console.log(inRecord);
+//		console.log(inRecord.airboxes);
+//		console.log(inRecord.airboxes[0]);
 		
 		
 		tmpArray = inRecord.airboxes;
@@ -76,7 +76,7 @@ module.exports = {
 //			inpRecordArray 		= tmpArray[i].split('[');
 			inpRecordArray 		= tmpArray[i];
 
-			console.log(inpRecordArray);
+//			console.log(inpRecordArray);
 
 			_dataRecord			= {};
 //			_dataRecord.airBox	= inpRecordArray[0];
@@ -90,9 +90,9 @@ module.exports = {
 						
 			_dataRecord.airbox 	= _waardeDataRecord[0];
 			
-			console.log(_dataRecord.airbox);
+//			console.log(_dataRecord.airbox);
 			
-			_dataRecord.retrievedDate 	= Date.parse(_waardeDataRecord[1]);
+			_dataRecord.retrievedDate 	= _waardeDataRecord[1]; //Date.parse(_waardeDataRecord[1]);
 			_dataRecord.measureDate 	= _waardeDataRecord[1];
 			_dataRecord.gpsLat 	= _waardeDataRecord[10];
 			_dataRecord.gpsLng 	= _waardeDataRecord[11];
