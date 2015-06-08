@@ -74,7 +74,7 @@ module.exports = {
 
 //			inpRecordArray 		= tmpArray[i].split(':(');
 //			inpRecordArray 		= tmpArray[i].split('[');
-			inpRecordArray 		= tmpArray[i]);
+			inpRecordArray 		= tmpArray[i];
 
 			_dataRecord			= {};
 //			_dataRecord.airBox	= inpRecordArray[0];
