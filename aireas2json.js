@@ -68,7 +68,7 @@ module.exports = {
 
 		dataRecords	= [];
 
-		for(i=1;i<tmpArray.length-1;i++) {  // start i=1 !!
+		for(i=0;i<tmpArray.length-1;i++) {  
 
 //			inpRecordArray 		= tmpArray[i].split(':(');
 			inpRecordArray 		= tmpArray[i].split('[');
