@@ -89,6 +89,9 @@ module.exports = {
 //			}
 						
 			_dataRecord.airbox 	= _waardeDataRecord[0];
+			
+			console.log(_dataRecord.airbox);
+			
 			_dataRecord.retrievedDate 	= Date.parse(_waardeDataRecord[1]);
 			_dataRecord.measureDate 	= _waardeDataRecord[1];
 			_dataRecord.gpsLat 	= _waardeDataRecord[10];
