@@ -49,10 +49,11 @@ module.exports = {
 		var dateRetrievedDate = Date.parse(dateRetrieved);
 		console.log('x'+dateRetrieved+'x');
 		var tmp1 = tmp0.substr(dateRetrievedLength+1);
-		var tmp2 = tmp1.replace(/<p>/g,'');
-		var tmp3 = tmp2.replace(/<\/p>/g,'');
+		//var tmp2 = tmp1.replace(/<p>/g,'');
+		//var tmp3 = tmp2.replace(/<\/p>/g,'');
 		//var tmpArray = tmp3.split(')');
-		var tmpArray = tmp3.split(']');
+		var tmp2 = tmp1.replace(/\[/,'');
+		var tmpArray = tmp3.split('],');
 		
 
 		dataRecords	= [];
