@@ -29,6 +29,7 @@ CREATE TABLE public.aireas
   ozon character varying(60),
   hum character varying(60),
   celc character varying(60),
+  no2 character varying(60),
   gpslatfloat double precision,
   gpslngfloat double precision,
   pm1float double precision,
@@ -38,6 +39,7 @@ CREATE TABLE public.aireas
   ozonfloat double precision,
   humfloat double precision,
   celcfloat double precision,
+  no2float double precision,
   geom geometry(Point),
   geom28992 geometry(Point,28992),
   CONSTRAINT aireas_pkey PRIMARY KEY (gid)

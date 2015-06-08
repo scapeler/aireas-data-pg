@@ -144,6 +144,7 @@ app.get('/'+_systemCode+'/data/aireas/:getFunction/:airbox', function(req, res) 
 				outRecord.properties.ozon 		= parseFloat(_result[i].ozonfloat);
 				outRecord.properties.hum 		= parseFloat(_result[i].humfloat);
 				outRecord.properties.celc 		= parseFloat(_result[i].celcfloat);
+				outRecord.properties.no2 		= parseFloat(_result[i].no2float);
 
 				_outRecords.push(outRecord);
 			}
@@ -462,6 +463,7 @@ app.get('/'+_systemCode+'/data/om/:getFunction/:object', function(req, res) {
 				outRecord.properties.ozon 		= parseFloat(_result[i].ozonfloat);
 				outRecord.properties.hum 		= parseFloat(_result[i].humfloat);
 				outRecord.properties.celc 		= parseFloat(_result[i].celcfloat);
+				outRecord.properties.no2 		= parseFloat(_result[i].no2float);
 
 				_outRecords.push(outRecord);
 			}

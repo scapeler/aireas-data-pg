@@ -52,8 +52,8 @@ module.exports = {
 		templateWijk		= handlebarsx.compile(templateWijkSource);				
 
 		sql = "select gm_naam, max(wijk.gm_code) gm_code, max(wijk.wk_naam) wk_naam, \
-  max(avg.avg_pm_all_hr) ScAQI, \
-  max(avg_prev.avg_pm_all_hr) ScAQI_prev, \
+  max(avg.avg_avg) ScAQI, \
+  max(avg_prev.avg_avg) ScAQI_prev, \
   max(avg.retrieveddate) retrieveddate, \
   max(aant_inw) aant_inw \
 from  grid_gem_cell cell \
@@ -66,10 +66,40 @@ and cell.gid = avg_prev.grid_gem_cell_gid \
 and avg.retrieveddate >= current_timestamp - interval '10 minutes'  \
 and avg_prev.retrieveddate >= current_timestamp - interval '20 minutes' \
 and avg_prev.retrieveddate < current_timestamp - interval '10 minutes' \
+and avg.avg_type = 'SPMI' \
+and avg_prev.avg_type = 'SPMI' \
 and wijk.gm_code='GM0772' \
 and wijk.wk_code = cell.wk_code \
 group by wijk.gm_naam, wijk.wk_code \
 order by wijk.gm_naam, wijk.wk_code ";
+
+
+
+/*  test if airbox is defect?
+select 
+  aireas.airbox,
+  max(aireas.pm1float) pm1float, 
+  max(aireas_prev.pm1float) pm1float_prev, 
+  max(aireas.pm25float) pm25float, 
+  max(aireas_prev.pm25float) pm25float_prev, 
+  max(aireas.pm10float) pm10float, 
+  max(aireas_prev.pm10float) pm10float_prev, 
+  max(aireas.retrieveddate) aireas_retrieveddate
+from  
+  aireas  
+, aireas aireas_prev 
+where 1=1 
+and aireas.airbox = aireas_prev.airbox 
+and aireas.retrieveddate >= current_timestamp - interval '10 minutes'  
+and aireas_prev.retrieveddate >= current_timestamp - interval '20 minutes' 
+and aireas_prev.retrieveddate < current_timestamp - interval '10 minutes' 
+and aireas.pm1float = aireas_prev.pm1float
+and aireas.pm25float = aireas_prev.pm25float
+and aireas.pm10float = aireas_prev.pm10float
+group by aireas.airbox 
+order by aireas.airbox
+
+*/
 
 
 	this.executeSql(sql, function(err, result) {

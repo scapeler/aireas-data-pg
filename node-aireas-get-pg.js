@@ -241,7 +241,7 @@ module.exports = {
     getMeasures: function (param, callback) {
 		var _airbox = "";
 		var _period = "";
-		var _attributes = " gid, airbox.airbox,  retrieveddate, gpslatfloat, gpslngfloat, pm1float, pm25float, pm10float, ufpfloat, ozonfloat, humfloat, celcfloat, geom ";
+		var _attributes = " gid, airbox.airbox,  retrieveddate, gpslatfloat, gpslngfloat, pm1float, pm25float, pm10float, ufpfloat, ozonfloat, humfloat, celcfloat, no2float, geom ";
 		var _from = " (select distinct(airbox) airbox from aireas) airbox, public.aireas a1 "
 		
 		if (param && param.airbox && param.airbox != '*') {

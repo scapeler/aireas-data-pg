@@ -51,16 +51,19 @@ module.exports = {
 		var tmp1 = tmp0.substr(dateRetrievedLength+1);
 		var tmp2 = tmp1.replace(/<p>/g,'');
 		var tmp3 = tmp2.replace(/<\/p>/g,'');
-		var tmpArray = tmp3.split(')');
+		//var tmpArray = tmp3.split(')');
+		var tmpArray = tmp3.split(']');
+		
 
 		dataRecords	= [];
 
 		for(i=1;i<tmpArray.length-1;i++) {  // start i=1 !!
 
-			inpRecordArray 		= tmpArray[i].split(':(');
+//			inpRecordArray 		= tmpArray[i].split(':(');
+			inpRecordArray 		= tmpArray[i].split('[');
 
 			_dataRecord			= {};
-			_dataRecord.airBox	= inpRecordArray[0];
+//			_dataRecord.airBox	= inpRecordArray[0];
 
 			inpMetingenArray 	= inpRecordArray[1].split(',');
 	
@@ -69,29 +72,32 @@ module.exports = {
 				_waardeDataRecord[j] = inpMetingenArray[j];// parseFloat(inpMetingenArray[j]);
 			}
 						
+			_dataRecord.airbox 	= _waardeDataRecord[0];
 			_dataRecord.retrievedDate 	= dateRetrieved;
-			_dataRecord.measureDate 	= "";  // not yet as key/value in measure data
-			_dataRecord.gpsLat 	= _waardeDataRecord[7];
-			_dataRecord.gpsLng 	= _waardeDataRecord[8];
-			_dataRecord.lat 	= this.convertGPS2LatLng(_waardeDataRecord[7]);
-			_dataRecord.lng 	= this.convertGPS2LatLng(_waardeDataRecord[8]);
-			_dataRecord.PM1 	= _waardeDataRecord[0];
-			_dataRecord.PM25 	= _waardeDataRecord[1];
-			_dataRecord.PM10 	= _waardeDataRecord[2];
-			_dataRecord.UFP 	= _waardeDataRecord[3];
-			_dataRecord.OZON 	= _waardeDataRecord[4];
-			_dataRecord.HUM 	= _waardeDataRecord[5];
-			_dataRecord.CELC 	= _waardeDataRecord[6];
+			_dataRecord.measureDate 	= _waardeDataRecord[1];
+			_dataRecord.gpsLat 	= _waardeDataRecord[10];
+			_dataRecord.gpsLng 	= _waardeDataRecord[11];
+			_dataRecord.lat 	= this.convertGPS2LatLng(_waardeDataRecord[10]);
+			_dataRecord.lng 	= this.convertGPS2LatLng(_waardeDataRecord[11]);
+			_dataRecord.PM1 	= _waardeDataRecord[2];
+			_dataRecord.PM25 	= _waardeDataRecord[3];
+			_dataRecord.PM10 	= _waardeDataRecord[4];
+			_dataRecord.UFP 	= _waardeDataRecord[5];
+			_dataRecord.OZON 	= _waardeDataRecord[6];
+			_dataRecord.HUM 	= _waardeDataRecord[7];
+			_dataRecord.CELC 	= _waardeDataRecord[8];
+			_dataRecord.NO2 	= _waardeDataRecord[9];
 
-			_dataRecord.gpsLatFloat = parseFloat(_waardeDataRecord[7]);
-			_dataRecord.gpsLngFloat	= parseFloat(_waardeDataRecord[8]);
-			_dataRecord.PM1Float 	= parseFloat(_waardeDataRecord[0]);
-			_dataRecord.PM25Float 	= parseFloat(_waardeDataRecord[1]);
-			_dataRecord.PM10Float 	= parseFloat(_waardeDataRecord[2]);
-			_dataRecord.UFPFloat 	= parseFloat(_waardeDataRecord[3]);
-			_dataRecord.OZONFloat 	= parseFloat(_waardeDataRecord[4]);
-			_dataRecord.HUMFloat 	= parseFloat(_waardeDataRecord[5]);
-			_dataRecord.CELCFloat 	= parseFloat(_waardeDataRecord[6]);
+			_dataRecord.gpsLatFloat = parseFloat(_waardeDataRecord[10]);
+			_dataRecord.gpsLngFloat	= parseFloat(_waardeDataRecord[11]);
+			_dataRecord.PM1Float 	= parseFloat(_waardeDataRecord[2]);
+			_dataRecord.PM25Float 	= parseFloat(_waardeDataRecord[3]);
+			_dataRecord.PM10Float 	= parseFloat(_waardeDataRecord[4]);
+			_dataRecord.UFPFloat 	= parseFloat(_waardeDataRecord[5]);
+			_dataRecord.OZONFloat 	= parseFloat(_waardeDataRecord[6]);
+			_dataRecord.HUMFloat 	= parseFloat(_waardeDataRecord[7]);
+			_dataRecord.CELCFloat 	= parseFloat(_waardeDataRecord[8]);
+			_dataRecord.NO2		 	= parseFloat(_waardeDataRecord[9]);
 
 			dataRecords.push(_dataRecord);
 

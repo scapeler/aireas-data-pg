@@ -1,5 +1,5 @@
 /*
-** Module: aireas2sql
+** Module: risc-markers-remove-hist
 **
 **
 **
@@ -19,6 +19,8 @@ var nrOfMeasures, maxMeasures, nextFolders, sqlConnString;
 
 // **********************************************************************************
 
+
+todo !!!!!!
 
 module.exports = {
 
@@ -206,8 +208,7 @@ module.exports = {
 					"'" + 	inputRecord.UFP 			+ "', " +
 					"'" + 	inputRecord.OZON 			+ "', " +
 					"'" + 	inputRecord.HUM 			+ "', " +
-					"'" + 	inputRecord.CELC 			+ "', " +
-					"'" + 	inputRecord.NO2 			+ "', \n" +
+					"'" + 	inputRecord.CELC 			+ "', \n" +
 							inputRecord.gpsLatFloat 	+ ", "  +
 							inputRecord.gpsLngFloat 	+ ", "  +
 							inputRecord.PM1Float 		+ ", "  +
@@ -217,7 +218,6 @@ module.exports = {
 							inputRecord.OZONFloat 		+ ", "  +
 							inputRecord.HUMFloat 		+ ", "  +
 							inputRecord.CELCFloat 		+ ", "  +
-							inputRecord.NO2Float 		+ ", "  +
 							" ST_Transform(ST_SetSRID(ST_MakePoint(" + inputRecord.lng + ", " + inputRecord.lat + "), 4326), 28992 ), " +
 							" ST_SetSRID(ST_MakePoint(" + inputRecord.lng + ", " + inputRecord.lat + "), 4326) ); ";
 
