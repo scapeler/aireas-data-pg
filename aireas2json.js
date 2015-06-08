@@ -43,6 +43,8 @@ module.exports = {
 			inpRecordPM1, inpRecordPM25, inpRecordPM10, 
 			inpRecordUFP, inpRecordOZON, inpRecordHUM, inpRecordCELC;
 
+		
+		var 
 		var inRecord1 = "" + _datFile.toString();
 		var inRecord2 = inRecord1.replace(/\'/g,'"');
 		var inRecord = JSON.parse(inRecord2);
@@ -51,7 +53,7 @@ module.exports = {
 //		console.log(inRecord.airboxes[0]);
 		
 		
-		tmpArray = inRecord.airboxes;
+		tmpArray = inRecord.content.airboxes;
 		
 
 /*
@@ -92,7 +94,7 @@ module.exports = {
 			
 //			console.log(_dataRecord.airbox);
 			
-			_dataRecord.retrievedDate 	= _waardeDataRecord[1]; //Date.parse(_waardeDataRecord[1]);
+			_dataRecord.retrievedDate 	= inRecord.content;
 			_dataRecord.measureDate 	= _waardeDataRecord[1];
 			_dataRecord.gpsLat 	= _waardeDataRecord[10];
 			_dataRecord.gpsLng 	= _waardeDataRecord[11];

@@ -113,11 +113,11 @@ module.exports = {
 
   	new StreamBuffer(request.get( { url: url }, function(error, response) {
 		console.log("Request completed: " + desc + " " );
-		//var currDate = new Date();
-		//var iso8601 = currDate.toISOString();
+		var currDate = new Date();
+		var iso8601 = currDate.toISOString();
 
-		writeFile(tmpFolder, fileName, //iso8601 + ' ' + 
-			_wfsResult);
+		writeFile(tmpFolder, fileName, '{"retrievedDate": "' + iso8601 + '", "content":' + 
+			_wfsResult + ' }');
 		})
   	);
 
