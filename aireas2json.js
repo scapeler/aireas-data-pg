@@ -44,7 +44,7 @@ module.exports = {
 			inpRecordUFP, inpRecordOZON, inpRecordHUM, inpRecordCELC;
 
 		var inRecord1 = "" + _datFile.toString();
-		var inRecord2 = inRecord1.replace(/\'/,'"');
+		var inRecord2 = inRecord1.replace(/\'/g,'"');
 		var inRecord = JSON.parse(inRecord2);
 		console.log(inRecord);
 		console.log(inRecord.airboxes);
