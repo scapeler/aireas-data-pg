@@ -137,7 +137,9 @@ module.exports = {
 			ST_AsGeoJSON(ST_Transform(gm.geom,4326)) AS geom ";
 
 		var queryFrom 		=	" from cbsgem2012 gm ";
-		var queryWhere 		= "where gm.gm_naam = 'Eindhoven' ";
+//		var queryWhere 		= " where gm.gm_naam = 'Eindhoven' ";
+		var queryWhere 		= " where gm.gm_naam = '" + param.gm_naam + "' ";
+		
 		var queryOrderBy 	= " order by gm_naam ; ";
 
 		console.log('Postgres sql start execute');
