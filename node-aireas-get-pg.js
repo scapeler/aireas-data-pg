@@ -134,6 +134,7 @@ module.exports = {
 
 		var querySelect = " select gm.gm_naam, gm.gm_code,  \
   			ST_AsGeoJSON(ST_Envelope(ST_Transform(gm.geom,4326))) AS envelope_geom, \
+			ST_AsGeoJSON(ST_Transform(ST_Centroid(gm.geom), 4326)) AS centroid, \
 			ST_AsGeoJSON(ST_Transform(gm.geom,4326)) AS geom ";
 
 		var queryFrom 		=	" from cbsgem2012 gm ";
