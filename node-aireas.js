@@ -190,7 +190,7 @@ app.get('/'+_systemCode+'/data/aireas/:getFunction/:airbox', function(req, res) 
   }
 
 	if (req.params.getFunction == 'getCbsGemInfo') {
-		apriAireasGetPg.getGemInfo({gm_naam: req.params.gm_naam, gm_code: req.params.gm_code }, function(err, result) {
+		apriAireasGetPg.getGemInfo({gm_naam: req.query.gm_naam, gm_code: req.query.gm_code }, function(err, result) {
 			var _outRecords = [];
 			var _result = result.rows; //JSON.parse(result);
 			for (var i=0;i<_result.length;i++) {
