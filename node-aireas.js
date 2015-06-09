@@ -198,6 +198,7 @@ app.get('/'+_systemCode+'/data/aireas/:getFunction/:airbox', function(req, res) 
 				outRecord.geometry = JSON.parse(_result[i].geom);
 				outRecord.type = 'Feature';
 				outRecord.envelope = JSON.parse(_result[i].envelope_geom);
+				outRecord.centroid = JSON.parse(_result[i].centroid);
 
 				outRecord.properties = {};
 				outRecord.properties.gm_code = _result[i].gm_code;
