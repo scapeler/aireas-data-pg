@@ -11,6 +11,11 @@ create table public.airbox (
   gid integer NOT NULL DEFAULT nextval('airbox_gid_seq'::regclass),
   airbox character varying(255) NOT NULL,
   airbox_location_desc character varying(255) NOT NULL,
+  airbox_type character varying(255),
+  lat double precision,
+  lng double precision,
+  lat_calculated double precision,
+  lng_calculated double precision,
   geom geometry(Point) NOT NULL,
   mutation_date timestamp with time zone  NOT NULL,
   creation_date timestamp with time zone  NOT NULL,
@@ -28,4 +33,4 @@ CREATE INDEX airbox_airbox_idx
 CREATE INDEX airbox_geom_gist
   ON public.airbox
   USING gist
-  (geom);  
+  (geom);
