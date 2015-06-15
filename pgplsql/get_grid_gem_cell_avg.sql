@@ -13,7 +13,7 @@ DECLARE
 		 AND a1.retrieveddate <= $2 
 		 AND a1.retrieveddate >= current_timestamp - INTERVAL ''00:30:00'' 
 		 AND a1.airbox = cellair.airbox
-		 AND ROUND(CAST(ST_Distance(GEOGRAPHY(a1.geom), GEOGRAPHY(cellair.airbox_geom)) AS NUMERIC), 5) < 30
+		 AND ROUND(CAST(ST_Distance(GEOGRAPHY(a1.geom), GEOGRAPHY(cellair.airbox_geom)) AS NUMERIC), 5) < 40
 		 AND cellair.factor_distance >= $4 
 		 AND cellair.factor_distance <= $5 ';
   stmt_p4 varchar := '';
@@ -77,6 +77,7 @@ BEGIN
 		INTO air;
 	END IF;
 
+/*
 	-- if no avg then try again in the next ring
 	IF (air.retrieveddate = $2 AND air.avg_avg > 0) THEN
 	ELSE
@@ -84,7 +85,7 @@ BEGIN
 		USING $1, $2, $3, 2000, 4000
 		INTO air;
 	END IF;
-
+*/
 
 	return air;
     
