@@ -244,7 +244,7 @@ module.exports = {
     getMeasures: function (param, callback) {
 		var _airbox = "";
 		var _period = "";
-		var _attributes = " a1.gid, airbox.airbox, airbox.airbox_type, airbox.airbox_location, airbox.airbox_location_desc, airbox.airbox_location_type, airbox.airbox_postcode, airbox.airbox_x, airbox.airbox_y, airbox.mutation_date, airbox.creation_date, retrieveddate, gpslatfloat, gpslngfloat, pm1float, pm25float, pm10float, ufpfloat, ozonfloat, humfloat, celcfloat, no2float, geom ";
+		var _attributes = " a1.gid, airbox.airbox, airbox.airbox_type, airbox.airbox_location, airbox.airbox_location_desc, airbox.airbox_location_type, airbox.airbox_postcode, airbox.airbox_x, airbox.airbox_y, airbox.mutation_date, airbox.creation_date, retrieveddate, gpslatfloat, gpslngfloat, pm1float, pm25float, pm10float, ufpfloat, ozonfloat, humfloat, celcfloat, no2float, airbox.geom ";
 //		var _from = " (select distinct(airbox) airbox from aireas) airbox, public.aireas a1 "
 		var _from = " airbox, public.aireas a1 "
 		
@@ -255,7 +255,8 @@ module.exports = {
 			_period = " and retrieveddate >= current_timestamp - interval '7 days' ";		//and a1.retrieveddate >= current_timestamp - interval '1 hour'
 		}
 		if (param && param.getFunction == 'getActualMeasures') {
-			_attributes = _attributes + " , ST_AsGeoJSON(ST_Transform(a1.geom28992, 4326)) geom4326 "; 
+//			_attributes = _attributes + " , ST_AsGeoJSON(ST_Transform(airbox.geom28992, 4326)) geom4326 "; 
+			_attributes = _attributes + " , ST_AsGeoJSON(airbox.geom) geom4326 "; 
 			_period = " and a1.retrieveddate = (select max(retrieveddate) from public.aireas a2 where a2.airbox = airbox.airbox)";		//and a1.retrieveddate >= current_timestamp - interval '1 hour'
 		}
 		var query = 'select ' + _attributes + ' from ' + _from + ' where 1=1 and a1.airbox = airbox.airbox ' + _airbox + _period + ' order by airbox.airbox, retrieveddate ;';
