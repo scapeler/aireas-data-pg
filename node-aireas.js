@@ -451,9 +451,19 @@ app.get('/'+_systemCode+'/data/om/:getFunction/:object', function(req, res) {
 				outRecord.type = 'Feature';
 
 				outRecord.properties = {};
-				outRecord.properties.gid 		= _result[i].gid;
-				outRecord.properties.airbox 		= _result[i].airbox; 
-				outRecord.properties.retrieveddate	= _result[i].retrieveddate;
+				outRecord.properties.gid 					= _result[i].gid;
+				outRecord.properties.airbox 				= _result[i].airbox; 
+				outRecord.properties.airbox_type 			= _result[i].airbox_type; 
+				outRecord.properties.airbox_location 		= _result[i].airbox_location; 
+				outRecord.properties.airbox_location_desc 	= _result[i].airbox_location_desc; 
+				outRecord.properties.airbox_location_type 	= _result[i].airbox_location_type; 
+				outRecord.properties.airbox_postcode 		= _result[i].airbox_postcode; 
+				outRecord.properties.airbox_x 				= _result[i].airbox_x; 
+				outRecord.properties.airbox_y 				= _result[i].airbox_y; 
+				outRecord.properties.mutation_date 			= _result[i].mutation_date; 
+				outRecord.properties.creation_date 			= _result[i].creation_date; 
+								
+				outRecord.properties.retrieveddate			= _result[i].retrieveddate;
 
 				outRecord.properties.gpslat 	= parseFloat(_result[i].gpslatfloat);
 				outRecord.properties.gpslng 	= parseFloat(_result[i].gpslngfloat);

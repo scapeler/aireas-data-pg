@@ -244,8 +244,9 @@ module.exports = {
     getMeasures: function (param, callback) {
 		var _airbox = "";
 		var _period = "";
-		var _attributes = " gid, airbox.airbox,  retrieveddate, gpslatfloat, gpslngfloat, pm1float, pm25float, pm10float, ufpfloat, ozonfloat, humfloat, celcfloat, no2float, geom ";
-		var _from = " (select distinct(airbox) airbox from aireas) airbox, public.aireas a1 "
+		var _attributes = " gid, airbox.airbox, airbox.airbox_type, airbox.airbox_location, airbox.airbox_location_desc, airbox.airbox_location_type, airbox.airbox_postcode, airbox.airbox_x, airbox.airbox_y, airbox.mutation_date, airbox.creation_date, retrieveddate, gpslatfloat, gpslngfloat, pm1float, pm25float, pm10float, ufpfloat, ozonfloat, humfloat, celcfloat, no2float, geom ";
+//		var _from = " (select distinct(airbox) airbox from aireas) airbox, public.aireas a1 "
+		var _from = " airbox, public.aireas a1 "
 		
 		if (param && param.airbox && param.airbox != '*') {
 			_airbox = " and airbox.airbox = '" + param.airbox + "' ";			
