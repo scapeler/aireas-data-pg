@@ -208,12 +208,12 @@ module.exports = {
 			outputRecord = "\nINSERT INTO aireas_hist ( airbox, retrieveddatechar, measuredatechar, retrieveddate, measuredate, " + 
 				" gpslat, gpslng, lat, lng, pm1, pm25, pm10, ufp, ozon, hum, celc, no2, " + 
 				" gpslatfloat, gpslngfloat, pm1float, pm25float, pm10float, ufpfloat, ozonfloat, humfloat, celcfloat, no2float, " + 
-				" geom28992, geom ) VALUES (\n" +
+				" geom28992, geom ) VALUES (" +
 					"'" + 	inputRecord.airbox 			+ "', " +
 					"'" + 	inputRecord.retrievedDate 	+ "', " +
 					"'" + 	inputRecord.measureDate 	+ "', " +
 					"'" +	inputRecord.retrievedDate 	+ "', " + 	// timestamp with time zone,
-					"'" + 	inputRecord.measureDate		+ "', \n" +	// timestamp with time zone,
+					"'" + 	inputRecord.measureDate		+ "', " +	// timestamp with time zone,
 					"'" + 	inputRecord.gpsLat 			+ "', " +
 					"'" + 	inputRecord.gpsLng 			+ "', " +
 							inputRecord.lat 			+ ", "  +
@@ -225,7 +225,7 @@ module.exports = {
 					"'" + 	inputRecord.OZON 			+ "', " +
 					"'" + 	inputRecord.HUM 			+ "', " +
 					"'" + 	inputRecord.CELC 			+ "', " +
-					"'" + 	inputRecord.NO2 			+ "', \n" +
+					"'" + 	inputRecord.NO2 			+ "', " +
 							inputRecord.gpsLatFloat 	+ ", "  +
 							inputRecord.gpsLngFloat 	+ ", "  +
 							inputRecord.PM1Float 		+ ", "  +
@@ -237,7 +237,7 @@ module.exports = {
 							inputRecord.CELCFloat 		+ ", "  +
 							inputRecord.NO2Float 		+ ", "  +
 							" ST_Transform(ST_SetSRID(ST_MakePoint(" + inputRecord.lng + ", " + inputRecord.lat + "), 4326), 28992 ), " +
-							" ST_SetSRID(ST_MakePoint(" + inputRecord.lng + ", " + inputRecord.lat + "), 4326) ); ";
+							" ST_SetSRID(ST_MakePoint(" + inputRecord.lng + ", " + inputRecord.lat + "), 4326) );  \n ";
 
 			outputFile=outputFile.concat(outputRecord);
 		}
