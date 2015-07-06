@@ -74,9 +74,18 @@ module.exports = {
 //		var inRecord = JSON.parse(inRecord2);
 		
 		var records1 = ""+_datFile;	
-		var records2 = records1.split('\n');	
+		var records2 = records1.split('\n');
 		
 		console.log('Aantal records:' + records2.length)
+		
+//		{"airbox": "39_cal", "retrievedDate": "2015-07-06T18:57:06.596Z", "content":
+
+		var firstRecParts = records2[0].split(',');
+		var firstRecJson = firstRecParts[0] + ', '+ firstRecParts[1] + '} ';
+		console.log(firstRecJson);
+		var firstRec = JSON.parse(firstRecJson);
+		console.log('Verwerk airbox %s van retrievedate %s', firstRec.airbox, firstRec.retrievedDate );
+		
 		
 		return;
 		
