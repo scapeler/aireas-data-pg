@@ -122,7 +122,8 @@ module.exports = {
 
 		console.log("- creating: " , aireasFileNameOutput);
 		outputFileJson = JSON.stringify(dataRecords);
-		this.writeFile (filePath, aireasFileNameOutput, outputFileJson );
+//		this.writeFile (filePath, aireasFileNameOutput, outputFileJson );
+		writeFile (filePath, aireasFileNameOutput, outputFileJson );
 
 
 	}
