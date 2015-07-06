@@ -73,7 +73,8 @@ module.exports = {
 //		var inRecord2 = inRecord1.replace(/\'/g,'"');
 //		var inRecord = JSON.parse(inRecord2);
 		
-		var records = _datFile.split('\n');	
+		var records1 = ""+_datFile;	
+		var records2 = records1.split('\n');	
 		
 		console.log('Aantal records:' + records.length)
 		
