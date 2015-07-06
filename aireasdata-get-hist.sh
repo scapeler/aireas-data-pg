@@ -1,8 +1,8 @@
 
 ##exit 0
 
-SYSTEMCODE=SCAPE604
-SYSTEMPATH=/opt/$SYSTEMCODE/
+SYSTEMCODE="SCAPE604"
+SYSTEMPATH="/opt"
 
 LOGFILE=$SYSTEMPATH/$SYSTEMCODE/log/aireas-hist-data.log
 echo "Start procedure on: " `date` >>$LOGFILE
