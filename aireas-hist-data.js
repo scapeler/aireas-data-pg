@@ -14,10 +14,10 @@ var sys 	= require('sys');
 
 var aireasUrl, aireasFileName, aireasLocalPathRoot, fileFolder, tmpFolder;
 
-var airboxes = ['1.cal', '2.cal', '3.cal', '4.cal', '5.cal', '6.cal', '7.cal', '8.cal', '9.cal', '10.cal', 
-'11.cal', '12.cal', '13.cal', '14.cal', '15.cal', '16.cal', '17.cal', '18.cal', '19.cal', '20.cal', 
-'21.cal', '22.cal', '23.cal', '24.cal', '25.cal', '26.cal', '27.cal', '28.cal', '29.cal', '30.cal', 
-'31.cal', '32.cal', '33.cal', '34.cal', '35.cal', '36.cal', '37.cal', '38.cal', '39.cal', '40.cal' ];
+var airboxes = ['1_cal', '2_cal', '3_cal', '4_cal', '5_cal', '6_cal', '7_cal', '8_cal', '9_cal', '10_cal', 
+'11_cal', '12_cal', '13_cal', '14_cal', '15_cal', '16_cal', '17_cal', '18_cal', '19_cal', '20_cal', 
+'21_cal', '22_cal', '23_cal', '24_cal', '25_cal', '26_cal', '27_cal', '28_cal', '29_cal', '30_cal', 
+'31_cal', '32_cal', '33_cal', '34_cal', '35_cal', '36_cal', '37_cal', '38_cal', '39_cal', '40_cal' ];
 // **********************************************************************************
 
 
@@ -38,7 +38,7 @@ module.exports = {
 		// 10-minuten reeksen met actuele AiREAS luchtmetingen. Verversing elke 10 minuten.
 	
 		for (var i=0;i<airboxes.length;i++) {
-			this.reqFile (aireasUrl+airboxes[i], aireasFileName+airboxes[i]+'.txt',	false, 'aireasdata');
+			this.reqFile (aireasUrl+airboxes[i]+'.csv', aireasFileName+airboxes[i]+'.txt',	false, 'aireasdata');
 		}	
 
 		console.log('All retrieve actions are activated.');
