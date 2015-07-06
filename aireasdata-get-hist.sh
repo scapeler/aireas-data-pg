@@ -14,7 +14,7 @@ mkdir -p $SYSTEMPATH/$SYSTEMCODE/log
 cd  $SYSTEMPATH/$SYSTEMCODE/aireas-data-pg
 #/usr/local/bin/node index.js aireas-hist-data.js >>$LOGFILE
 
-#/usr/local/bin/node index.js aireas-hist2json.js /opt/SCAPE604/aireas/aireas-hist/tmp/aireas-hist1_cal.txt >>$LOGFILE
+/usr/local/bin/node index.js aireas-hist2json.js /opt/SCAPE604/aireas/aireas-hist/tmp/aireas-hist1_cal.txt >>$LOGFILE
 /usr/local/bin/node index.js aireas-hist2json.js /opt/SCAPE604/aireas/aireas-hist/tmp/aireas-hist2_cal.txt >>$LOGFILE
 /usr/local/bin/node index.js aireas-hist2json.js /opt/SCAPE604/aireas/aireas-hist/tmp/aireas-hist3_cal.txt >>$LOGFILE
 /usr/local/bin/node index.js aireas-hist2json.js /opt/SCAPE604/aireas/aireas-hist/tmp/aireas-hist4_cal.txt >>$LOGFILE
