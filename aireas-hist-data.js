@@ -125,7 +125,7 @@ module.exports = {
 		var currDate = new Date();
 		var iso8601 = currDate.toISOString();
 
-		writeFile(tmpFolder, fileName, '{"airbox": "' + airbox + '", retrievedDate": "' + iso8601 + '", "content":' + 
+		writeFile(tmpFolder, fileName, '{"airbox": "' + airbox + '", "retrievedDate": "' + iso8601 + '", "content":' + 
 			_wfsResult + ' }');
 		})
   	);
