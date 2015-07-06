@@ -55,10 +55,10 @@ module.exports = {
 	}, // end of init
 
 
-	executeFile: function(file, pathname) {
+	executeFile: function(file, extention) {
 	
 //		localPath 		= tmpFolder + aireasFileName;
-		localPath 		= pathname + file;
+		localPath 		= file;
     	console.log("Local AiREAS data: " + localPath );
 
     	var _datFile	= fs.readFileSync(localPath);
