@@ -175,7 +175,7 @@ module.exports = {
                         	}
                         	client.query(query, function(err, result) {
                                 	if(err) {
-                                	return console.error('error running query', err);
+                                	return console.error('error running query', err, query);
                         	}
                         	console.log('sql result: ' + result);
                         	client.end();
