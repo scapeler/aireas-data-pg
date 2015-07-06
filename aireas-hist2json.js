@@ -202,7 +202,7 @@ module.exports = {
 		console.log('Aantal records: ' + tmpArray.length);
 		
 		for ( i=1; i<tmpArray.length-2;i++) {
-			if (i>61640) {
+			if (i>tmpArray.length - 5) {
 				console.log(' %n %s ', i, _waardeDataRecord[9] );
 			}  
 //			inpRecordArray 		= tmpArray[i].split(':(');
