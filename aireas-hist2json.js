@@ -65,6 +65,84 @@ module.exports = {
 			return result;
 		};
 		
+		var	createExportFile = function () {
+
+		var outputArray;
+		var outputRecord;
+		var inputRecord;
+		var filePath;
+		var outputFileJson;
+
+		var currDate = new Date();
+		var year = (currDate.getYear()+1900);
+
+		var month = (currDate.getMonth()+1);
+		var monthStr = "";
+		if (month<10) {
+			monthStr = "0" + month;
+		} else {
+			monthStr = "" + month;
+		}
+
+		var day = currDate.getDate();
+		var dayStr = "";
+		if (day<10) {
+			dayStr = "0" + day;
+		} else {
+			dayStr = "" + day;
+		}
+
+		var hour = currDate.getHours();
+		var hourStr = "";
+		if (hour<10) {
+			hourStr = "0" + hour;
+		} else {
+			hourStr = "" + hour;
+		}
+
+		var minute = currDate.getMinutes();
+		var minuteStr = "";
+		if (minute<10) {
+			minuteStr = "0" + minute;
+		} else {
+			minuteStr = "" + minute;
+		}
+
+
+
+		filePath = resultsFolder + year + "/" + monthStr + "/" + dayStr + "/" + hourStr + "/" + minuteStr;
+
+
+		try {fs.mkdirSync(resultsFolder + year + "/" );} catch (e) {} ;
+		try {fs.mkdirSync(resultsFolder + year + "/" + monthStr + "/");} catch (e) {} ;
+		try {fs.mkdirSync(resultsFolder + year + "/" + monthStr + "/" + dayStr + "/" );} catch (e) {} ;
+		try {fs.mkdirSync(resultsFolder + year + "/" + monthStr + "/" + dayStr + "/"  + hourStr + "/");} catch (e) {} ;
+		try {fs.mkdirSync(resultsFolder + year + "/" + monthStr + "/" + dayStr + "/" + hourStr + "/" + minuteStr);} catch (e) {} ;
+
+
+		console.log("- creating: " , aireasFileNameOutput);
+		outputFileJson = JSON.stringify(dataRecords);
+		this.writeFile (filePath, aireasFileNameOutput, outputFileJson );
+
+
+	}
+
+//	convertGPS2LatLng: function(gpsValue){
+//		var degrees = Math.floor(gpsValue /100);
+//		var minutes = gpsValue - (degrees*100);
+//		var result  = degrees + (minutes /60);
+//		return result;
+//	},
+
+		var writeFile = function(path, fileName, content ) {
+			var _path = path;
+			try {
+				fs.mkdirSync(_path);
+			} catch (e) {} ;
+			fs.writeFileSync(_path + "/" + fileName, content);
+		};
+
+		
 //		localPath 		= tmpFolder + aireasFileName;
 		var localPath 		= file;
     	console.log("Local AiREAS data: " + localPath );
@@ -124,7 +202,7 @@ module.exports = {
 		
 		for ( i=1; i<tmpArray.length-2;i++) {
 			if (i>61640) {
-				console.log('%s %s ', i, _waardeDataRecord[9] );
+				console.log(' %n %s ', i, _waardeDataRecord[9] );
 			}  
 //			inpRecordArray 		= tmpArray[i].split(':(');
 //			inpRecordArray 		= tmpArray[i].split('[');
@@ -181,86 +259,11 @@ module.exports = {
 
 		}
 	
-		this.createExportFile();
+		createExportFile();
 	
 	},
 
 
 
-	createExportFile: function () {
-		var outputArray;
-		var outputRecord;
-		var inputRecord;
-		var filePath;
-		var outputFileJson;
-
-		var currDate = new Date();
-		var year = (currDate.getYear()+1900);
-
-		var month = (currDate.getMonth()+1);
-		var monthStr = "";
-		if (month<10) {
-			monthStr = "0" + month;
-		} else {
-			monthStr = "" + month;
-		}
-
-		var day = currDate.getDate();
-		var dayStr = "";
-		if (day<10) {
-			dayStr = "0" + day;
-		} else {
-			dayStr = "" + day;
-		}
-
-		var hour = currDate.getHours();
-		var hourStr = "";
-		if (hour<10) {
-			hourStr = "0" + hour;
-		} else {
-			hourStr = "" + hour;
-		}
-
-		var minute = currDate.getMinutes();
-		var minuteStr = "";
-		if (minute<10) {
-			minuteStr = "0" + minute;
-		} else {
-			minuteStr = "" + minute;
-		}
-
-
-
-		filePath = resultsFolder + year + "/" + monthStr + "/" + dayStr + "/" + hourStr + "/" + minuteStr;
-
-
-		try {fs.mkdirSync(resultsFolder + year + "/" );} catch (e) {} ;
-		try {fs.mkdirSync(resultsFolder + year + "/" + monthStr + "/");} catch (e) {} ;
-		try {fs.mkdirSync(resultsFolder + year + "/" + monthStr + "/" + dayStr + "/" );} catch (e) {} ;
-		try {fs.mkdirSync(resultsFolder + year + "/" + monthStr + "/" + dayStr + "/"  + hourStr + "/");} catch (e) {} ;
-		try {fs.mkdirSync(resultsFolder + year + "/" + monthStr + "/" + dayStr + "/" + hourStr + "/" + minuteStr);} catch (e) {} ;
-
-
-		console.log("- creating: " , aireasFileNameOutput);
-		outputFileJson = JSON.stringify(dataRecords);
-		this.writeFile (filePath, aireasFileNameOutput, outputFileJson );
-
-
-	},
-
-//	convertGPS2LatLng: function(gpsValue){
-//		var degrees = Math.floor(gpsValue /100);
-//		var minutes = gpsValue - (degrees*100);
-//		var result  = degrees + (minutes /60);
-//		return result;
-//	},
-
-	writeFile: function(path, fileName, content ) {
-		var _path = path;
-		try {
-			fs.mkdirSync(_path);
-		} catch (e) {} ;
-		fs.writeFileSync(_path + "/" + fileName, content);
-	}
 
 } // end of module.exports
