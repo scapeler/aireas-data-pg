@@ -55,8 +55,10 @@ module.exports = {
     		}).filter(function (file) {
         		return fs.statSync(file).isFile();
     		}).forEach(function (file) {
+				if (file == '/opt/SCAPE604/aireas/aireas-hist/tmp/aireas-hist25_cal.txt') {
         		console.log("%s (%s)", file, path.extname(file));
 				executeFile(file, path.extname(file))
+				}
     		});
 		});
 
