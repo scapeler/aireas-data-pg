@@ -327,7 +327,7 @@ module.exports = {
 
 			_dataRecord			= {};
 //			_dataRecord.airBox	= inpRecordArray[0];
-			_dataRecord.airBox	= firstRec.airbox;
+			_dataRecord.airbox	= firstRec.airbox;
 			
 //			inpMetingenArray 	= inpRecordArray[1].split(',');
 			_waardeDataRecord	= inpRecordArray;	
