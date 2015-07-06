@@ -10,6 +10,7 @@
 
 var fs 		= require('fs'),
 	path = require("path");
+var pg = require('pg');	
 
 var aireasFolder, aireasUrl, aireasFileName, aireasLocalPathRoot, fileFolder, 
 	tmpFolder, tmpFolderName, localPath, fileFolderName, resultsFolder, resultsFolderName;
@@ -20,6 +21,13 @@ var dataRecords;
 module.exports = {
 
 	init: function (options) {
+	
+		sqlConnString = options.configParameter.databaseType + '://' + 
+			options.configParameter.databaseAccount + ':' + 
+			options.configParameter.databasePassword + '@' + 
+			options.configParameter.databaseServer + '/' +
+			options.systemCode + '_' + options.configParameter.databaseName;
+			
 		aireasLocalPathRoot = options.systemFolderParent+'/aireas/';
 		fileFolderName 		= 'aireas-hist';
 		tmpFolderName 		= 'tmp';
@@ -73,6 +81,7 @@ module.exports = {
 		var filePath;
 		var outputFileJson;
 
+/*
 		var currDate = new Date();
 		var year = (currDate.getYear()+1900);
 
@@ -107,24 +116,25 @@ module.exports = {
 		} else {
 			minuteStr = "" + minute;
 		}
+*/
 
 
+//		filePath = resultsFolder + year + "/" + monthStr + "/" + dayStr + "/" + hourStr + "/" + minuteStr;
+		filePath = resultsFolder;
 
-		filePath = resultsFolder + year + "/" + monthStr + "/" + dayStr + "/" + hourStr + "/" + minuteStr;
 
-
-		try {fs.mkdirSync(resultsFolder + year + "/" );} catch (e) {} ;
-		try {fs.mkdirSync(resultsFolder + year + "/" + monthStr + "/");} catch (e) {} ;
-		try {fs.mkdirSync(resultsFolder + year + "/" + monthStr + "/" + dayStr + "/" );} catch (e) {} ;
-		try {fs.mkdirSync(resultsFolder + year + "/" + monthStr + "/" + dayStr + "/"  + hourStr + "/");} catch (e) {} ;
-		try {fs.mkdirSync(resultsFolder + year + "/" + monthStr + "/" + dayStr + "/" + hourStr + "/" + minuteStr);} catch (e) {} ;
+//		try {fs.mkdirSync(resultsFolder + year + "/" );} catch (e) {} ;
+//		try {fs.mkdirSync(resultsFolder + year + "/" + monthStr + "/");} catch (e) {} ;
+//		try {fs.mkdirSync(resultsFolder + year + "/" + monthStr + "/" + dayStr + "/" );} catch (e) {} ;
+//		try {fs.mkdirSync(resultsFolder + year + "/" + monthStr + "/" + dayStr + "/"  + hourStr + "/");} catch (e) {} ;
+//		try {fs.mkdirSync(resultsFolder + year + "/" + monthStr + "/" + dayStr + "/" + hourStr + "/" + minuteStr);} catch (e) {} ;
 
 
 		console.log("- creating: " , aireasFileNameOutput);
 		outputFileJson = JSON.stringify(dataRecords);
 //		this.writeFile (filePath, aireasFileNameOutput, outputFileJson );
-		writeFile (filePath, aireasFileNameOutput, outputFileJson );
-
+		//writeFile (filePath, aireasFileNameOutput, outputFileJson );
+		createSqlAireas(dataRecords);
 
 	}
 
@@ -142,6 +152,106 @@ module.exports = {
 			} catch (e) {} ;
 			fs.writeFileSync(_path + "/" + fileName, content);
 		};
+		
+		
+		var createSqlAireas = function(inputFileJson , outputFilePath) {
+		
+		var i;
+
+// 		var inputFile = JSON.parse(inputFileJson);
+ 		var inputFile = inputFileJson;
+		var outputFile = "";
+
+	        var executeSql = function  (query, callback) {
+        	        console.log('sql start: ');
+                	var client = new pg.Client(sqlConnString);
+                	client.connect(function(err) {
+                        	if(err) {
+                                	return console.error('could not connect to postgres', err);
+                        	}
+                        	client.query(query, function(err, result) {
+                                	if(err) {
+                                	return console.error('error running query', err);
+                        	}
+                        	console.log('sql result: ' + result);
+                        	client.end();
+                        	});
+                	});
+        	};
+
+		var sqlCallBack = function (err, result) {
+			if (err) {
+				console.log('ERROR:','sql error:', err, result);
+			} else {
+				//console.log('Query','sql result:', result);
+			}
+		};
+
+  //      	var writeFile = function(fileContent, filepath ) {
+   //             	var _path = filepath;
+   //             	fs.writeFileSync(_path, fileContent);
+   //     	};
+
+
+		for (i=0;i<inputFile.length;i++) {
+
+			var inputRecord = inputFile[i];
+			var outputRecord = "";
+
+			//var _measureDate		 			= inputRecord.measureDate==""?"null":"'"+inputRecord.measureDate + "', ";
+
+
+			outputRecord = "\nINSERT INTO aireas ( airbox, retrieveddatechar, measuredatechar, retrieveddate, measuredate, " + 
+				" gpslat, gpslng, lat, lng, pm1, pm25, pm10, ufp, ozon, hum, celc, no2, " + 
+				" gpslatfloat, gpslngfloat, pm1float, pm25float, pm10float, ufpfloat, ozonfloat, humfloat, celcfloat, no2float, " + 
+				" geom28992, geom ) VALUES (\n" +
+					"'" + 	inputRecord.airbox 			+ "', " +
+					"'" + 	inputRecord.retrievedDate 	+ "', " +
+					"'" + 	inputRecord.measureDate 	+ "', " +
+					"'" +	inputRecord.retrievedDate 	+ "', " + 	// timestamp with time zone,
+					"'" + 	inputRecord.measureDate		+ "', \n" +	// timestamp with time zone,
+					"'" + 	inputRecord.gpsLat 			+ "', " +
+					"'" + 	inputRecord.gpsLng 			+ "', " +
+							inputRecord.lat 			+ ", "  +
+							inputRecord.lng 			+ ", "  +
+					"'" + 	inputRecord.PM1 			+ "', " +
+					"'" + 	inputRecord.PM25 			+ "', " +
+					"'" +	inputRecord.PM10 			+ "', " +
+					"'" + 	inputRecord.UFP 			+ "', " +
+					"'" + 	inputRecord.OZON 			+ "', " +
+					"'" + 	inputRecord.HUM 			+ "', " +
+					"'" + 	inputRecord.CELC 			+ "', " +
+					"'" + 	inputRecord.NO2 			+ "', \n" +
+							inputRecord.gpsLatFloat 	+ ", "  +
+							inputRecord.gpsLngFloat 	+ ", "  +
+							inputRecord.PM1Float 		+ ", "  +
+							inputRecord.PM25Float 		+ ", "  +
+							inputRecord.PM10Float 		+ ", "  +
+							inputRecord.UFPFloat 		+ ", "  +
+							inputRecord.OZONFloat 		+ ", "  +
+							inputRecord.HUMFloat 		+ ", "  +
+							inputRecord.CELCFloat 		+ ", "  +
+							inputRecord.NO2Float 		+ ", "  +
+							" ST_Transform(ST_SetSRID(ST_MakePoint(" + inputRecord.lng + ", " + inputRecord.lat + "), 4326), 28992 ), " +
+							" ST_SetSRID(ST_MakePoint(" + inputRecord.lng + ", " + inputRecord.lat + "), 4326) ); ";
+
+			outputFile=outputFile.concat(outputRecord);
+		}
+	console.log('Write: ' + outputFilePath);	
+		//writeFile(outputFile, outputFilePath);
+		executeSql(outputFile, sqlCallBack);
+		outputFile = null;  // clear memory
+
+	};
+
+
+		
+		
+		
+		
+		
+		
+		
 
 		
 //		localPath 		= tmpFolder + aireasFileName;
@@ -225,7 +335,7 @@ module.exports = {
 //				_waardeDataRecord[j] = inpRecordArray[j];// parseFloat(inpMetingenArray[j]);
 //			}
 						
-			_dataRecord.airbox 	= _waardeDataRecord[0];
+			//_dataRecord.airbox 	= _waardeDataRecord[0];
 			
 //			console.log(_dataRecord.airbox);
 			
