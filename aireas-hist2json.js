@@ -57,6 +57,14 @@ module.exports = {
 
 	executeFile: function(file, extention) {
 	
+
+		var convertGPS2LatLng = function(gpsValue){
+			var degrees = Math.floor(gpsValue /100);
+			var minutes = gpsValue - (degrees*100);
+			var result  = degrees + (minutes /60);
+			return result;
+		};
+		
 //		localPath 		= tmpFolder + aireasFileName;
 		localPath 		= file;
     	console.log("Local AiREAS data: " + localPath );
@@ -236,12 +244,12 @@ module.exports = {
 
 	},
 
-	convertGPS2LatLng: function(gpsValue){
-		var degrees = Math.floor(gpsValue /100);
-		var minutes = gpsValue - (degrees*100);
-		var result  = degrees + (minutes /60);
-		return result;
-	},
+//	convertGPS2LatLng: function(gpsValue){
+//		var degrees = Math.floor(gpsValue /100);
+//		var minutes = gpsValue - (degrees*100);
+//		var result  = degrees + (minutes /60);
+//		return result;
+//	},
 
 	writeFile: function(path, fileName, content ) {
 		var _path = path;
