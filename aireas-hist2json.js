@@ -47,7 +47,7 @@ module.exports = {
         		return fs.statSync(file).isFile();
     		}).forEach(function (file) {
         		console.log("%s (%s)", file, path.extname(file));
-				executeFile(file, path.extname(file))
+				this.executeFile(file, path.extname(file))
     		});
 		});
 
