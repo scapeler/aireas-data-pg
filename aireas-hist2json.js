@@ -35,7 +35,8 @@ module.exports = {
 		// create subfolders
 		try {fs.mkdirSync(resultsFolder );} catch (e) {};//console.log('ERROR: no tmp folder found, batch run aborted.'); return } ;
 
-
+		var executeFile = this.executeFile;
+		
 		fs.readdir(tmpFolder, function (err, files) {
     		if (err) {
         		throw err;
@@ -47,7 +48,7 @@ module.exports = {
         		return fs.statSync(file).isFile();
     		}).forEach(function (file) {
         		console.log("%s (%s)", file, path.extname(file));
-				this.executeFile(file, path.extname(file))
+				executeFile(file, path.extname(file))
     		});
 		});
 
