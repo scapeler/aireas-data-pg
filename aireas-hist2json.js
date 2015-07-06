@@ -119,11 +119,11 @@ module.exports = {
 
 		dataRecords	= [];
 
-		// Let op skip first and last record for now!
+		// Let op skip first and last record(s) for now!
 		console.log('Aantal records: ' + tmpArray.length);
 		
-		for ( i=1; i<tmpArray.length-1;i++) {  
-			console.log(i);
+		for ( i=1; i<tmpArray.length-2;i++) {  
+			//console.log(i);
 //			inpRecordArray 		= tmpArray[i].split(':(');
 //			inpRecordArray 		= tmpArray[i].split('[');
 			//inpRecordArray 		= tmpArray[i];
