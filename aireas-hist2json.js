@@ -76,7 +76,7 @@ module.exports = {
 		var records1 = ""+_datFile;	
 		var records2 = records1.split('\n');	
 		
-		console.log('Aantal records:' + records.length)
+		console.log('Aantal records:' + records2.length)
 		
 		return;
 		
