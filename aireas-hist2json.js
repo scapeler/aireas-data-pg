@@ -22,6 +22,8 @@ module.exports = {
 
 	init: function (options) {
 	
+		var inFile = process.argv[3];
+	
 		sqlConnString = options.configParameter.databaseType + '://' + 
 			options.configParameter.databaseAccount + ':' + 
 			options.configParameter.databasePassword + '@' + 
@@ -55,7 +57,7 @@ module.exports = {
     		}).filter(function (file) {
         		return fs.statSync(file).isFile();
     		}).forEach(function (file) {
-				if (file == '/opt/SCAPE604/aireas/aireas-hist/tmp/aireas-hist25_cal.txt') {
+				if (file == inFile) {
         		console.log("%s (%s)", file, path.extname(file));
 				executeFile(file, path.extname(file))
 				}
