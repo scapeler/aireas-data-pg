@@ -201,7 +201,7 @@ module.exports = {
 			//var _measureDate		 			= inputRecord.measureDate==""?"null":"'"+inputRecord.measureDate + "', ";
 
 
-			outputRecord = "\nINSERT INTO aireas ( airbox, retrieveddatechar, measuredatechar, retrieveddate, measuredate, " + 
+			outputRecord = "\nINSERT INTO aireas_hist ( airbox, retrieveddatechar, measuredatechar, retrieveddate, measuredate, " + 
 				" gpslat, gpslng, lat, lng, pm1, pm25, pm10, ufp, ozon, hum, celc, no2, " + 
 				" gpslatfloat, gpslngfloat, pm1float, pm25float, pm10float, ufpfloat, ozonfloat, humfloat, celcfloat, no2float, " + 
 				" geom28992, geom ) VALUES (\n" +
