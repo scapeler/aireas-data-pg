@@ -240,7 +240,7 @@ module.exports = {
 							" ST_Transform(ST_SetSRID(ST_MakePoint(" + inputRecord.lng + ", " + inputRecord.lat + "), 4326), 28992 ), " +
 							" ST_SetSRID(ST_MakePoint(" + inputRecord.lng + ", " + inputRecord.lat + "), 4326) );  \n ";
 							
-			console.log('Output %s', outputRecord)				
+			//console.log('Output %s', outputRecord)				
 
 			outputFile=outputFile.concat(outputRecord);
 		}
