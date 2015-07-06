@@ -373,8 +373,11 @@ module.exports = {
 			_dataRecord.CELCFloat 	= parseFloat(_waardeDataRecord[8]);
 			_dataRecord.NO2Float 	= 0; //parseFloat(_waardeDataRecord[9]);
 
-			dataRecords.push(_dataRecord);
-
+			if (_waardeDataRecord[0] == 'EAST' || _waardeDataRecord[0] == '0.0') {
+				console.log('skip record');
+			} else {
+				dataRecords.push(_dataRecord);
+			}
 		}
 	
 		createExportFile();
