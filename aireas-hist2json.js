@@ -8,7 +8,8 @@
 
 // **********************************************************************************
 
-var fs 		= require('fs');
+var fs 		= require('fs'),
+	path = require("path");
 
 var aireasFolder, aireasUrl, aireasFileName, aireasLocalPathRoot, fileFolder, 
 	tmpFolder, tmpFolderName, localPath, fileFolderName, resultsFolder, resultsFolderName;
