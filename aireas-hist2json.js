@@ -66,7 +66,7 @@ module.exports = {
 		};
 		
 //		localPath 		= tmpFolder + aireasFileName;
-		localPath 		= file;
+		var localPath 		= file;
     	console.log("Local AiREAS data: " + localPath );
 
     	var _datFile	= fs.readFileSync(localPath);
@@ -122,8 +122,10 @@ module.exports = {
 		// Let op skip first and last record(s) for now!
 		console.log('Aantal records: ' + tmpArray.length);
 		
-		for ( i=1; i<tmpArray.length-2;i++) {  
-			//console.log(i);
+		for ( i=1; i<tmpArray.length-2;i++) {
+			if (i>61640) {
+				console.log('%s %s ', i, _waardeDataRecord[9] );
+			}  
 //			inpRecordArray 		= tmpArray[i].split(':(');
 //			inpRecordArray 		= tmpArray[i].split('[');
 			//inpRecordArray 		= tmpArray[i];
