@@ -42,6 +42,8 @@ CREATE TABLE public.aireas_hist
   no2float double precision,
   geom geometry(Point),
   geom28992 geometry(Point,28992),
+  mark_date timestamp with time zone,
+  mark_desc character varying(255),
   CONSTRAINT aireas_hist_pkey PRIMARY KEY (gid)
 )
 WITH (

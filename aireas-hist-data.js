@@ -40,7 +40,9 @@ module.exports = {
 		// 10-minuten reeksen met actuele AiREAS luchtmetingen. Verversing elke 10 minuten.
 	
 		for (var i=0;i<airboxes.length;i++) {
-			this.reqFile (aireasUrl+airboxes[i]+'.csv', airboxes[i], aireasFileName+airboxes[i]+'.txt',	false, 'aireasdata');
+			var airboxId = airbox[i];
+			airboxId = airboxId.replace('_','.');
+			this.reqFile (aireasUrl+airboxes[i]+'.csv', airboxId, aireasFileName+airboxes[i]+'.txt',	false, 'aireasdata');
 		}	
 
 		console.log('All retrieve actions are activated.');
