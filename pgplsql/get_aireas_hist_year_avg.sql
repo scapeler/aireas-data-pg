@@ -1,4 +1,5 @@
 
+-- delete from aireas_hist_avg;
 
 -- insert 'day avg' records
 INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_day, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
@@ -10,6 +11,57 @@ SELECT distinct(airbox)
 , max (measuredate) last_measuredate
 , 'PM1' avg_type
 , round(cast(avg(PM1float) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where date_part('year', measuredate) = 2014
+--and mark_date is null
+group by airbox, hist_year, hist_month, hist_day
+order by airbox, hist_year, hist_month, hist_day
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_day, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, date_part('month', measuredate) hist_month
+, date_part('day', measuredate) hist_day
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'PM25' avg_type
+, round(cast(avg(PM25float) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where date_part('year', measuredate) = 2014
+--and mark_date is null
+group by airbox, hist_year, hist_month, hist_day
+order by airbox, hist_year, hist_month, hist_day
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_day, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, date_part('month', measuredate) hist_month
+, date_part('day', measuredate) hist_day
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'PM10' avg_type
+, round(cast(avg(PM10float) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where date_part('year', measuredate) = 2014
+--and mark_date is null
+group by airbox, hist_year, hist_month, hist_day
+order by airbox, hist_year, hist_month, hist_day
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_day, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, date_part('month', measuredate) hist_month
+, date_part('day', measuredate) hist_day
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'OZON' avg_type
+, round(cast(avg(OZONfloat) as numeric),2) avg_avg
 , max(geom) geom
 , current_timestamp creation_date
 FROM public.aireas_hist

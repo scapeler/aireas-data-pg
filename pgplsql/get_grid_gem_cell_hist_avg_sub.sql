@@ -1,19 +1,19 @@
--- DROP FUNCTION get_grid_gem_cell_hist_avg(avg_type CHARACTER VARYING(60), hist_year smallint, hist_month smallint, hist_day smallint, gid INTEGER )
--- test: select get_grid_gem_cell_hist_avg('SPMI','2015', null, null, 125);
-CREATE OR REPLACE FUNCTION public.get_grid_gem_cell_hist_avg( avg_type CHARACTER VARYING(60), hist_year smallint, hist_month smallint, hist_day smallint, gid INTEGER )
+-- DROP FUNCTION get_grid_gem_cell_hist_avg_sub(avg_type CHARACTER VARYING(60), hist_year INTEGER, hist_month INTEGER, hist_day INTEGER, gid INTEGER )
+-- test: select get_grid_gem_cell_hist_avg_sub('PM1','2014', null, null, 477);
+CREATE OR REPLACE FUNCTION public.get_grid_gem_cell_hist_avg_sub( avg_type CHARACTER VARYING(60), hist_year INTEGER, hist_month INTEGER, hist_day INTEGER, gid INTEGER )
   RETURNS  record AS
 $BODY$
 DECLARE
   stmt varchar    :=  '';
-  stmt_p1 varchar :=  'SELECT CAST($1 as varchar(60)) AS avg_type, hist_year, hist_month, hist_day, ';
+  stmt_p1 varchar :=  'SELECT CAST($1 as varchar(60)) AS avg_type, cast(hist_year AS INTEGER), cast(hist_month AS INTEGER), cast(hist_day AS INTEGER), ';
   stmt_p2 varchar :=  '	ROUND(a1.avg_avg, 1) AS avg_avg ';
   stmt_p3 varchar :=  ' FROM aireas_hist_avg a1, grid_gem_cell_airbox cellair 
 		WHERE 1=1 
          AND a1.avg_avg > 0 AND a1.avg_type = $1 
 		 AND cellair.grid_gem_cell_gid = $5
-		 AND a1.hist_year = $2 
-		 AND a1.hist_month = $3 
-		 AND a1.hist_day = $4 
+		-- AND a1.hist_year = $2 
+		-- AND a1.hist_month is null -- $3 
+		-- AND a1.hist_day = $4 
 		 AND a1.airbox = cellair.airbox
 		 AND ROUND(CAST(ST_Distance(GEOGRAPHY(a1.geom), GEOGRAPHY(cellair.airbox_geom)) AS NUMERIC), 5) < 40
 		 AND cellair.factor_distance >= $6 
@@ -21,6 +21,18 @@ DECLARE
   stmt_p4 varchar := '';
   air record;
 BEGIN
+	stmt_p4 := ' AND a1.hist_year = $2 ';
+	IF ($3 >= 1 AND $3 <= 12) THEN
+		stmt_p4 := stmt_p4 || ' AND a1.hist_month = $3 ' ;
+	ELSE
+		stmt_p4 := stmt_p4 || ' AND a1.hist_month is null ' ;	
+	END IF;
+	IF ($4 >= 1 AND $4 <= 31) THEN
+		stmt_p4 := stmt_p4 || ' AND a1.hist_day = $4 ' ;
+	ELSE
+		stmt_p4 := stmt_p4 || ' AND a1.hist_day is null ' ;	
+	END IF;
+		
 /*
 	CASE $1
 		WHEN 'PM1'  THEN stmt_p2 := ' ROUND(CAST(AVG(pm1float) as numeric), 1) AS avg_avg ';
@@ -96,6 +108,6 @@ END;
 $BODY$
   LANGUAGE plpgsql VOLATILE
    ;
-ALTER FUNCTION public.get_grid_gem_cell_hist_avg(avg_type CHARACTER VARYING(60), hist_year smallint, hist_month smallint, hist_day smallint, gid INTEGER)
+ALTER FUNCTION public.get_grid_gem_cell_hist_avg_sub(avg_type CHARACTER VARYING(60), hist_year INTEGER, hist_month INTEGER, hist_day INTEGER, gid INTEGER)
   OWNER TO postgres;
    
