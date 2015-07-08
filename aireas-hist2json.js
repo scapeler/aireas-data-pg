@@ -346,6 +346,34 @@ module.exports = {
 			
 //			console.log(_dataRecord.airbox);
 			
+		if (firstRec.airbox == '35.cal') {
+			_dataRecord.retrievedDate 	= firstRec.retrievedDate;
+			_dataRecord.measureDate 	= _waardeDataRecord[9];
+			_dataRecord.gpsLat 	= _waardeDataRecord[1];
+			_dataRecord.gpsLng 	= _waardeDataRecord[0];
+			_dataRecord.lat 	= convertGPS2LatLng(_waardeDataRecord[1]);
+			_dataRecord.lng 	= convertGPS2LatLng(_waardeDataRecord[0]);
+			_dataRecord.OZON 	= _waardeDataRecord[2];
+			_dataRecord.PM10 	= _waardeDataRecord[3];
+			_dataRecord.PM1 	= _waardeDataRecord[4];
+			_dataRecord.PM25 	= _waardeDataRecord[5];
+			_dataRecord.HUM 	= _waardeDataRecord[6];
+			_dataRecord.CELC 	= _waardeDataRecord[7];
+			_dataRecord.UFP 	= _waardeDataRecord[8];
+			_dataRecord.NO2 	= 0; //_waardeDataRecord[9];
+
+			_dataRecord.gpsLatFloat = parseFloat(_waardeDataRecord[1]);
+			_dataRecord.gpsLngFloat	= parseFloat(_waardeDataRecord[0]);
+			_dataRecord.OZONFloat 	= parseFloat(_waardeDataRecord[2]);
+			_dataRecord.PM10Float 	= parseFloat(_waardeDataRecord[3]);
+			_dataRecord.PM1Float 	= parseFloat(_waardeDataRecord[4]);
+			_dataRecord.PM25Float 	= parseFloat(_waardeDataRecord[5]);
+			_dataRecord.HUMFloat 	= parseFloat(_waardeDataRecord[6]);
+			_dataRecord.CELCFloat 	= parseFloat(_waardeDataRecord[7]);
+			_dataRecord.UFPFloat 	= parseFloat(_waardeDataRecord[8]);
+			if (_dataRecord.UFPFloat > 0) _dataRecord.UFPFloat = Math.round(_dataRecord.UFPFloat / 1000); // in units of 1000
+			_dataRecord.NO2Float 	= 0; //parseFloat(_waardeDataRecord[9]);
+		} else {
 			_dataRecord.retrievedDate 	= firstRec.retrievedDate;
 			_dataRecord.measureDate 	= _waardeDataRecord[9];
 			_dataRecord.gpsLat 	= _waardeDataRecord[1];
@@ -372,6 +400,7 @@ module.exports = {
 			_dataRecord.HUMFloat 	= parseFloat(_waardeDataRecord[7]);
 			_dataRecord.CELCFloat 	= parseFloat(_waardeDataRecord[8]);
 			_dataRecord.NO2Float 	= 0; //parseFloat(_waardeDataRecord[9]);
+		}
 
 			if (_waardeDataRecord[0] == 'EAST' || _waardeDataRecord[0] == '0.0') {
 				console.log('skip record');
