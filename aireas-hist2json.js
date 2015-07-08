@@ -348,8 +348,8 @@ module.exports = {
 			
 			_dataRecord.retrievedDate 	= firstRec.retrievedDate;
 			_dataRecord.measureDate 	= _waardeDataRecord[9];
-			_dataRecord.gpsLat 	= _waardeDataRecord[0];
-			_dataRecord.gpsLng 	= _waardeDataRecord[1];
+			_dataRecord.gpsLat 	= _waardeDataRecord[1];
+			_dataRecord.gpsLng 	= _waardeDataRecord[0];
 			_dataRecord.lat 	= convertGPS2LatLng(_waardeDataRecord[1]);
 			_dataRecord.lng 	= convertGPS2LatLng(_waardeDataRecord[0]);
 			_dataRecord.PM1 	= _waardeDataRecord[5];
