@@ -14,10 +14,14 @@ var sys 	= require('sys');
 
 var aireasUrl, aireasFileName, aireasLocalPathRoot, fileFolder, tmpFolder;
 
+/*
 var airboxes = ['1_cal', '2_cal', '3_cal', '4_cal', '5_cal', '6_cal', '7_cal', '8_cal', '9_cal', '10_cal', 
 '11_cal', '12_cal', '13_cal', '14_cal', '15_cal', '16_cal', '17_cal', '18_cal', '19_cal', '20_cal', 
 '21_cal', '22_cal', '23_cal', '24_cal', '25_cal', '26_cal', '27_cal', '28_cal', '29_cal', '30_cal', 
 '31_cal', '32_cal', '33_cal', '34_cal', '35_cal', '36_cal', '37_cal', '38_cal', '39_cal', '40_cal' ];
+*/
+
+var airboxes = ['26_cal', '35_cal' ];
 
 var fileImportIndex = 0;
 // **********************************************************************************
