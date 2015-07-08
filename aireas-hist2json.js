@@ -346,7 +346,7 @@ module.exports = {
 			
 //			console.log(_dataRecord.airbox);
 			
-		if (firstRec.airbox == '35.cal') {
+		if (firstRec.airbox == '26.cal' || firstRec.airbox == '35.cal') {  // andere recordindeling
 			_dataRecord.retrievedDate 	= firstRec.retrievedDate;
 			_dataRecord.measureDate 	= _waardeDataRecord[9];
 			_dataRecord.gpsLat 	= _waardeDataRecord[1];
