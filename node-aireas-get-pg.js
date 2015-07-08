@@ -210,6 +210,50 @@ module.exports = {
 
         return;
 	},
+	
+	
+	getGridGemAireasHistInfo: function (param, req_query, callback) {
+		var _airbox = "";
+		
+		if (req_query.avgType == undefined) {
+			req_query.avgType = 'SPMI';
+		}
+
+		var querySelect = " select grid.gm_code, grid.gm_naam, cellunion.hist_year, cellunion.hist_month, cellunion.hist_day, \
+  			ST_AsGeoJSON(ST_Transform(cellunion.union_geom, 4326)) geom, \
+			ST_AsGeoJSON(ST_Transform(ST_Centroid(cellunion.union_geom), 4326)) centroid, \
+			cell.cell_x, cell.cell_y, \
+			cellunion.avg_type, cellunion.avg_avg ";
+//			cellunion.avg_pm1_hr, cellunion.avg_pm25_hr, cellunion.avg_pm10_hr, cellunion.avg_pm_all_hr ";
+			
+
+		retrieveddateMaxConstraintStr = "";  // 2014-11-09T09:30:01.376Z
+
+		if ( req_query.retrieveddatemax) {  //todo
+			console.log('req_query: ' + req_query );
+			retrieveddateMaxConstraintStr = " and cellunion2.retrieveddate AT TIME ZONE 'UTC' <= timestamp '" + req_query.retrieveddatemax + "' ";  //'2014-11-09T06:00:01.376Z' ";
+
+		}
+
+		var queryFrom = " from grid_gem grid, grid_gem_cell cell, grid_gem_cell_hist_union cellunion  ";
+		var queryWhere = " where grid.gm_naam = 'Eindhoven' and grid.grid_code = 'EHV20141104:1' and grid.grid_code = cell.grid_code and cell.gid = cellunion.grid_gem_cell_gid ";
+			queryWhere += " and cellunion.avg_type = '" + req_query.avgType + "' ";
+			queryWhere += " and cellunion.hist_year = " + req_query.hist_year + " ";
+			queryWhere += " and cellunion.hist_month is null ";
+
+		//	queryWhere += " and ST_Intersects(grid.cell_geom, a1.geom) ";
+		//	queryWhere += " and a1.retrieveddate >= current_timestamp - interval '1 hour' ";
+		var queryGroupBy = ""; // group by grid.gm_code, grid.gm_naam, grid.cell_geom"; //, grid.centroid_geom ";
+		var queryOrderBy = ""; //" order by bu_naam ; ";
+
+		console.log('Postgres sql start execute');
+		var query = querySelect + queryFrom + queryWhere + queryGroupBy + queryOrderBy;
+		console.log('Query: ' + query);
+		executeSql(query, callback);
+
+        return;
+	},
+
 
     getBuurtAireasInfo: function (param, callback) {
 		var _airbox = "";

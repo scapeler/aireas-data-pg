@@ -199,6 +199,43 @@ app.get('/'+_systemCode+'/data/aireas/:getFunction/:airbox', function(req, res) 
 		return;
   }
 
+	if (req.params.getFunction == 'getAireasHistGridGemInfo') {
+		apriAireasGetPg.getGridGemAireasHistInfo({airbox: req.params.airbox }, req.query, function(err, result) {
+			var _outRecords = [];
+			var _result = result.rows; //JSON.parse(result);
+			for (var i=0;i<_result.length;i++) {
+				var outRecord = {};
+				outRecord.geometry = JSON.parse(_result[i].geom);
+				outRecord.type = 'Feature';
+
+				outRecord.properties = {};
+				outRecord.properties.gm_code 		= _result[i].gm_code;
+				outRecord.properties.gm_naam 		= _result[i].gm_naam; 
+				outRecord.properties.hist_year		= _result[i].hist_year;
+				outRecord.properties.hist_month		= _result[i].hist_month;
+				outRecord.properties.hist_day		= _result[i].hist_day;
+
+				outRecord.properties.avg_type 		= _result[i].avg_type;
+				outRecord.properties.avg_avg		= parseFloat(_result[i].avg_avg);
+
+				//outRecord.properties.avg_pm1_hr 	= parseFloat(_result[i].avg_pm1_hr);
+				//outRecord.properties.avg_pm25_hr 	= parseFloat(_result[i].avg_pm25_hr);
+				//outRecord.properties.avg_pm10_hr 	= parseFloat(_result[i].avg_pm10_hr);
+				//outRecord.properties.avg_pm_all_hr 	= parseFloat(_result[i].avg_pm_all_hr);
+				outRecord.properties.cell_x 		= parseFloat(_result[i].cell_x);
+				outRecord.properties.cell_y 		= parseFloat(_result[i].cell_y);
+
+				_outRecords.push(outRecord);
+			}
+			var outRecords = JSON.stringify(_outRecords);
+			res.contentType('application/json');
+ 			res.send(outRecords);
+		});
+		return;
+  }
+
+
+
 	if (req.params.getFunction == 'getCbsGemInfo') {
 		apriAireasGetPg.getGemInfo({gm_naam: req.query.gm_naam, gm_code: req.query.gm_code }, function(err, result) {
 			var _outRecords = [];
