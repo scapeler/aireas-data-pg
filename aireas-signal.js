@@ -37,7 +37,7 @@ module.exports = {
 		sendMail 			= this.sendMail;
 
 		emails = [
-			{emailAddress: 'awiel@scapeler.com', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 5, 10,  15, 20, 25] } ] }
+			{emailAddress: 'awiel@scapeler.com', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 10, 15, 20, 25] } ] }
 		]
 
 		templateWijkSource	= "<h1>Informatie over daling of stijging meetwaarde luchtkwaliteit</h1><p>Datum: {{data.signalDateTimeStr}}</p> \
