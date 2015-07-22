@@ -38,6 +38,10 @@ BEGIN
 						 stmt_p4 := ' AND a1.celcfloat > 0 ';
 		WHEN 'NO2' 	THEN stmt_p2 := ' ROUND(CAST(AVG(no2float) as numeric), 1) AS avg_avg ';
 						 stmt_p4 := ' AND a1.no2float > 0 ';
+		WHEN 'AMBHUM' 	THEN stmt_p2 := ' ROUND(CAST(AVG(ambhumfloat) as numeric), 1) AS avg_avg ';
+						 stmt_p4 := ' AND a1.ambhumfloat > 0 ';
+		WHEN 'AMBTEMP' 	THEN stmt_p2 := ' ROUND(CAST(AVG(ambtempfloat) as numeric), 1) AS avg_avg ';
+						 stmt_p4 := ' AND a1.ambtempfloat > 0 ';
 		ELSE stmt_p2 := ' null AS avg_avg ';
 			 stmt_p4 := ' AND 1=2 ';  --always no result when avg_type unknown
 	END CASE;
