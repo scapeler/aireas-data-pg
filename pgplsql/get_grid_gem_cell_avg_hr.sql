@@ -108,6 +108,7 @@ BEGIN
 			 air.avg_avg, current_timestamp;
 		END IF;	
 
+/*
 		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg from get_grid_gem_cell_avg($1,$2,$3) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric )'
 			USING 'HUM',retrieveddate_selection, grid_gem_cell.gid
 			INTO air;
@@ -131,6 +132,7 @@ BEGIN
 			USING grid_gem_cell.gid, retrieveddate_selection,air.avg_type,
 			 air.avg_avg, current_timestamp;
 		END IF;	
+*/
 
 		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg from get_grid_gem_cell_avg($1,$2,$3) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric )'
 			USING 'NO2',retrieveddate_selection, grid_gem_cell.gid
@@ -144,6 +146,7 @@ BEGIN
 			 air.avg_avg, current_timestamp;
 		END IF;	
 
+/*
 		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg from get_grid_gem_cell_avg($1,$2,$3) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric )'
 			USING 'AMBHUM',retrieveddate_selection, grid_gem_cell.gid
 			INTO air;
@@ -167,7 +170,7 @@ BEGIN
 			USING grid_gem_cell.gid, retrieveddate_selection,air.avg_type,
 			 air.avg_avg, current_timestamp;
 		END IF;	
-
+*/
 
 
 	END LOOP;
