@@ -30,6 +30,8 @@ CREATE TABLE public.aireas
   hum character varying(60),
   celc character varying(60),
   no2 character varying(60),
+  ambhum character varying(60),
+  ambtemp character varying(60),
   gpslatfloat double precision,
   gpslngfloat double precision,
   pm1float double precision,
@@ -40,6 +42,8 @@ CREATE TABLE public.aireas
   humfloat double precision,
   celcfloat double precision,
   no2float double precision,
+  ambhumfloat double precision,
+  ambtempfloat double precision,
   geom geometry(Point),
   geom28992 geometry(Point,28992),
   CONSTRAINT aireas_pkey PRIMARY KEY (gid)

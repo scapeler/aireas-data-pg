@@ -1,5 +1,5 @@
 /*
-** Module: aireas2sql
+** Module: aireas2sql-v1
 **
 **
 **
@@ -188,8 +188,8 @@ module.exports = {
 
 
 			outputRecord = "\nINSERT INTO aireas ( airbox, retrieveddatechar, measuredatechar, retrieveddate, measuredate, " + 
-				" gpslat, gpslng, lat, lng, pm1, pm25, pm10, ufp, ozon, hum, celc, no2, " + 
-				" gpslatfloat, gpslngfloat, pm1float, pm25float, pm10float, ufpfloat, ozonfloat, humfloat, celcfloat, no2float, " + 
+				" gpslat, gpslng, lat, lng, pm1, pm25, pm10, ufp, ozon, hum, celc, no2, ambhum, ambtemp, " + 
+				" gpslatfloat, gpslngfloat, pm1float, pm25float, pm10float, ufpfloat, ozonfloat, humfloat, celcfloat, no2float, ambhumfloat, ambtempfloat, " + 
 				" geom28992, geom ) VALUES (\n" +
 					"'" + 	inputRecord.airbox 			+ "', " +
 					"'" + 	inputRecord.retrievedDate 	+ "', " +
@@ -207,7 +207,9 @@ module.exports = {
 					"'" + 	inputRecord.OZON 			+ "', " +
 					"'" + 	inputRecord.HUM 			+ "', " +
 					"'" + 	inputRecord.CELC 			+ "', " +
-					"'" + 	inputRecord.NO2 			+ "', \n" +
+					"'" + 	inputRecord.NO2 			+ "', " +
+					"'" + 	inputRecord.AMBHUM 			+ "', " +
+					"'" + 	inputRecord.AMBTEMP 		+ "', \n" +
 							inputRecord.gpsLatFloat 	+ ", "  +
 							inputRecord.gpsLngFloat 	+ ", "  +
 							inputRecord.PM1Float 		+ ", "  +
@@ -218,6 +220,8 @@ module.exports = {
 							inputRecord.HUMFloat 		+ ", "  +
 							inputRecord.CELCFloat 		+ ", "  +
 							inputRecord.NO2Float 		+ ", "  +
+							inputRecord.AMBHUMFloat 	+ ", "  +
+							inputRecord.AMBTEMPFloat 	+ ", "  +
 							" ST_Transform(ST_SetSRID(ST_MakePoint(" + inputRecord.lng + ", " + inputRecord.lat + "), 4326), 28992 ), " +
 							" ST_SetSRID(ST_MakePoint(" + inputRecord.lng + ", " + inputRecord.lat + "), 4326) ); ";
 

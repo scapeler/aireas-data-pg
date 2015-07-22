@@ -11,15 +11,15 @@
 De API zal een nieuwe URL krijgen: http://82.201.127.232/api/v1/?airboxid=* (deze is nog niet actief). Hierdoor kunnen eindgebruikers zelf overstappen wanneer ze er klaar voor zijn, tot die tijd kunnen zij niet de hittestress ontvangen. Verder is de API ook omgebouwd naar een JSON string met de volgende inhoud. De volgorde kan afwijken, met JSON en het gebruik van keys (zoals utctimestamp) maakt deze volgorde namelijk niet meer uit:
  
 Voor een enkele airbox:
-{“name”: “15.cal”, “utctimestamp”: “2015-07-01 13:08:02”, “PM1”: 3.0, “PM2”: 4.0, “PM10”: 5.0, “UFP”: 6.0, “NO2”: 7.0, “OZON”: 8.0, “RELHUM”: 9.0, “TEMP”: 10.0, “AMBTEMP”: 11.0, “AMBHUM”: 12.0, “WBGT”: 13, “gps”: { “lat”: 5128.649943, “lon”: 539.407194}}
+{“name”: “15.cal”, “utctimestamp”: “2015-07-01 13:08:02”, “PM1”: 3.0, “PM25”: 4.0, “PM10”: 5.0, “UFP”: 6.0, “NO2”: 7.0, “OZON”: 8.0, “RELHUM”: 9.0, “TEMP”: 10.0, “AMBTEMP”: 11.0, “AMBHUM”: 12.0, “WBGT”: 13, “gps”: { “lat”: 5128.649943, “lon”: 539.407194}}
  
  
 Voor alle airboxen:
 [
-{“name”: “1.cal”, “utctimestamp”: “2015-07-01 13:08:02”, “PM1”: 3.0, “PM2”: 4.0, “PM10”: 5.0, “UFP”: 6.0, “NO2”: 7.0, “OZON”: 8.0, “RELHUM”: 9.0, “TEMP”: 10.0, “AMBTEMP”: 11.0, “AMBHUM”: 12.0, “WBGT”: 13, “gps”: { “lat”: 5128.649943, “lon”: 539.407194}},
-{“name”: “2.cal”, “utctimestamp”: “2015-07-01 13:08:02”, “PM1”: 3.0, “PM2”: 4.0, “PM10”: 5.0, “UFP”: 6.0, “NO2”: 7.0, “OZON”: 8.0, “RELHUM”: 9.0, “TEMP”: 10.0, “AMBTEMP”: 11.0, “AMBHUM”: 12.0, “WBGT”: 13, “gps”: { “lat”: 5128.649943, “lon”: 539.407194}},
+{“name”: “1.cal”, “utctimestamp”: “2015-07-01 13:08:02”, “PM1”: 3.0, “PM25”: 4.0, “PM10”: 5.0, “UFP”: 6.0, “NO2”: 7.0, “OZON”: 8.0, “RELHUM”: 9.0, “TEMP”: 10.0, “AMBTEMP”: 11.0, “AMBHUM”: 12.0, “WBGT”: 13, “gps”: { “lat”: 5128.649943, “lon”: 539.407194}},
+{“name”: “2.cal”, “utctimestamp”: “2015-07-01 13:08:02”, “PM1”: 3.0, “PM25”: 4.0, “PM10”: 5.0, “UFP”: 6.0, “NO2”: 7.0, “OZON”: 8.0, “RELHUM”: 9.0, “TEMP”: 10.0, “AMBTEMP”: 11.0, “AMBHUM”: 12.0, “WBGT”: 13, “gps”: { “lat”: 5128.649943, “lon”: 539.407194}},
 …,
-{“name”: “23.cal”, “utctimestamp”: “2015-07-01 13:08:02”, “PM1”: 3.0, “PM2”: 4.0, “PM10”: 5.0, “UFP”: 6.0, “NO2”: 7.0, “OZON”: 8.0, “RELHUM”: 9.0, “TEMP”: 10.0, “AMBTEMP”: 11.0, “AMBHUM”: 12.0, “WBGT”: 13, “gps”: { “lat”: 5128.649943, “lon”: 539.407194}}
+{“name”: “23.cal”, “utctimestamp”: “2015-07-01 13:08:02”, “PM1”: 3.0, “PM25”: 4.0, “PM10”: 5.0, “UFP”: 6.0, “NO2”: 7.0, “OZON”: 8.0, “RELHUM”: 9.0, “TEMP”: 10.0, “AMBTEMP”: 11.0, “AMBHUM”: 12.0, “WBGT”: 13, “gps”: { “lat”: 5128.649943, “lon”: 539.407194}}
 ]
 
 */
@@ -143,6 +143,8 @@ module.exports = {
 			_dataRecord.HUMFloat 	= _waardeDataRecord.RELHUM;
 			_dataRecord.CELCFloat 	= _waardeDataRecord.TEMP;
 			_dataRecord.NO2Float 	= _waardeDataRecord.NO2;
+			_dataRecord.AMBHUMFloat = _waardeDataRecord.AMBHUM;
+			_dataRecord.AMBTEMPFloat = _waardeDataRecord.AMBTEMP;
 
 /*
 			_dataRecord.airbox 	= _waardeDataRecord[0];
