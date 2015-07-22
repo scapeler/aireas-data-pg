@@ -70,7 +70,7 @@ module.exports = {
 //		console.log(inRecord.airboxes[0]);
 		
 		
-		tmpArray = inRecord.content.airboxes;
+		tmpArray = inRecord.content;
 		
 
 /*
