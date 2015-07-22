@@ -144,6 +144,30 @@ BEGIN
 			 air.avg_avg, current_timestamp;
 		END IF;	
 
+		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg from get_grid_gem_cell_avg($1,$2,$3) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric )'
+			USING 'AMBHUM',retrieveddate_selection, grid_gem_cell.gid
+			INTO air;
+		IF (air.retrieveddate = retrieveddate_selection AND air.avg_avg > 0) THEN
+			EXECUTE 'INSERT INTO grid_gem_cell_avg ( grid_gem_cell_gid, retrieveddate, avg_type, 
+				avg_avg, creation_date) 
+				VALUES ( 
+				$1, $2, $3, $4, $5)'
+			USING grid_gem_cell.gid, retrieveddate_selection,air.avg_type,
+			 air.avg_avg, current_timestamp;
+		END IF;	
+
+		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg from get_grid_gem_cell_avg($1,$2,$3) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric )'
+			USING 'AMBTEMP',retrieveddate_selection, grid_gem_cell.gid
+			INTO air;
+		IF (air.retrieveddate = retrieveddate_selection AND air.avg_avg > 0) THEN
+			EXECUTE 'INSERT INTO grid_gem_cell_avg ( grid_gem_cell_gid, retrieveddate, avg_type, 
+				avg_avg, creation_date) 
+				VALUES ( 
+				$1, $2, $3, $4, $5)'
+			USING grid_gem_cell.gid, retrieveddate_selection,air.avg_type,
+			 air.avg_avg, current_timestamp;
+		END IF;	
+
 
 
 	END LOOP;
