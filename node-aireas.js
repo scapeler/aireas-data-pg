@@ -80,8 +80,10 @@ app.use(function(req, res, next) {
 
 
 app.all('/*', function(req, res, next) {
-  console.log("app.all/: " + req.url + " ; systemCode: " + _systemCode );
-  next();
+  	console.log("app.all/: " + req.url + " ; systemCode: " + _systemCode );
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Headers", "X-Requested-With");
+	next();
 });
 
 
