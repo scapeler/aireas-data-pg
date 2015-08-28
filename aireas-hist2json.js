@@ -402,8 +402,8 @@ module.exports = {
 			_dataRecord.NO2Float 	= 0; //parseFloat(_waardeDataRecord[9]);
 		}
 
-			if (_waardeDataRecord[0] == 'EAST' || _waardeDataRecord[0] == '0.0') {
-				console.log('skip record');
+			if (_waardeDataRecord[0] == 'EAST' || _waardeDataRecord[0] == '0.0') {  // header record or no lng value
+				//console.log('skip record');
 			} else {
 				dataRecords.push(_dataRecord);
 			}
