@@ -329,7 +329,37 @@ module.exports = {
 
         return;
 
+    },
+	
+    getMeasureQ: function (param, callback) {
+		var _attribute, _and;
+		var _attribute 	= " hist_year, round((hist_month+2)/3) hist_q, sum(hist_count) hist_count, avg_type, round(avg(avg_avg)) avg_avg ";
+		var _from 		= " aireas_hist_avg ha ";
+		var _where 		= " hist_day is null and hist_month is not null ";
+		var _groupBy	= " avg_type, hist_year, hist_q ";
+		var _orderBy	= _groupBy;
+		
+		var query = 'select ' + _attribute + _from + ' where ' + _where + ' group by ' + _groupBy + ' order by ' + _orderBy + ' ;';
+		console.log('Postgres sql start execute: ' + query);
+		executeSql(query, callback);
+
+        return;
+
     }
+	
+
+	
+	
+/* Quarter mean values
+	SELECT hist_year, round((hist_month+2)/3) Q, sum(hist_count), avg_type, round(avg(avg_avg)) avg
+  FROM public.aireas_hist_avg
+  where hist_day is null
+  and hist_month is not null
+  --and airbox = '13.cal'
+  group by avg_type, hist_year, Q
+  order by avg_type, hist_year, Q
+  limit 100
+*/	
 
 };
 

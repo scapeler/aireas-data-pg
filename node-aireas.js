@@ -121,6 +121,30 @@ app.get('/'+_systemCode+'/data/aireas/:getFunction/:airbox', function(req, res) 
 		});
 		return;
   }
+  
+  if (	req.params.getFunction == 'getMeasureQ' ) {
+		apriAireasGetPg.getMeasureQ({ getFunction: req.params.getFunction }, function(err, result) {
+			var _outRecords = [];
+			var _result = result.rows; 
+			for (var i=0;i<_result.length;i++) {
+				var outRecord = {};
+				outRecord.properties = {};
+
+				outRecord.properties.avg_type 		= parseFloat(_result[i].avg_type);
+				outRecord.properties.hist_year 		= parseFloat(_result[i].hist_year);
+				outRecord.properties.hist_q	 		= parseFloat(_result[i].hist_q);
+				outRecord.properties.hist_count 	= parseFloat(_result[i].hist_count);
+				outRecord.properties.avg_avg 		= parseFloat(_result[i].avg_avg);
+
+				_outRecords.push(outRecord);
+			}
+			var outRecords = JSON.stringify(_outRecords);
+			res.contentType('application/json');
+ 			res.send(outRecords);
+		});
+		return;
+  }
+  
 
 
   if (	req.params.getFunction == 'getActualMeasures' ) {
