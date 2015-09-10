@@ -339,7 +339,7 @@ module.exports = {
 		var _groupBy	= " avg_type, hist_year, hist_q ";
 		var _orderBy	= _groupBy;
 		
-		var query = 'select ' + _attribute + _from + ' where ' + _where + ' group by ' + _groupBy + ' order by ' + _orderBy + ' ;';
+		var query = 'select ' + _attribute + ' from ' + _from + ' where ' + _where + ' group by ' + _groupBy + ' order by ' + _orderBy + ' ;';
 		console.log('Postgres sql start execute: ' + query);
 		executeSql(query, callback);
 
