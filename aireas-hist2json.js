@@ -248,7 +248,7 @@ module.exports = {
 			
 			//console.log(outputRecord);
 		}
-	console.log('Write: ' + outputFilePath);	
+	console.log('Write: ' + outputFilePath+'test.sql');	
 		writeFile(outputFile, outputFilePath+'test.sql');
 		executeSql(outputFile, sqlCallBack);
 		outputFile = null;  // clear memory
