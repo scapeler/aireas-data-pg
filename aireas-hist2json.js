@@ -355,7 +355,7 @@ module.exports = {
 			if (_waardeDataRecord.length>10) { 
 			
 				_dataRecord.retrievedDate 	= firstRec.retrievedDate;
-				_dataRecord.measureDate 	= _waardeDataRecord[9];
+				_dataRecord.measureDate 	= '' + _waardeDataRecord[9];
 				_dataRecord.gpsLat 	= _waardeDataRecord[11];
 				_dataRecord.gpsLng 	= _waardeDataRecord[12];
 				_dataRecord.lat 	= convertGPS2LatLng(_waardeDataRecord[11]);
@@ -388,7 +388,7 @@ module.exports = {
 			
 		if (firstRec.airbox == '26.cal' || firstRec.airbox == '35.cal') {  // andere recordindeling
 			_dataRecord.retrievedDate 	= firstRec.retrievedDate;
-			_dataRecord.measureDate 	= _waardeDataRecord[9];
+			_dataRecord.measureDate 	= '' + _waardeDataRecord[9];
 			_dataRecord.gpsLat 	= _waardeDataRecord[1];
 			_dataRecord.gpsLng 	= _waardeDataRecord[0];
 			_dataRecord.lat 	= convertGPS2LatLng(_waardeDataRecord[1]);
@@ -420,7 +420,7 @@ module.exports = {
 		
 //		 else {
 			_dataRecord.retrievedDate 	= firstRec.retrievedDate;
-			_dataRecord.measureDate 	= _waardeDataRecord[9];
+			_dataRecord.measureDate 	= '' + _waardeDataRecord[9];
 			_dataRecord.gpsLat 	= _waardeDataRecord[1];
 			_dataRecord.gpsLng 	= _waardeDataRecord[0];
 			_dataRecord.lat 	= convertGPS2LatLng(_waardeDataRecord[1]);
