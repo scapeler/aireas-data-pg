@@ -356,6 +356,11 @@ module.exports = {
 			
 			_waardeDataRecord[_waardeDataRecord.length-1] = _waardeDataRecord[_waardeDataRecord.length-1].replace(/\r/, '');  // dos->unix
 			
+			if (_waardeDataRecord.length == 11) {
+				console.log('record met 11 kolommen!: ' + firstRec.airbox + ' ' + _waardeDataRecord[9] + ' wordt overgeslagen.');
+				continue;
+			}
+			
 			//console.log(_waardeDataRecord.length);
 			
 			if (_waardeDataRecord.length>10) { 
