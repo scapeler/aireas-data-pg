@@ -350,11 +350,11 @@ module.exports = {
 
 			if (_waardeDataRecord[0] == 'EAST') continue;
 			
-			console.log(_waardeDataRecord.length);
+			//console.log(_waardeDataRecord.length);
 			
 			if (_waardeDataRecord.length>10) { 
 			
-				_dataRecord.retrievedDate 	= firstRec.retrievedDate;
+				_dataRecord.retrievedDate 	= '' + firstRec.retrievedDate;
 				_dataRecord.measureDate 	= '' + _waardeDataRecord[9];
 				_dataRecord.gpsLat 	= _waardeDataRecord[11];
 				_dataRecord.gpsLng 	= _waardeDataRecord[12];
@@ -387,7 +387,7 @@ module.exports = {
 			
 			
 		if (firstRec.airbox == '26.cal' || firstRec.airbox == '35.cal') {  // andere recordindeling
-			_dataRecord.retrievedDate 	= firstRec.retrievedDate;
+			_dataRecord.retrievedDate 	= '' + firstRec.retrievedDate;
 			_dataRecord.measureDate 	= '' + _waardeDataRecord[9];
 			_dataRecord.gpsLat 	= _waardeDataRecord[1];
 			_dataRecord.gpsLng 	= _waardeDataRecord[0];
@@ -419,7 +419,7 @@ module.exports = {
 		}
 		
 //		 else {
-			_dataRecord.retrievedDate 	= firstRec.retrievedDate;
+			_dataRecord.retrievedDate 	= '' + firstRec.retrievedDate;
 			_dataRecord.measureDate 	= '' + _waardeDataRecord[9];
 			_dataRecord.gpsLat 	= _waardeDataRecord[1];
 			_dataRecord.gpsLng 	= _waardeDataRecord[0];
