@@ -350,8 +350,10 @@ module.exports = {
 
 			if (_waardeDataRecord[0] == 'EAST') continue;
 			
+			console.log(_waardeDataRecord.length);
 			
-			if (_waardeDataRecord[10] != undefined) {
+			if (_waardeDataRecord.length>10) { 
+			
 				_dataRecord.retrievedDate 	= firstRec.retrievedDate;
 				_dataRecord.measureDate 	= _waardeDataRecord[9];
 				_dataRecord.gpsLat 	= _waardeDataRecord[11];
