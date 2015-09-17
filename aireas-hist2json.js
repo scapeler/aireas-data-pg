@@ -345,6 +345,42 @@ module.exports = {
 			//_dataRecord.airbox 	= _waardeDataRecord[0];
 			
 //			console.log(_dataRecord.airbox);
+
+			if (_waardeDataRecord[0] == 'EAST') continue;
+			
+			
+			if (_waardeDataRecord[10] != undefined) {
+				_dataRecord.retrievedDate 	= firstRec.retrievedDate;
+				_dataRecord.measureDate 	= _waardeDataRecord[9];
+				_dataRecord.gpsLat 	= _waardeDataRecord[11];
+				_dataRecord.gpsLng 	= _waardeDataRecord[12];
+				_dataRecord.lat 	= convertGPS2LatLng(_waardeDataRecord[11]);
+				_dataRecord.lng 	= convertGPS2LatLng(_waardeDataRecord[12]);
+				_dataRecord.OZON 	= _waardeDataRecord[2];
+				_dataRecord.PM10 	= _waardeDataRecord[3];
+				_dataRecord.PM1 	= _waardeDataRecord[4];
+				_dataRecord.PM25 	= _waardeDataRecord[5];
+				_dataRecord.HUM 	= _waardeDataRecord[6];
+				_dataRecord.CELC 	= _waardeDataRecord[7];
+				_dataRecord.UFP 	= _waardeDataRecord[8];
+				_dataRecord.NO2 	= _waardeDataRecord[10]; //_waardeDataRecord[9];
+
+				_dataRecord.gpsLatFloat = parseFloat(_waardeDataRecord[11]);
+				_dataRecord.gpsLngFloat	= parseFloat(_waardeDataRecord[12]);
+				_dataRecord.OZONFloat 	= parseFloat(_waardeDataRecord[2]);
+				_dataRecord.PM10Float 	= parseFloat(_waardeDataRecord[3]);
+				_dataRecord.PM1Float 	= parseFloat(_waardeDataRecord[4]);
+				_dataRecord.PM25Float 	= parseFloat(_waardeDataRecord[5]);
+				_dataRecord.HUMFloat 	= parseFloat(_waardeDataRecord[6]);
+				_dataRecord.CELCFloat 	= parseFloat(_waardeDataRecord[7]);
+				_dataRecord.UFPFloat 	= parseFloat(_waardeDataRecord[8]);
+				if (_dataRecord.UFPFloat > 0) _dataRecord.UFPFloat = Math.round(_dataRecord.UFPFloat / 1000); // in units of 1000
+				_dataRecord.NO2Float 	= parseFloat(_waardeDataRecord[10]);; //parseFloat(_waardeDataRecord[9]);
+
+				dataRecords.push(_dataRecord);
+				continue;
+			}
+			
 			
 		if (firstRec.airbox == '26.cal' || firstRec.airbox == '35.cal') {  // andere recordindeling
 			_dataRecord.retrievedDate 	= firstRec.retrievedDate;
@@ -373,7 +409,12 @@ module.exports = {
 			_dataRecord.UFPFloat 	= parseFloat(_waardeDataRecord[8]);
 			if (_dataRecord.UFPFloat > 0) _dataRecord.UFPFloat = Math.round(_dataRecord.UFPFloat / 1000); // in units of 1000
 			_dataRecord.NO2Float 	= 0; //parseFloat(_waardeDataRecord[9]);
-		} else {
+
+			dataRecords.push(_dataRecord);
+			continue;
+		}
+		
+//		 else {
 			_dataRecord.retrievedDate 	= firstRec.retrievedDate;
 			_dataRecord.measureDate 	= _waardeDataRecord[9];
 			_dataRecord.gpsLat 	= _waardeDataRecord[1];
@@ -400,13 +441,13 @@ module.exports = {
 			_dataRecord.HUMFloat 	= parseFloat(_waardeDataRecord[7]);
 			_dataRecord.CELCFloat 	= parseFloat(_waardeDataRecord[8]);
 			_dataRecord.NO2Float 	= 0; //parseFloat(_waardeDataRecord[9]);
-		}
+//		}
 
-			if (_waardeDataRecord[0] == 'EAST' || _waardeDataRecord[0] == '0.0') {  // header record or no lng value
+//			if (_waardeDataRecord[0] == 'EAST' || _waardeDataRecord[0] == '0.0') {  // header record or no lng value
 				//console.log('skip record');
-			} else {
+//			} else {
 				dataRecords.push(_dataRecord);
-			}
+//			}
 		}
 	
 		createExportFile();
