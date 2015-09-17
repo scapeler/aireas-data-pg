@@ -373,26 +373,26 @@ module.exports = {
 				_dataRecord.gpsLng 	= _waardeDataRecord[12];
 				_dataRecord.lat 	= convertGPS2LatLng(_waardeDataRecord[11]);
 				_dataRecord.lng 	= convertGPS2LatLng(_waardeDataRecord[12]);
-				_dataRecord.OZON 	= _waardeDataRecord[2];
-				_dataRecord.PM10 	= _waardeDataRecord[3];
-				_dataRecord.PM1 	= _waardeDataRecord[4];
-				_dataRecord.PM25 	= _waardeDataRecord[5];
-				_dataRecord.HUM 	= _waardeDataRecord[6];
-				_dataRecord.CELC 	= _waardeDataRecord[7];
-				_dataRecord.UFP 	= _waardeDataRecord[8];
-				_dataRecord.NO2 	= _waardeDataRecord[10]; //_waardeDataRecord[9];
+				_dataRecord.OZON 	= _waardeDataRecord[3];
+				_dataRecord.PM10 	= _waardeDataRecord[4];
+				_dataRecord.PM1 	= _waardeDataRecord[5];
+				_dataRecord.PM25 	= _waardeDataRecord[6];
+				_dataRecord.HUM 	= _waardeDataRecord[7];
+				_dataRecord.CELC 	= _waardeDataRecord[8];
+				_dataRecord.UFP 	= _waardeDataRecord[2];
+				_dataRecord.NO2 	= _waardeDataRecord[1]; //_waardeDataRecord[9];
 
 				_dataRecord.gpsLatFloat = parseFloat(_waardeDataRecord[11]);
 				_dataRecord.gpsLngFloat	= parseFloat(_waardeDataRecord[12]);
-				_dataRecord.OZONFloat 	= parseFloat(_waardeDataRecord[2]);
-				_dataRecord.PM10Float 	= parseFloat(_waardeDataRecord[3]);
-				_dataRecord.PM1Float 	= parseFloat(_waardeDataRecord[4]);
-				_dataRecord.PM25Float 	= parseFloat(_waardeDataRecord[5]);
-				_dataRecord.HUMFloat 	= parseFloat(_waardeDataRecord[6]);
-				_dataRecord.CELCFloat 	= parseFloat(_waardeDataRecord[7]);
-				_dataRecord.UFPFloat 	= parseFloat(_waardeDataRecord[8]);
+				_dataRecord.OZONFloat 	= parseFloat(_waardeDataRecord[3]);
+				_dataRecord.PM10Float 	= parseFloat(_waardeDataRecord[4]);
+				_dataRecord.PM1Float 	= parseFloat(_waardeDataRecord[5]);
+				_dataRecord.PM25Float 	= parseFloat(_waardeDataRecord[6]);
+				_dataRecord.HUMFloat 	= parseFloat(_waardeDataRecord[7]);
+				_dataRecord.CELCFloat 	= parseFloat(_waardeDataRecord[8]);
+				_dataRecord.UFPFloat 	= parseFloat(_waardeDataRecord[2]);
 				if (_dataRecord.UFPFloat > 0) _dataRecord.UFPFloat = Math.round(_dataRecord.UFPFloat / 1000); // in units of 1000
-				_dataRecord.NO2Float 	= parseFloat(_waardeDataRecord[10]);; //parseFloat(_waardeDataRecord[9]);
+				_dataRecord.NO2Float 	= parseFloat(_waardeDataRecord[1]);; //parseFloat(_waardeDataRecord[9]);
 
 				dataRecords.push(_dataRecord);
 				continue;
