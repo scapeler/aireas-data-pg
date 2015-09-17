@@ -138,7 +138,7 @@ module.exports = {
 		outputFileJson = JSON.stringify(dataRecords);
 //		this.writeFile (filePath, aireasFileNameOutput, outputFileJson );
 		//writeFile (filePath, aireasFileNameOutput, outputFileJson );
-		createSqlAireas(dataRecords);
+		createSqlAireas(dataRecords, filePath);
 
 	}
 
@@ -247,7 +247,7 @@ module.exports = {
 			console.log(outputRecord);
 		}
 	console.log('Write: ' + outputFilePath);	
-		//writeFile(outputFile, outputFilePath);
+		writeFile(outputFile, outputFilePath+'test.sql');
 		executeSql(outputFile, sqlCallBack);
 		outputFile = null;  // clear memory
 
