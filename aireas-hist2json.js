@@ -350,6 +350,8 @@ module.exports = {
 
 			if (_waardeDataRecord[0] == 'EAST') continue;
 			
+			_waardeDataRecord[_waardeDataRecord.length-1] = _waardeDataRecord[_waardeDataRecord.length-1].replace(/\r/, '');  // dos->unix
+			
 			//console.log(_waardeDataRecord.length);
 			
 			if (_waardeDataRecord.length>10) { 
