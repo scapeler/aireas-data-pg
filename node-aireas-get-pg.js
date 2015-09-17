@@ -331,7 +331,8 @@ module.exports = {
 
     },
 	
-    getMeasureQ: function (param, callback) {
+    //overgezet naar OpenIoD observation-aggregation.js 20150914
+	getMeasureQ: function (param, callback) {
 		var _attribute, _and;
 		var _attribute 	= " hist_year, round((hist_month+2)/3) hist_q, sum(hist_count) hist_count, avg_type, round(avg(avg_avg)) avg_avg ";
 		var _from 		= " aireas_hist_avg ha ";

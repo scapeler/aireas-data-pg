@@ -2,6 +2,371 @@
 -- delete from aireas_hist_avg;
 
 
+-- insert 'day avg' records per sensor 
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_day, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, date_part('month', measuredate) hist_month
+, date_part('day', measuredate) hist_day
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'PM1' avg_type
+, round(cast(avg(PM1float) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and PM1float <> 0
+and PM1float is not null
+group by airbox, hist_year, hist_month, hist_day
+order by airbox, hist_year, hist_month, hist_day
+;
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_day, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, date_part('month', measuredate) hist_month
+, date_part('day', measuredate) hist_day
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'PM25' avg_type
+, round(cast(avg(PM25float) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and PM25float <> 0
+and PM25float is not null
+group by airbox, hist_year, hist_month, hist_day
+order by airbox, hist_year, hist_month, hist_day
+;
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_day, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, date_part('month', measuredate) hist_month
+, date_part('day', measuredate) hist_day
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'PM10' avg_type
+, round(cast(avg(PM10float) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and PM10float <> 0
+and PM10float is not null
+group by airbox, hist_year, hist_month, hist_day
+order by airbox, hist_year, hist_month, hist_day
+;
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_day, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, date_part('month', measuredate) hist_month
+, date_part('day', measuredate) hist_day
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'OZON' avg_type
+, round(cast(avg(OZONfloat) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and OZONfloat <> 0
+and OZONfloat is not null
+group by airbox, hist_year, hist_month, hist_day
+order by airbox, hist_year, hist_month, hist_day
+;
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_day, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, date_part('month', measuredate) hist_month
+, date_part('day', measuredate) hist_day
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'UFP' avg_type
+, round(cast(avg(UFPfloat) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and UFPfloat <> 0
+and UFPfloat is not null
+group by airbox, hist_year, hist_month, hist_day
+order by airbox, hist_year, hist_month, hist_day
+;
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_day, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, date_part('month', measuredate) hist_month
+, date_part('day', measuredate) hist_day
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'NO2' avg_type
+, round(cast(avg(NO2float) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and NO2float <> 0
+and NO2float is not null
+group by airbox, hist_year, hist_month, hist_day
+order by airbox, hist_year, hist_month, hist_day
+;
+
+
+-- insert 'month avg' records per sensor 
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, date_part('month', measuredate) hist_month
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'PM1' avg_type
+, round(cast(avg(PM1float) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and PM1float <> 0
+and PM1float is not null
+group by airbox, hist_year, hist_month
+order by airbox, hist_year, hist_month
+;
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, date_part('month', measuredate) hist_month
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'PM25' avg_type
+, round(cast(avg(PM25float) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and PM25float <> 0
+and PM25float is not null
+group by airbox, hist_year, hist_month
+order by airbox, hist_year, hist_month
+;
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, date_part('month', measuredate) hist_month
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'PM10' avg_type
+, round(cast(avg(PM10float) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and PM10float <> 0
+and PM10float is not null
+group by airbox, hist_year, hist_month
+order by airbox, hist_year, hist_month
+;
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, date_part('month', measuredate) hist_month
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'OZON' avg_type
+, round(cast(avg(OZONfloat) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and OZONfloat <> 0
+and OZONfloat is not null
+group by airbox, hist_year, hist_month
+order by airbox, hist_year, hist_month
+;
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, date_part('month', measuredate) hist_month
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'UFP' avg_type
+, round(cast(avg(UFPfloat) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and UFPfloat <> 0
+and UFPfloat is not null
+group by airbox, hist_year, hist_month
+order by airbox, hist_year, hist_month
+;
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, date_part('month', measuredate) hist_month
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'NO2' avg_type
+, round(cast(avg(NO2float) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and NO2float <> 0
+and NO2float is not null
+group by airbox, hist_year, hist_month
+order by airbox, hist_year, hist_month
+;
+
+
+-- insert 'year avg' records per sensor 
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'PM1' avg_type
+, round(cast(avg(PM1float) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and PM1float <> 0
+and PM1float is not null
+group by airbox, hist_year
+order by airbox, hist_year
+;
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'PM25' avg_type
+, round(cast(avg(PM25float) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and PM25float <> 0
+and PM25float is not null
+group by airbox, hist_year
+order by airbox, hist_year
+;
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'PM10' avg_type
+, round(cast(avg(PM10float) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and PM10float <> 0
+and PM10float is not null
+group by airbox, hist_year
+order by airbox, hist_year
+;
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'OZON' avg_type
+, round(cast(avg(OZONfloat) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and OZONfloat <> 0
+and OZONfloat is not null
+group by airbox, hist_year
+order by airbox, hist_year
+;
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'UFP' avg_type
+, round(cast(avg(UFPfloat) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and UFPfloat <> 0
+and UFPfloat is not null
+group by airbox, hist_year
+order by airbox, hist_year
+;
+
+INSERT INTO aireas_hist_avg (airbox, hist_year, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
+SELECT distinct(airbox)
+, date_part('year', measuredate) hist_year
+, count(*) hist_count
+, max (measuredate) last_measuredate
+, 'NO2' avg_type
+, round(cast(avg(NO2float) as numeric),2) avg_avg
+, max(geom) geom
+, current_timestamp creation_date
+FROM public.aireas_hist
+where 1=1 --date_part('year', measuredate) = 2013
+and mark_date is null
+and NO2float <> 0
+and NO2float is not null
+group by airbox, hist_year
+order by airbox, hist_year
+;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+!!  vanaf hier oud:
+
 -- insert 'day avg' records
 INSERT INTO aireas_hist_avg (airbox, hist_year, hist_month, hist_day, hist_count, last_measuredate, avg_type, avg_avg, geom, creation_date)
 SELECT distinct(airbox)
