@@ -244,7 +244,7 @@ module.exports = {
 
 			outputFile=outputFile.concat(outputRecord);
 			
-			console.log(outputRecord);
+			//console.log(outputRecord);
 		}
 	console.log('Write: ' + outputFilePath);	
 		writeFile(outputFile, outputFilePath+'test.sql');
