@@ -14,6 +14,7 @@ var pg = require('pg');
 
 var aireasFolder, aireasUrl, aireasFileName, aireasLocalPathRoot, fileFolder, 
 	tmpFolder, tmpFolderName, localPath, fileFolderName, resultsFolder, resultsFolderName;
+var airboxName;	
 var dataRecords;
 
 // **********************************************************************************
@@ -248,9 +249,9 @@ module.exports = {
 			
 			//console.log(outputRecord);
 		}
-		console.log('Write: ' + outputFilePath+'test.sql');	
+		console.log('Write: ' + outputFilePath+airboxName+'_test.sql');	
 //		writeFile(outputFile, outputFilePath+'test.sql');
-		fs.writeFileSync(outputFilePath+'test.sql', outputFile);
+		fs.writeFileSync(outputFilePath+airboxName+'_test.sql', outputFile);
 		
 		executeSql(outputFile, sqlCallBack);
 		outputFile = null;  // clear memory
@@ -296,6 +297,7 @@ module.exports = {
 		var firstRec = JSON.parse(firstRecJson);
 		console.log('Verwerk airbox %s van retrievedate %s', firstRec.airbox, firstRec.retrievedDate );
 		
+		airboxName = firstRec.airbox;
 
 //		console.log(inRecord);
 //		console.log(inRecord.airboxes);
