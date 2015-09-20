@@ -111,8 +111,9 @@ module.exports = {
 // {"AMBHUM": 0.0, "PM1": 3.0, "utctimestamp": "2015-07-22 17:37:17", "TEMP": 21.97, "RELHUM": 41.73, "NO2": 0.0, "name": "22.cal", "PM10": 11.0, "OZON": 102.8, "UFP": 10290.0, "AMBTEMP": 0.0, "PM25": 5.0, "gps": {"lat": 5126.733562, "lon": 530.503508}}
 						
 
-			if (_waardeDataRecord.name == '37.cal') continue;  //temporary skip because of wrong measurements
+			if (_waardeDataRecord.name == '6.cal') continue;  //temporary skip because of wrong measurements
 			if (_waardeDataRecord.name == '23.cal') continue;  //temporary skip because of wrong measurements
+			if (_waardeDataRecord.name == '37.cal') continue;  //temporary skip because of wrong measurements
 
 			_dataRecord.airbox 	= _waardeDataRecord.name;
 			
