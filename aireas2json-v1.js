@@ -113,7 +113,9 @@ module.exports = {
 
 			if (_waardeDataRecord.name == '6.cal') continue;  //temporary skip because of wrong measurements
 			if (_waardeDataRecord.name == '23.cal') continue;  //temporary skip because of wrong measurements
+			if (_waardeDataRecord.name == '29.cal') continue;  //temporary skip because of wrong measurements
 			if (_waardeDataRecord.name == '37.cal') continue;  //temporary skip because of wrong measurements
+			
 
 			_dataRecord.airbox 	= _waardeDataRecord.name;
 			
