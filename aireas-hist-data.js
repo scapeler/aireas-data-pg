@@ -31,7 +31,8 @@ module.exports = {
 
 	init: function (options) {
 		//aireasUrl 			= 'http://82.201.127.232/api?airboxid=*';
-		aireasUrl 			= 'http://82.201.127.232:8080/csv/';
+		//aireasUrl 			= 'http://82.201.127.232:8080/csv/';
+		aireasUrl 			= 'http://ilm.scapeler.com:8080/csv/';
 		aireasFileName 		= 'aireas-hist';
 
 		aireasLocalPathRoot = options.systemFolderParent + '/aireas/';
