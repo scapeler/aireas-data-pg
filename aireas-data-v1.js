@@ -20,7 +20,7 @@ var aireasUrl, aireasFileName, aireasLocalPathRoot, fileFolder, tmpFolder;
 module.exports = {
 
 	init: function (options) {
-		aireasUrl 			= 'http://90.145.62.12/api/v1/?airboxid=*'; //oud:'http://82.201.127.232/api/v1/?airboxid=*';   
+		aireasUrl 			= 'http://ilm.scapeler.com/api/v1/?airboxid=*';  //'http://90.145.62.12/api/v1/?airboxid=*'; //oud:'http://82.201.127.232/api/v1/?airboxid=*';   
 		aireasFileName 		= 'aireas.txt';
 
 		aireasLocalPathRoot = options.systemFolderParent + '/aireas/';
