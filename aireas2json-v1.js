@@ -123,7 +123,7 @@ module.exports = {
 			_dataRecord.airbox 	= _waardeDataRecord.name;
 			
 			_dataRecord.retrievedDate 	= inRecord.retrievedDate;
-			_dataRecord.measureDate 	= _waardeDataRecord.utctimestamp;
+			_dataRecord.measureDate 	= _waardeDataRecord.utctimestamp+'Z';
 			_dataRecord.gpsLat 	= _waardeDataRecord.gps.lat;
 			_dataRecord.gpsLng 	= _waardeDataRecord.gps.lon;
 			_dataRecord.lat 	= this.convertGPS2LatLng(_waardeDataRecord.gps.lat);
