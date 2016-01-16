@@ -16,12 +16,15 @@ module.exports = {
 		}
 
 		if ( apriConfig.init(main_module) ) {
+			console.log('aireas-start.js: '+ main_module);
+			//console.log('systemfolderparent: '+ apriConfig.getSystemFolderParent());
 			var apriModule = require(moduleScapeAireasPath + '/' + main_module);
-			apriModule.init({
+			var options = {
 				systemFolderParent: apriConfig.getSystemFolderParent(),
 				configParameter: apriConfig.getConfigParameter(),
 				systemCode: apriConfig.getSystemCode()
-			});
+			};
+			apriModule.init(options);
 		}
 	}
 }
