@@ -35,7 +35,7 @@ var dataRecords;
 		aireasLocalPathRoot = options.systemFolderParent +'/../ECNaireasdata' + '/aireas/';
 //		aireasLocalPathRoot = options.systemFolderParent+'/aireas/';
 		fileFolderName 		= 'aireas-histecn';
-		tmpFolderName 		= 'tmp/' + inSubFolder;
+		tmpFolderName 		= 'tmp_2014/' + inSubFolder;
 		resultsFolderName 	= 'results';
 
 		//aireasFileName 		= 'aireas.txt';
@@ -189,7 +189,8 @@ var dataRecords;
 				if (toprecord3 == '"UTC";"Lokaal";"°C";"%";"°";"°";"μg/m³";"μg/m³";"μg/m³";"μg/m³"') {
 					recordType = 1; //default
 				}
-			};	
+			};
+				
 			if (toprecord2 == '"Tijd";"Tijd";"UFP";"Temperatuur";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10"') {
 				if (toprecord3 == '"UTC";"Lokaal";"Counts/cm³";"°C";"%";"°";"°";"μg/m³";"μg/m³";"μg/m³"') {
 					recordType = 2; //default
@@ -200,29 +201,75 @@ var dataRecords;
 				if (toprecord3 == '"UTC";"Lokaal";"Counts/cm³";"°C";"°C";"%";"%";"°";"°";"μg/m³";"μg/m³";"μg/m³";"μg/m³"') {
 					recordType = 3; //default
 				}
-			};	
+			};
+				
 			if (toprecord2 == '"Tijd";"Tijd";"UFP";"Temperatuur";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"Ozon"') {
 				if (toprecord3 == '"UTC";"Lokaal";"Counts/cm³";"°C";"%";"°";"°";"μg/m³";"μg/m³";"μg/m³";"μg/m³"') {
 					recordType = 4; //default
 				}
-			};				
+			};
+							
 			if (toprecord2 == '"Tijd";"Tijd";"Temperatuur ext";"Temperatuur";"Luchtvochtigheid ext";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"Ozon"') {
 				if (toprecord3 == '"UTC";"Lokaal";"°C";"°C";"%";"%";"°";"°";"μg/m³";"μg/m³";"μg/m³";"μg/m³"') {
 					recordType = 5; //default
 				}
 			};	
+			
 			if (toprecord2 == '"Tijd";"Tijd";"Temperatuur ext";"Temperatuur";"Luchtvochtigheid ext";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10"') {
 				if (toprecord3 == '"UTC";"Lokaal";"°C";"°C";"%";"%";"°";"°";"μg/m³";"μg/m³";"μg/m³"') {
 					recordType = 6; //default
 				}
-			};	
+			};
+				
 			if (toprecord2 == '"Tijd";"Tijd";"UFP";"Temperatuur ext";"Temperatuur";"Luchtvochtigheid ext";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10"') {
 				if (toprecord3 == '"UTC";"Lokaal";"Counts/cm³";"°C";"°C";"%";"%";"°";"°";"μg/m³";"μg/m³";"μg/m³"') {
 					recordType = 7; //default
 				}
 			};	
 
+			if (toprecord2 == '"Tijd";"Tijd";"Temperatuur ext";"Temperatuur";"Luchtvochtigheid ext";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"Ozon";"NO2"') {
+				if (toprecord3 == '"UTC";"Lokaal";"°C";"°C";"%";"%";"°";"°";"μg/m³";"μg/m³";"μg/m³";"μg/m³";"μg/m³"') {
+					recordType = 8; //default
+				}
+			};
+				
+			if (toprecord2 == '"Tijd";"Tijd";"UFP";"Temperatuur ext";"Temperatuur";"Luchtvochtigheid ext";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"Ozon";"NO2"') {
+				if (toprecord3 == '"UTC";"Lokaal";"Counts/cm³";"°C";"°C";"%";"%";"°";"°";"μg/m³";"μg/m³";"μg/m³";"μg/m³";"μg/m³"') {
+					recordType = 9; //default
+				}
+			};	
+			if (toprecord2 == '"Tijd";"Tijd";"UFP";"Temperatuur";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"Ozon";"NO2"') {
+				if (toprecord3 == '"UTC";"Lokaal";"Counts/cm³";"°C";"%";"°";"°";"μg/m³";"μg/m³";"μg/m³";"μg/m³";"μg/m³"') {
+					recordType = 10; //default
+				}
+			};
 
+			if (toprecord2 == '"Tijd";"Tijd";"UFP";"Temperatuur ext";"Temperatuur";"Luchtvochtigheid ext";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"NO2"') {
+				if (toprecord3 == '"UTC";"Lokaal";"Counts/cm³";"°C";"°C";"%";"%";"°";"°";"μg/m³";"μg/m³";"μg/m³";"μg/m³"') {
+					recordType = 11; //default
+				}
+			};	
+
+			if (toprecord2 == '"Tijd";"Tijd";"UFP";"Temperatuur";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"NO2"') {
+				if (toprecord3 == '"UTC";"Lokaal";"Counts/cm³";"°C";"%";"°";"°";"μg/m³";"μg/m³";"μg/m³";"μg/m³"') {
+					recordType = 12; //default
+				}
+			};	
+			if (toprecord2 == '"Tijd";"Tijd";"Temperatuur";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"Ozon";"NO2"') {
+				if (toprecord3 == '"UTC";"Lokaal";"°C";"%";"°";"°";"μg/m³";"μg/m³";"μg/m³";"μg/m³";"μg/m³"') {
+					recordType = 13; //default
+				}
+			};
+			if (toprecord2 == '"Tijd";"Tijd";"Temperatuur ext";"Temperatuur";"Luchtvochtigheid ext";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"NO2"') {
+				if (toprecord3 == '"UTC";"Lokaal";"°C";"°C";"%";"%";"°";"°";"μg/m³";"μg/m³";"μg/m³";"μg/m³"') {
+					recordType = 14; //default
+				}
+			};
+			if (toprecord2 == '"Tijd";"Tijd";"Temperatuur";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10"') {
+				if (toprecord3 == '"UTC";"Lokaal";"°C";"%";"°";"°";"μg/m³";"μg/m³";"μg/m³"') {
+					recordType = 15; //default
+				}
+			};
 
 
 
@@ -287,11 +334,11 @@ var dataRecords;
 
 				if (recordType == 1 ) {
 					//"Tijd";"Tijd";"Temperatuur";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"Ozon"
+					_ufp 		= null;
 					_temp 		= _parseFloat(inputRecordCols[2]);
 					_tempext 	= null;
 					_rhum 		= _parseFloat(inputRecordCols[3]);
 					_rhumext 	= null;
-					_ufp 		= null;
 					_lat 		= _parseFloat(inputRecordCols[4]);
 					_lng 		= _parseFloat(inputRecordCols[5]);
 					_pm1 		= _parseFloat(inputRecordCols[6]);
@@ -313,7 +360,7 @@ var dataRecords;
 					_pm1 		= _parseFloat(inputRecordCols[7]);
 					_pm25 		= _parseFloat(inputRecordCols[8]);
 					_pm10 		= _parseFloat(inputRecordCols[9]);
-					_ozone 		= _parseFloat(inputRecordCols[10]);
+					_ozone 		= null;
 					_no2 		= null;
 				};	
 
@@ -347,7 +394,8 @@ var dataRecords;
 					_pm10 		= _parseFloat(inputRecordCols[9]);
 					_ozone 		= _parseFloat(inputRecordCols[10]);
 					_no2 		= null;
-				};	
+				};
+					
 				if (recordType == 5 ) {
 					//"Tijd";"Tijd";"Temperatuur ext";"Temperatuur";"Luchtvochtigheid ext";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"Ozon"
 					_ufp 		= null;
@@ -396,11 +444,134 @@ var dataRecords;
 					_no2 		= null;
 				};	
 
+				if (recordType == 8 ) {
+					//"Tijd";"Tijd";"Temperatuur ext";"Temperatuur";"Luchtvochtigheid ext";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"Ozon";"NO2"
+					_ufp 		= null;
+					_tempext 	= _parseFloat(inputRecordCols[2]);
+					_temp 		= _parseFloat(inputRecordCols[3]);
+					_rhumext 	= _parseFloat(inputRecordCols[4]);
+					_rhum 		= _parseFloat(inputRecordCols[5]);
+					_lat 		= _parseFloat(inputRecordCols[6]);
+					_lng 		= _parseFloat(inputRecordCols[7]);
+					_pm1 		= _parseFloat(inputRecordCols[8]);
+					_pm25 		= _parseFloat(inputRecordCols[9]);
+					_pm10 		= _parseFloat(inputRecordCols[10]);
+					_ozone 		= _parseFloat(inputRecordCols[11]);
+					_no2 		= _parseFloat(inputRecordCols[12]);;
+				};	
+
+				if (recordType == 9 ) {
+					//"Tijd";"Tijd";"UFP";"Temperatuur ext";"Temperatuur";"Luchtvochtigheid ext";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"Ozon";"NO2"
+					_ufp 		= _parseFloat(inputRecordCols[2]);
+					_tempext 	= _parseFloat(inputRecordCols[3]);
+					_temp 		= _parseFloat(inputRecordCols[4]);
+					_rhumext 	= _parseFloat(inputRecordCols[5]);
+					_rhum 		= _parseFloat(inputRecordCols[6]);
+					_lat 		= _parseFloat(inputRecordCols[7]);
+					_lng 		= _parseFloat(inputRecordCols[8]);
+					_pm1 		= _parseFloat(inputRecordCols[9]);
+					_pm25 		= _parseFloat(inputRecordCols[10]);
+					_pm10 		= _parseFloat(inputRecordCols[11]);
+					_ozone 		= _parseFloat(inputRecordCols[12]);
+					_no2 		= _parseFloat(inputRecordCols[13]);;
+				};	
+
+				if (recordType == 10 ) {
+					//"Tijd";"Tijd";"UFP";"Temperatuur";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"Ozon";"NO2"
+					_ufp 		= _parseFloat(inputRecordCols[2]);
+					_tempext 	= null;
+					_temp 		= _parseFloat(inputRecordCols[3]);
+					_rhumext 	= null;
+					_rhum 		= _parseFloat(inputRecordCols[4]);
+					_lat 		= _parseFloat(inputRecordCols[5]);
+					_lng 		= _parseFloat(inputRecordCols[6]);
+					_pm1 		= _parseFloat(inputRecordCols[7]);
+					_pm25 		= _parseFloat(inputRecordCols[8]);
+					_pm10 		= _parseFloat(inputRecordCols[9]);
+					_ozone 		= _parseFloat(inputRecordCols[10]);
+					_no2 		= _parseFloat(inputRecordCols[11]);
+				};	
+
+				if (recordType == 11 ) {
+					//"Tijd";"Tijd";"UFP";"Temperatuur ext";"Temperatuur";"Luchtvochtigheid ext";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"NO2"
+					_ufp 		= _parseFloat(inputRecordCols[2]);
+					_tempext 	= _parseFloat(inputRecordCols[3]);
+					_temp 		= _parseFloat(inputRecordCols[4]);
+					_rhumext 	= _parseFloat(inputRecordCols[5]);
+					_rhum 		= _parseFloat(inputRecordCols[6]);
+					_lat 		= _parseFloat(inputRecordCols[7]);
+					_lng 		= _parseFloat(inputRecordCols[8]);
+					_pm1 		= _parseFloat(inputRecordCols[9]);
+					_pm25 		= _parseFloat(inputRecordCols[10]);
+					_pm10 		= _parseFloat(inputRecordCols[11]);
+					_ozone 		= null;
+					_no2 		= _parseFloat(inputRecordCols[12]);
+				};	
+
+				if (recordType == 12 ) {
+					//"Tijd";"Tijd";"UFP";"Temperatuur";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"NO2"
+					_ufp 		= _parseFloat(inputRecordCols[2]);
+					_temp 		= _parseFloat(inputRecordCols[3]);
+					_tempext 	= null;
+					_rhum 		= _parseFloat(inputRecordCols[4]);
+					_rhumext 	= null;
+					_lat 		= _parseFloat(inputRecordCols[5]);
+					_lng 		= _parseFloat(inputRecordCols[6]);
+					_pm1 		= _parseFloat(inputRecordCols[7]);
+					_pm25 		= _parseFloat(inputRecordCols[8]);
+					_pm10 		= _parseFloat(inputRecordCols[9]);
+					_ozone 		= null;
+					_no2 		= _parseFloat(inputRecordCols[10]);
+				};	
+				if (recordType == 13 ) {
+					//"Tijd";"Tijd";"Temperatuur";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"Ozon";"NO2"
+					_temp 		= _parseFloat(inputRecordCols[2]);
+					_tempext 	= null;
+					_rhum 		= _parseFloat(inputRecordCols[3]);
+					_rhumext 	= null;
+					_ufp 		= null;
+					_lat 		= _parseFloat(inputRecordCols[4]);
+					_lng 		= _parseFloat(inputRecordCols[5]);
+					_pm1 		= _parseFloat(inputRecordCols[6]);
+					_pm25 		= _parseFloat(inputRecordCols[7]);
+					_pm10 		= _parseFloat(inputRecordCols[8]);
+					_ozone 		= _parseFloat(inputRecordCols[9]);
+					_no2 		= _parseFloat(inputRecordCols[10]);
+				};	
+				if (recordType == 14 ) {
+					//"Tijd";"Tijd";"Temperatuur ext";"Temperatuur";"Luchtvochtigheid ext";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"NO2"
+					_ufp 		= null;
+					_tempext 	= _parseFloat(inputRecordCols[2]);
+					_temp 		= _parseFloat(inputRecordCols[3]);
+					_rhumext 	= _parseFloat(inputRecordCols[4]);
+					_rhum 		= _parseFloat(inputRecordCols[5]);
+					_lat 		= _parseFloat(inputRecordCols[6]);
+					_lng 		= _parseFloat(inputRecordCols[7]);
+					_pm1 		= _parseFloat(inputRecordCols[8]);
+					_pm25 		= _parseFloat(inputRecordCols[9]);
+					_pm10 		= _parseFloat(inputRecordCols[10]);
+					_ozone 		= null;
+					_no2 		= _parseFloat(inputRecordCols[11]);
+				};	
+
+				if (recordType == 15 ) {
+					//"Tijd";"Tijd";"Temperatuur";"Luchtvochtigheid";"Lat";"Lon";"PM1";"PM2.5";"PM10";"Ozon"
+					_ufp 		= null;
+					_temp 		= _parseFloat(inputRecordCols[2]);
+					_tempext 	= null;
+					_rhum 		= _parseFloat(inputRecordCols[3]);
+					_rhumext 	= null;
+					_lat 		= _parseFloat(inputRecordCols[4]);
+					_lng 		= _parseFloat(inputRecordCols[5]);
+					_pm1 		= _parseFloat(inputRecordCols[6]);
+					_pm25 		= _parseFloat(inputRecordCols[7]);
+					_pm10 		= _parseFloat(inputRecordCols[8]);
+					_ozone 		= null;
+					_no2 		= null;
+				};	
 
 
-
-
-				outputRecord = "\nINSERT INTO aireas_histecn ( airbox, tickdate, measuredate, " + 
+				outputRecord = "\nINSERT INTO aireas_histecn ( airbox, tick_date, measure_date, " + 
 						" lat, lng, ufp, rhumext, rhum, tempext, temp, pm1, pm25, pm10, " +
 						" ozone, no2 " +
 					//	" ,geom28992, geom " +
