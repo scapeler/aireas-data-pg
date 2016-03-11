@@ -88,8 +88,31 @@ module.exports = {
 */		
 
 		dataRecords	= [];
+		
+		
+		
+		// find latest measured datetime, actual measurements can't be older than this datetime - 15 minutes. They maybe in maintenance or defect of ....
+		var latestMeasureDate, tmpLatestMeasureDate, tmpLatestMeasureDateStr;
+		tmpLatestMeasureDateStr = tmpArray[0].utctimestamp+'Z';
+		latestMeasureDate = new Date(tmpLatestMeasureDateStr);
+		for(i=0;i<tmpArray.length-1;i++) {  
+			tmpLatestMeasureDateStr = tmpArray[i].utctimestamp+'Z';
+			tmpLatestMeasureDate 	= new Date(tmpLatestMeasureDateStr);
+			if (latestMeasureDate.getTime() < tmpLatestMeasureDate.getTime()) {
+				latestMeasureDate = tmpLatestMeasureDate;
+			}
+		}
+		
+		
 
 		for(i=0;i<tmpArray.length-1;i++) {  
+		
+			// skip if measureddate < latest date - 15 minutes
+			tmpLatestMeasureDateStr = tmpArray[i].utctimestamp+'Z';
+			tmpLatestMeasureDate 	= new Date(tmpLatestMeasureDateStr);
+			if (tmpLatestMeasureDate.getTime() < latestMeasureDate.getTime()- 54000000) {
+				continue;  // skip 'old' measurement
+			}  
 
 //			inpRecordArray 		= tmpArray[i].split(':(');
 //			inpRecordArray 		= tmpArray[i].split('[');

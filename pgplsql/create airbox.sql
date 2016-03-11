@@ -16,6 +16,7 @@ create table public.airbox (
   airbox_location_type character varying(50),
   airbox_type character varying(255),
   airbox_postcode character varying(255),
+  region character varying(50),
   airbox_X integer,
   airbox_Y integer,
   lat double precision,
