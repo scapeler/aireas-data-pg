@@ -10,6 +10,8 @@
 create table public.airbox (
   gid integer NOT NULL DEFAULT nextval('airbox_gid_seq'::regclass),
   airbox character varying(255) NOT NULL,
+  airbox_id_ecn character varying(255),
+  feature_of_interest character varying(255), 
   airbox_type character varying(255),
   airbox_location character varying(255),
   airbox_location_desc character varying(1024),

@@ -2,7 +2,9 @@
 SELECT * FROM public.airbox order by mutation_date desc;
 */
 
-update airbox set (airbox_location, airbox_location_desc, region, airbox_location_type, airbox_postcode, airbox_X,airbox_Y ) = 
+-- insert into table airbox, airbox_id_ecn, feature_of_interest, 
+
+update airbox set (airbox_location, airbox_location_desc, region, airbox_location_type, airbox_postcode, airbox_X, airbox_Y ) = 
 	('Eij-erven 41','Aan woonstraat aan rand van de stad, bij parkje',  'EHV',
 	'stadsachtergrond', '5646JM', 163804, 380995) 
 	where airbox = '1.cal';
