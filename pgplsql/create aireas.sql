@@ -14,6 +14,7 @@ CREATE TABLE public.aireas
 (
   gid integer NOT NULL DEFAULT nextval('aireas_gid_seq'::regclass),
   airbox character varying(255),
+  identifier character varying(250),
   retrieveddatechar character varying(60),
   measuredatechar character varying(60),
   retrieveddate timestamp with time zone,

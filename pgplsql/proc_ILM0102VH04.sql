@@ -2,11 +2,11 @@
  USE/TEST: 
  
  SELECT dblink_disconnect('sosdb');
- select proc_ILM0102VH04(2015, 1, cast('http://wiki.aireas.com/index.php/airbox_pm1'  as character varying), true);
+ select proc_ILM0102VH04(2015, 1, false);
 
- select proc_ILM0102VH04(2015, 1, cast('http://wiki.aireas.com/index.php/airbox_pm1'  as character varying), true );
- select proc_ILM0102VH04(2015, 1, cast('http://wiki.aireas.com/index.php/airbox_pm25' as character varying), true );
- select proc_ILM0102VH04(2015, 1, cast('http://wiki.aireas.com/index.php/airbox_pm10' as character varying), true );
+ select proc_ILM0102VH04(2015, 1, cast('http://wiki.aireas.com/index.php/airbox_pm1'  as character varying), false );
+ select proc_ILM0102VH04(2015, 1, cast('http://wiki.aireas.com/index.php/airbox_pm25' as character varying), false );
+ select proc_ILM0102VH04(2015, 1, cast('http://wiki.aireas.com/index.php/airbox_pm10' as character varying), false );
  
  	SELECT dblink_close('sosdb', 'cursor_observableproperty');
 	SELECT dblink_disconnect('sosdb');
@@ -47,10 +47,10 @@ order by o.feature_of_interest, o.observed_property, of.flag_code;
  
  select count(*) from ILM0102VH01_OUT;
  
- DROP FUNCTION proc_ILM0102VH04(hist_year INTEGER, hist_month INTEGER, observed_property varchar(250), init_tables BOOLEAN)
+ DROP FUNCTION proc_ILM0102VH04(hist_year INTEGER, hist_month INTEGER, init_tables BOOLEAN)
 */
 
-CREATE OR REPLACE FUNCTION public.proc_ILM0102VH04(hist_year INTEGER, hist_month INTEGER, observed_property varchar(250), init_tables BOOLEAN)
+CREATE OR REPLACE FUNCTION public.proc_ILM0102VH04(hist_year INTEGER, hist_month INTEGER, init_tables BOOLEAN)
   RETURNS  void AS
 $BODY$
 DECLARE
@@ -58,7 +58,6 @@ DECLARE
 	/* parameters */
 	_parm_hist_year 		INTEGER;
 	_parm_hist_month 		INTEGER;
-	_parm_observed_property varchar(250);
 	_parm_init_tables 		BOOLEAN;
 	
 	    
@@ -67,7 +66,7 @@ DECLARE
 		AND		extract(month from (phenomenon_tick_time - interval '1 hour')) 	= _parm_hist_month
 		--AND		o.foi_short = '11'
 		--AND 	extract(month from (o.phenomenon_tick_time - interval '1 hour')) = 1
-		AND 	o.observed_property = _parm_observed_property
+		--AND 	o.observed_property = _parm_observed_property
 		AND		o.quality > 50
 		-- AND 	o.result_value > 40
 		ORDER BY  o.feature_of_interest, o.observed_property, o.phenomenon_tick_time  
@@ -87,9 +86,9 @@ DECLARE
   _quality integer;
   _creation_date timestamp with time zone;
   
-	_prev_feature_of_interest varchar;
-	_prev_offeringidentifier varchar;
-	_prev_procedureidentifier varchar;
+	_prev_feature_of_interest 	varchar;
+	_prev_offeringidentifier 	varchar;
+	_prev_procedureidentifier 	varchar;
   
 	_prev_sos_featureofinterestid	bigint;
 	_prev_sos_observablepropertyid	bigint;
@@ -128,12 +127,21 @@ DECLARE
 	_loop_index bigint;
 	_retrieve_series boolean;
 	_observationidentifier varchar;
+	
+	_VH04_foi_identifierid			bigint;
+	_VH04_foi_identifier			varchar;
+	_VH04_offering_identifierid		bigint;
+	_VH04_offering_identifier		varchar;
+	_VH04_procedure_identifierid	bigint;
+	_VH04_procedure_identifier		varchar;
+	_VH04_obsprop_identifierid		bigint;
+	_VH04_obsprop_identifier		varchar;
+	
   
 BEGIN
 	_parm_hist_year 			:= $1;
 	_parm_hist_month			:= $2;
-	_parm_observed_property 	:= $3;
-	_parm_init_tables			:= $4;
+	_parm_init_tables			:= $3;
 	
 	batch_time_stamp	:= current_timestamp;
 	first_value			:= true;
@@ -149,6 +157,15 @@ BEGIN
 	_prev_sos_observablepropertyid	:=1;
 	_prev_sos_procedureid			:=1;
 	
+	_VH04_foi_identifierid 			:= null;
+	_VH04_foi_identifier 			:= null;
+	_VH04_offering_identifierid 	:= null;
+	_VH04_offering_identifier 		:= null;
+	_VH04_procedure_identifierid 	:= null;
+	_VH04_procedure_identifier 		:= null;
+	_VH04_obsprop_identifierid 		:= null;
+	_VH04_obsprop_identifier 		:= null;
+	
 	SELECT extract(epoch from now())*100000 into new_unique_id;	
 	
 	_sos_offeringidentifier		:= 'http://wiki.aireas.com/index.php/Airbox_EHV_offering_initial';
@@ -158,6 +175,7 @@ BEGIN
 
 	IF (init_tables = true) THEN 
 		EXECUTE 'DROP TABLE IF EXISTS ILM0102VH04_OUT';
+		EXECUTE 'DROP TABLE IF EXISTS ILM0102VH04_OUT_IDENTIFIER';
 	END IF;
 
 
@@ -176,33 +194,45 @@ BEGIN
 		EXECUTE 'CREATE TABLE ILM0102VH04_OUT (
 --			gid integer NOT NULL DEFAULT nextval(''ILM0102DH01_OUT_GID_SEQ''::regclass),
 --			observationid 		bigint,
-			seriesid	 		bigint,
-			phenomenontime 		timestamp with time zone,
-			phenomenonticktime 	timestamp with time zone,
+--			seriesid	 		bigint,
+			offeringid			bigint,
+			featureofinterestid	bigint,
+			procedureid	 		bigint,
+			observablepropertyid	bigint,
+			unitid				bigint,
+			phenomenon_time 	timestamp with time zone,
+			phenomenon_tick_time	timestamp with time zone,
+			result_value		double precision,
 			identifier			varchar(250),
 			description			varchar(250),
-			unitid				bigint,
 			quality 			integer,
-			result_value		double precision
+			published 			boolean
 --			creation_date timestamp with time zone
 --			CONSTRAINT ILM0102VH01_OUT_pkey PRIMARY KEY (gid)		
 		)';	
+
+		EXECUTE 'CREATE TABLE ILM0102VH04_OUT_IDENTIFIER (
+			gid integer NOT NULL DEFAULT nextval(''ILM0102VH01_OUT_GID_SEQ''::regclass),
+			identifier			varchar(250),
+			identifier_type		varchar(50),
+			sos_id		 		bigint,
+			CONSTRAINT ILM0102VH04_OUT_pkey PRIMARY KEY (gid)
+		)';	
+
 	END IF;
 
 	
 	
-	/* connect to SOS database */
-	SELECT dblink_connect('sosdb', 'hostaddr=149.210.234.239 port=5432 dbname=openiod_sos user=postgres password=OpenIoD@2015 ') into _dblink_result;
 	
 	/* get observablepropertyid from SOS */
-	_dblink_query := 'select observablepropertyid FROM public.observableproperty WHERE identifier = ''' || _parm_observed_property || '''';
+/*	_dblink_query := 'select observablepropertyid FROM public.observableproperty WHERE identifier = ''' || _parm_observed_property || '''';
 	SELECT dblink_open('sosdb', 'cursor_observableproperty', _dblink_query ) 
 		into _dblink_result; --_sos_observablepropertyid;
 	SELECT * --observablepropertyid 
 		FROM dblink_fetch('sosdb', 'cursor_observableproperty', 1 ) 
 		AS (observablepropertyid bigint) into _sos_observablepropertyid;
 	SELECT dblink_close('sosdb', 'cursor_observableproperty') into _dblink_result;
-
+*/
 
 /* 
 	observation record:
@@ -231,8 +261,8 @@ BEGIN
 		_loop_index := 	_loop_index + 1;
 
 		/* get featureofinterestid from SOS */
-		RAISE NOTICE 'feature_of_interest  %', ILM0102VH01_OUT_rec.feature_of_interest ;
-		IF ILM0102VH01_OUT_rec.feature_of_interest <> _prev_feature_of_interest THEN 
+/*		IF ILM0102VH01_OUT_rec.feature_of_interest <> _prev_feature_of_interest THEN 
+			RAISE NOTICE 'feature_of_interest  %', ILM0102VH01_OUT_rec.feature_of_interest ;
 			_dblink_query := 'select featureofinterestid FROM public.featureofinterest WHERE identifier = ''' || ILM0102VH01_OUT_rec.feature_of_interest || ''';';
 			SELECT dblink_open('sosdb', 'cursor_featureofinterest', _dblink_query ) 
 				into _dblink_result; 
@@ -242,10 +272,10 @@ BEGIN
 			SELECT dblink_close('sosdb', 'cursor_featureofinterest') into _dblink_result;	
 			_prev_feature_of_interest = ILM0102VH01_OUT_rec.feature_of_interest;
 		END IF;
-
+*/
 
 		/* get offeringid from SOS */
-		IF _sos_offeringidentifier <> _prev_offeringidentifier THEN 
+/*		IF _sos_offeringidentifier <> _prev_offeringidentifier THEN 
 			_dblink_query := 'select offeringid FROM public.offering WHERE identifier = ''' || _sos_offeringidentifier || '''';
 			SELECT dblink_open('sosdb', 'cursor_offering', _dblink_query ) 
 				into _dblink_result; 
@@ -255,10 +285,10 @@ BEGIN
 			SELECT dblink_close('sosdb', 'cursor_offering') into _dblink_result;	
 			_prev_offeringidentifier = _sos_offeringidentifier;
 		END IF;
-
+*/
 
 		/* get procedureid from SOS */
-		IF _sos_procedureidentifier <> _prev_procedureidentifier THEN 
+/*		IF _sos_procedureidentifier <> _prev_procedureidentifier THEN 
 			_dblink_query := 'select procedureid FROM public.procedure WHERE identifier = ''' || _sos_procedureidentifier || '''';
 			SELECT dblink_open('sosdb', 'cursor_procedure', _dblink_query ) 
 				into _dblink_result; 
@@ -268,8 +298,98 @@ BEGIN
 			SELECT dblink_close('sosdb', 'cursor_procedure') into _dblink_result;
 			_prev_procedureidentifier = _sos_procedureidentifier;		
 		END IF;
+*/
+
+		
+		_observationidentifier := 'Airbox_standard_procedure_obs_' || new_unique_id || '_' || _loop_index;
+		
+		/* get or create foi identifier in VH04_OUT_IDENTIFIER */
+		IF (ILM0102VH01_OUT_rec.feature_of_interest = _VH04_foi_identifier) THEN 
+			--RAISE NOTICE 'IDENTIFIER IN CACHE:  % % %', 'featureofinterest', ILM0102VH01_OUT_rec.feature_of_interest, _VH04_foi_identifierid;
+		ELSE		
+			_VH04_foi_identifierid 	:= null;
+			_VH04_foi_identifier 	:= ILM0102VH01_OUT_rec.feature_of_interest;
+			SELECT i.gid FROM ILM0102VH04_OUT_IDENTIFIER i WHERE i.identifier_type = 'featureofinterest' AND i.identifier = ILM0102VH01_OUT_rec.feature_of_interest INTO _VH04_foi_identifierid;
+			if (_VH04_foi_identifierid is null) THEN
+				EXECUTE 'INSERT INTO ILM0102VH04_OUT_IDENTIFIER (identifier_type, identifier) values($1, $2)'
+					USING 'featureofinterest', ILM0102VH01_OUT_rec.feature_of_interest;
+				SELECT i.gid FROM ILM0102VH04_OUT_IDENTIFIER i WHERE i.identifier_type = 'featureofinterest' AND i.identifier = ILM0102VH01_OUT_rec.feature_of_interest INTO _VH04_foi_identifierid;	
+				RAISE NOTICE 'IDENTIFIER NOT FOUND, NEW ID CREATED: % %', 'featureofinterest', ILM0102VH01_OUT_rec.feature_of_interest;			
+			END IF;
+			if (_VH04_foi_identifierid is null) THEN
+				RAISE NOTICE 'IDENTIFIER NOT FOUND  % %', 'featureofinterest', ILM0102VH01_OUT_rec.feature_of_interest; 
+			END IF;
+			RAISE NOTICE 'IDENTIFIER  % % %', 'featureofinterest', ILM0102VH01_OUT_rec.feature_of_interest, _VH04_foi_identifierid; 
+		END IF;
+
+		/* get or create offering identifier in VH04_OUT_IDENTIFIER */
+		IF (_sos_offeringidentifier = _VH04_offering_identifier) THEN 
+			--RAISE NOTICE 'IDENTIFIER IN CACHE:  % % %', 'procedure', _sos_offeringidentifier, _VH04_offering_identifierid;
+		ELSE		
+			_VH04_offering_identifierid := null;
+			_VH04_offering_identifier 	:= _sos_offeringidentifier;
+			SELECT i.gid FROM ILM0102VH04_OUT_IDENTIFIER i WHERE i.identifier_type = 'offering' AND i.identifier = _sos_offeringidentifier INTO _VH04_offering_identifierid;
+			if (_VH04_offering_identifierid is null) THEN
+				EXECUTE 'INSERT INTO ILM0102VH04_OUT_IDENTIFIER (identifier_type, identifier) values($1, $2)'
+					USING 'offering', _sos_offeringidentifier;
+				SELECT i.gid FROM ILM0102VH04_OUT_IDENTIFIER i WHERE i.identifier_type = 'offering' AND i.identifier = _sos_offeringidentifier INTO _VH04_offering_identifierid;	
+				RAISE NOTICE 'IDENTIFIER NOT FOUND, NEW ID CREATED: % %', 'offering', _sos_offeringidentifier;			
+			END IF;
+			if (_VH04_offering_identifierid is null) THEN
+				RAISE NOTICE 'IDENTIFIER NOT FOUND  % %', 'offering', _sos_offeringidentifier; 
+			END IF;
+			RAISE NOTICE 'IDENTIFIER  % % %', 'offering', _sos_offeringidentifier, _VH04_offering_identifierid; 
+		END IF;
+		
+		/* get or create obsprop identifier in VH04_OUT_IDENTIFIER */
+		IF (ILM0102VH01_OUT_rec.observed_property = _VH04_obsprop_identifier) THEN 
+			--RAISE NOTICE 'IDENTIFIER IN CACHE:  % % %', 'procedure', ILM0102VH01_OUT_rec.observed_property, _VH04_obsprop_identifierid;
+		ELSE		
+			_VH04_obsprop_identifierid := null;
+			_VH04_obsprop_identifier 	:= ILM0102VH01_OUT_rec.observed_property;
+			SELECT i.gid FROM ILM0102VH04_OUT_IDENTIFIER i WHERE i.identifier_type = 'obsprop' AND i.identifier = ILM0102VH01_OUT_rec.observed_property INTO _VH04_obsprop_identifierid;
+			if (_VH04_obsprop_identifierid is null) THEN
+				EXECUTE 'INSERT INTO ILM0102VH04_OUT_IDENTIFIER (identifier_type, identifier) values($1, $2)'
+					USING 'obsprop', ILM0102VH01_OUT_rec.observed_property;
+				SELECT i.gid FROM ILM0102VH04_OUT_IDENTIFIER i WHERE i.identifier_type = 'obsprop' AND i.identifier = ILM0102VH01_OUT_rec.observed_property INTO _VH04_obsprop_identifierid;	
+				RAISE NOTICE 'IDENTIFIER NOT FOUND, NEW ID CREATED: % %', 'obsprop', ILM0102VH01_OUT_rec.observed_property;			
+			END IF;
+			if (_VH04_obsprop_identifierid is null) THEN
+				RAISE NOTICE 'IDENTIFIER NOT FOUND  % %', 'obsprop', ILM0102VH01_OUT_rec.observed_property; 
+			END IF;
+			RAISE NOTICE 'IDENTIFIER  % % %', 'obsprop', ILM0102VH01_OUT_rec.observed_property, _VH04_obsprop_identifierid; 
+		END IF;
+		
+
+		/* get or create procedure identifier in VH04_OUT_IDENTIFIER */
+		IF (_sos_procedureidentifier = _VH04_procedure_identifier) THEN 
+			--RAISE NOTICE 'IDENTIFIER IN CACHE:  % % %', 'procedure', _sos_procedureidentifier, _VH04_procedure_identifierid;
+		ELSE		
+			_VH04_procedure_identifierid := null;
+			_VH04_procedure_identifier 	:= _sos_procedureidentifier;
+			SELECT i.gid FROM ILM0102VH04_OUT_IDENTIFIER i WHERE i.identifier_type = 'procedure' AND i.identifier = _sos_procedureidentifier INTO _VH04_procedure_identifierid;
+			if (_VH04_procedure_identifierid is null) THEN
+				EXECUTE 'INSERT INTO ILM0102VH04_OUT_IDENTIFIER (identifier_type, identifier) values($1, $2)'
+					USING 'procedure', _sos_procedureidentifier;
+				SELECT i.gid FROM ILM0102VH04_OUT_IDENTIFIER i WHERE i.identifier_type = 'procedure' AND i.identifier = _sos_procedureidentifier INTO _VH04_procedure_identifierid;	
+				RAISE NOTICE 'IDENTIFIER NOT FOUND, NEW ID CREATED: % %', 'procedure', _sos_procedureidentifier;			
+			END IF;
+			if (_VH04_procedure_identifierid is null) THEN
+				RAISE NOTICE 'IDENTIFIER NOT FOUND  % %', 'procedure', _sos_procedureidentifier; 
+			END IF;
+			RAISE NOTICE 'IDENTIFIER  % % %', 'procedure', _sos_procedureidentifier, _VH04_procedure_identifierid; 
+		END IF;
 		
 		
+		/* insert observation into VH04_OUT */		
+		EXECUTE 'INSERT INTO ILM0102VH04_OUT (offeringid, featureofinterestid, procedureid, observablepropertyid, unitid, phenomenon_time, phenomenon_tick_time, result_value, identifier, description, quality, published ) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)'
+			USING _VH04_offering_identifierid, _VH04_foi_identifierid, _VH04_procedure_identifierid, _VH04_obsprop_identifierid, 13, ILM0102VH01_OUT_rec.phenomenon_time, ILM0102VH01_OUT_rec.phenomenon_tick_time, ILM0102VH01_OUT_rec.result_value, _observationidentifier, 'unofficial validated observation', ILM0102VH01_OUT_rec.quality, false;
+		  
+
+
+	
+				
+		CONTINUE;
 		
 		
 		RAISE NOTICE 'Loop index %', _loop_index;
@@ -344,16 +464,17 @@ BEGIN
 
 	END LOOP;
 
+/*
 	SELECT dblink_exec('sosdb','COMMIT') into _dblink_result;
 
 	--SELECT dblink_close('sosdb', 'cursor_observableproperty') into _dblink_result;
 	SELECT dblink_disconnect('sosdb') into _dblink_result;
-	
+*/	
 
 		
 END;
 $BODY$
   LANGUAGE plpgsql VOLATILE
    ;
-ALTER FUNCTION public.proc_ILM0102VH04(hist_year INTEGER, hist_month INTEGER, observed_property varchar(250), init_tables BOOLEAN)
+ALTER FUNCTION public.proc_ILM0102VH04(hist_year INTEGER, hist_month INTEGER, init_tables BOOLEAN)
   OWNER TO postgres;   
