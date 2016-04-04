@@ -4,6 +4,7 @@
  insert into featureofinteresttype (featureofinteresttypeid, featureofinteresttype) values(1, 'http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint');
  INSERT INTO public.unit(unitid, unit) VALUES (nextval('unitid_seq'::regclass), 'testunit');
  
+ 
 	select proc_ILM0102PH01(2015, 1, false);
  
  	SELECT dblink_disconnect('sosdb');
@@ -640,7 +641,7 @@ BEGIN
 	
 		_dblink_query := 'INSERT INTO observation ' || 
 			' (observationid, seriesid, phenomenontimestart, phenomenontimeend, resulttime, validtimestart, validtimeend, deleted, samplinggeometry, identifier, codespace, name, codespacename, description, unitid) ' ||
-			' VALUES ('||_newobservationid||','|| _sos_seriesid||','''|| ILM0102VH04_OUT_rec.phenomenon_time ||''' AT TIME ZONE ''UTC'' ,'''|| ILM0102VH04_OUT_rec.phenomenon_time||''' AT TIME ZONE ''UTC'' ,'''|| ILM0102VH04_OUT_rec.phenomenon_tick_time||''' AT TIME ZONE ''UTC'' , null, null, ''F'', null, ''airbox_standard_procedure_obs_' || new_unique_id||'_'||_loop_index || ''', 39, null, 39, ''testobservation'', 14); ' ;
+			' VALUES ('||_newobservationid||','|| _sos_seriesid||','''|| ILM0102VH04_OUT_rec.phenomenon_time ||''' AT TIME ZONE ''UTC'' ,'''|| ILM0102VH04_OUT_rec.phenomenon_time||''' AT TIME ZONE ''UTC'' ,'''|| ILM0102VH04_OUT_rec.phenomenon_tick_time||''' AT TIME ZONE ''UTC'' , null, null, ''F'', null, ''airbox_standard_procedure_obs_' || new_unique_id||'_'||_loop_index || ''', 39, null, 39, ''testobservation'', 15); ' ;
 		SELECT dblink_exec('sosdb', _dblink_query ) into _dblink_result; 
 
 		_dblink_query := 'INSERT INTO numericvalue ' || 
@@ -648,6 +649,10 @@ BEGIN
 			' VALUES ('||_newobservationid||','|| ILM0102VH04_OUT_REC.result_value||'); ' ;
 		SELECT dblink_exec('sosdb', _dblink_query ) into _dblink_result; 
 
+		_dblink_query := 'INSERT INTO observationhasoffering ' || 
+			' (observationid, offeringid) ' ||
+			' VALUES ('||_newobservationid||','|| _sos_offeringid||'); ' ;
+		SELECT dblink_exec('sosdb', _dblink_query ) into _dblink_result; 
 
 		
 --		RAISE NOTICE 'Loop index %', _loop_index;	
