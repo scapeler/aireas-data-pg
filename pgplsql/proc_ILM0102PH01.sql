@@ -1,9 +1,10 @@
 /*
  USE/TEST: 
  
+ /* additional manual executed sql statements, to be implemented in this procedure */
  insert into featureofinteresttype (featureofinteresttypeid, featureofinteresttype) values(1, 'http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint');
  INSERT INTO public.unit(unitid, unit) VALUES (nextval('unitid_seq'::regclass), 'testunit');
- 
+ update   observationconstellation set observationtypeid=119 where observationtypeid is null;
  
 	select proc_ILM0102PH01(2015, 1, false);
  

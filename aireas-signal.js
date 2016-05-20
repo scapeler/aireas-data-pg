@@ -8,6 +8,29 @@
 
 // **********************************************************************************
 "use strict"; // This is for your code to comply with the ECMAScript 5 standard.
+// activate init process config-main
+var path = require('path');
+var startFolder 			= __dirname;
+var startFolderParent		= path.resolve(__dirname,'..');
+var configServerModulePath	= startFolderParent + '/apri-server-config/apri-server-config';
+console.log("Start of Config Main ", configServerModulePath);
+var apriConfig = require(configServerModulePath)
+
+var systemFolder 			= __dirname;
+var systemFolderParent		= path.resolve(__dirname,'..');
+var systemFolderRoot		= path.resolve(systemFolderParent,'..');
+var systemModuleFolderName 	= path.basename(systemFolder);
+var systemModuleName 		= path.basename(__filename);
+var systemBaseCode 			= path.basename(systemFolderParent);
+
+//console.log('systemFolder', systemFolder);  				// systemFolder /opt/TSCAP-550/node-apri
+//console.log('systemFolderParent', systemFolderParent);  	// systemFolderParent /opt/TSCAP-550
+//console.log('systemFolderRoot', systemFolderRoot);  	// systemFolderRoot   /opt
+
+var initResult = apriConfig.init(systemModuleFolderName+"/"+systemModuleName);
+
+// **********************************************************************************
+
 
 var handlebarsx 	= require('handlebars');
 var moment 			= require('moment');
@@ -15,9 +38,10 @@ var moment 			= require('moment');
 var fs 				= require('fs');
 var pg 				= require('pg');
 var nodemailer 		= require('nodemailer');
+var socket = require('socket.io-client')('https://openiod.org',{path: '/SCAPE604/socket.io'});
 
 var sqlConnString;
-var transporter, emails, templateWijkSource, templateWijk, sql;
+var transporter, emails, apps, templateWijkSource, templateWijk, sql;
 var checkSignalValues, sendMail;
 
 // **********************************************************************************
@@ -25,6 +49,8 @@ var checkSignalValues, sendMail;
 module.exports = {
 
 	init: function (options) {
+	
+		console.log('execute init');
 	
 		sqlConnString = options.configParameter.databaseType + '://' + 
 			options.configParameter.databaseAccount + ':' + 
@@ -37,7 +63,11 @@ module.exports = {
 		sendMail 			= this.sendMail;
 
 		emails = [
-			{emailAddress: 'awiel@scapeler.com', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 10, 15, 20, 25] } ] }
+			{emailAddress: 'awiel@scapeler.com', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 15, 20, 25, 30] } ] }
+		]
+
+		apps = [
+			{app: 'humansensor', messageType: 'aireassignal', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 15, 20, 25, 30] } ], signalDiffGt: 2 }
 		]
 
 		templateWijkSource	= "<h1>Informatie over daling of stijging meetwaarde luchtkwaliteit</h1><p>Datum: {{data.signalDateTimeStr}}</p> \
@@ -109,6 +139,7 @@ order by aireas.airbox
 	
 		var _result = result.rows; //JSON.parse(result);
 
+		// mailing notifications / signals
 		for (i =0;i< emails.length;i++) {
 			var email = emails[i];
 			console.log('Signal function started for emailaddress: ' + email.emailAddress);
@@ -144,14 +175,89 @@ order by aireas.airbox
 					outRecord.scaqi 		= _scaqi;
 					outRecord.scaqi_prev 	= _scaqi_prev;
 					if (outRecord.message) _outRecords.push(outRecord);
+					
+					socket.emit('aireassignal', {'signal': outRecord});
+					
 				}
+
 			}
+
 			
 			if (_outRecords.length>0) {
 				sendMail(email.emailAddress, 'AiREAS Signaal from system: ' + options.systemCode , _outRecords );
 			}
 		}
-		}); // end of inner function
+		
+		
+		// emit web-socket for notification to apps
+		socket.on('connect', function () {
+			console.log('connected ');
+		});	
+		socket.on( 'info', function (data) {
+			console.log('info '+data.nrOfConnections);
+		});
+		for (i =0;i< apps.length;i++) {
+			var app = apps[i];
+			
+			console.log('Signal function started for app: ' + app.app);
+			var municipal = app.municipals[0];
+			
+			var _outRecords = [];
+			_outRecords.signalDateTime = new Date();
+			_outRecords.signalDateTimeStr = moment(_outRecords.signalDateTime).format("DD-MM-YYYY, HH:mm");
+					
+			for (j=0;j<_result.length;j++) {
+				var _record 	= _result[j];
+				var _scaqi 		= parseFloat(_record.scaqi);
+				var _scaqi_prev = parseFloat(_record.scaqi_prev);
+				console.log('process record ' + (j+1) + ' ' + _scaqi_prev + ' -> ' + _scaqi + ' for ' + _record.wk_naam);
+				
+				if (_scaqi == _scaqi_prev) continue;
+								
+				var outRecord = {};
+				outRecord.gm_code 		= _record.gm_code;
+				outRecord.gm_naam 		= _record.gm_naam; 
+				outRecord.wk_naam 		= _record.wk_naam; 
+				outRecord.aant_inw		= parseInt(_record.aant_inw);
+				outRecord.scaqi 		= _scaqi;
+				outRecord.scaqi_prev 	= _scaqi_prev;
+					
+				var signalResult = checkSignalValues(municipal.signalValues, _scaqi_prev, _scaqi);
+						
+				if (signalResult.signalValue) { 
+					if (signalResult.direction == 'up') {
+						outRecord.message = "Index voor luchtkwaliteit is gestegen boven grenswaarde " + signalResult.signalValue+ " ug/m3.";	
+					}
+					if (signalResult.direction == 'down') {
+						outRecord.message = "Index voor luchtkwaliteit is gedaald onder grenswaarde " + signalResult.signalValue+ " ug/m3.";					
+					}
+					socket.emit(app.messageType, {'signal': outRecord});
+				}
+				
+				var _scaciDiff			= Math.round((_scaqi - _scaqi_prev)*10)/10;
+				var _scaciDiffDirection	= _scaciDiff<0?'down':'up';
+				console.log(_scaciDiffDirection);
+				_scaciDiff				= _scaciDiff<0?_scaciDiff*-1:_scaciDiff;
+				console.log(_scaciDiff);
+				console.log(app.signalDiffGt);
+				if (_scaciDiff >= app.signalDiffGt) {
+					if (_scaciDiffDirection == 'up') {
+						outRecord.message = "Index voor luchtkwaliteit is gestegen met " + _scaciDiff + " ug/m3.";					
+					}
+					if (_scaciDiffDirection == 'down') {
+						outRecord.message = "Index voor luchtkwaliteit is gedaald met " + _scaciDiff + " ug/m3.";	
+					}
+					socket.emit(app.messageType, {'signal': outRecord});
+					console.log('websocket signal sent: '+ app.messageType);
+				}
+			}
+
+		}
+		setTimeout(function(e) {socket.disconnect();},1000);
+		
+
+	}); // end of inner function
+		
 	},
 	
 	executeSql: function(query, callback) {
@@ -213,3 +319,6 @@ order by aireas.airbox
 	}
 
 } // end of module.exports
+
+
+
