@@ -230,10 +230,10 @@ order by aireas.airbox
 						
 				if (signalResult.signalValue) { 
 					if (signalResult.direction == 'up') {
-						outRecord.message = "Index voor luchtkwaliteit is gestegen boven grenswaarde " + signalResult.signalValue+ " ug/m3.";	
+						outRecord.message = "Index voor luchtkwaliteit is gestegen boven grenswaarde " + signalResult.signalValue+ "";	
 					}
 					if (signalResult.direction == 'down') {
-						outRecord.message = "Index voor luchtkwaliteit is gedaald onder grenswaarde " + signalResult.signalValue+ " ug/m3.";					
+						outRecord.message = "Index voor luchtkwaliteit is gedaald onder grenswaarde " + signalResult.signalValue+ "";					
 					}
 					socket.emit(app.messageType, {'signal': outRecord});
 				}
@@ -246,10 +246,10 @@ order by aireas.airbox
 				console.log(app.signalDiffGt);
 				if (_scaciDiff >= app.signalDiffGt) {
 					if (_scaciDiffDirection == 'up') {
-						outRecord.message = "Index voor luchtkwaliteit is gestegen met " + _scaciDiff + " ug/m3.";					
+						outRecord.message = "Index voor luchtkwaliteit is gestegen met " + _scaciDiff + "";					
 					}
 					if (_scaciDiffDirection == 'down') {
-						outRecord.message = "Index voor luchtkwaliteit is gedaald met " + _scaciDiff + " ug/m3.";	
+						outRecord.message = "Index voor luchtkwaliteit is gedaald met " + _scaciDiff + "";	
 					}
 					socket.emit(app.messageType, {'signal': outRecord});
 					console.log('websocket signal sent: '+ app.messageType);
