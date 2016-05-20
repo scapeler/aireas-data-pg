@@ -38,7 +38,9 @@ var moment 			= require('moment');
 var fs 				= require('fs');
 var pg 				= require('pg');
 var nodemailer 		= require('nodemailer');
-var socket = require('socket.io-client')('https://openiod.org',{path: '/SCAPE604/socket.io'});
+//var socket = require('socket.io-client')('https://openiod.org',{path: '/SCAPE604/socket.io'});
+var socket = require('socket.io-client')('http://149.210.208.157:3010',{path: '/SCAPE604/socket.io'});
+
 
 var sqlConnString;
 var transporter, emails, apps, templateWijkSource, templateWijk, sql;
@@ -67,7 +69,7 @@ module.exports = {
 		]
 
 		apps = [
-			{app: 'humansensor', messageType: 'aireassignal', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 15, 20, 25, 30] } ], signalDiffGt: 2 }
+			{app: 'humansensor', messageType: 'aireassignal', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 15, 20, 25, 30] } ], signalDiffGt: 0.1 }
 		]
 
 		templateWijkSource	= "<h1>Informatie over daling of stijging meetwaarde luchtkwaliteit</h1><p>Datum: {{data.signalDateTimeStr}}</p> \
