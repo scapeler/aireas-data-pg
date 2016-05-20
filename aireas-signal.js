@@ -217,12 +217,14 @@ order by aireas.airbox
 				if (_scaqi == _scaqi_prev) continue;
 								
 				var outRecord = {};
-				outRecord.gm_code 		= _record.gm_code;
-				outRecord.gm_naam 		= _record.gm_naam; 
-				outRecord.wk_naam 		= _record.wk_naam; 
-				outRecord.aant_inw		= parseInt(_record.aant_inw);
-				outRecord.scaqi 		= _scaqi;
-				outRecord.scaqi_prev 	= _scaqi_prev;
+				outRecord.gm_code 			= _record.gm_code;
+				outRecord.gm_naam 			= _record.gm_naam; 
+				outRecord.wk_naam 			= _record.wk_naam; 
+				outRecord.aant_inw			= parseInt(_record.aant_inw);
+				outRecord.scaqi 			= _scaqi;
+				outRecord.scaqi_prev 		= _scaqi_prev;
+				outRecord.signalDateTime	= _outRecords.signalDateTime;
+				outRecord.signalDateTimeStr	= _outRecords.signalDateTimeStr;
 					
 				var signalResult = checkSignalValues(municipal.signalValues, _scaqi_prev, _scaqi);
 						
