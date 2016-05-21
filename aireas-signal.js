@@ -69,7 +69,7 @@ module.exports = {
 		]
 
 		apps = [
-			{app: 'humansensor', messageType: 'aireassignal', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 15, 20, 25, 30] } ], signalDiffGt: 3 }
+			{app: 'humansensor', messageType: 'aireassignal', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 15, 20, 25, 30] } ], signalDiffGt: 1 }
 		]
 
 		templateWijkSource	= "<h1>Informatie over daling of stijging meetwaarde luchtkwaliteit</h1><p>Datum: {{data.signalDateTimeStr}}</p> \
@@ -240,10 +240,10 @@ order by aireas.airbox
 				
 				var _scaciDiff			= Math.round((_scaqi - _scaqi_prev)*10)/10;
 				var _scaciDiffDirection	= _scaciDiff<0?'down':'up';
-				console.log(_scaciDiffDirection);
+				//console.log(_scaciDiffDirection);
 				_scaciDiff				= _scaciDiff<0?_scaciDiff*-1:_scaciDiff;
-				console.log(_scaciDiff);
-				console.log(app.signalDiffGt);
+				//console.log(_scaciDiff);
+				//console.log(app.signalDiffGt);
 				if (_scaciDiff >= app.signalDiffGt) {
 					if (_scaciDiffDirection == 'up') {
 						outRecord.message = "Index voor luchtkwaliteit is gestegen met " + _scaciDiff + "";					
@@ -257,7 +257,15 @@ order by aireas.airbox
 			}
 
 		}
-		setTimeout(function(e) {socket.disconnect();},1000);
+		setTimeout(function(e) {
+			console.log('disconnect socket client');
+			socket.disconnect();
+			setTimeout(function(e) {
+				console.log('end of process after disconnect socket client');
+				return true;			
+			},1000);
+			return true;
+		},1000);
 		
 
 	}); // end of inner function
