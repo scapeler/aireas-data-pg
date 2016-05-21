@@ -38,9 +38,6 @@ var moment 			= require('moment');
 var fs 				= require('fs');
 var pg 				= require('pg');
 var nodemailer 		= require('nodemailer');
-//var socket = require('socket.io-client')('https://openiod.org',{path: '/SCAPE604/socket.io'});
-var socket = require('socket.io-client')('http://149.210.208.157:3010',{path: '/SCAPE604/socket.io'});
-
 
 var sqlConnString;
 var transporter, emails, apps, templateWijkSource, templateWijk, sql;
@@ -76,13 +73,42 @@ module.exports = {
     {{#each data}}<h2>Signaal voor wijk '{{wk_naam}}'</h2><p>{{message}}</p> \
 	Gemeente: {{gm_naam}} ({{gm_code}})<BR/> \
 	Wijk: {{wk_naam}}<BR/> \
-	Inwoners: {{aant_inw}}<BR/> \
+	Inwoners wijk: {{aant_inw_wijk}}<BR/> \
+	Buurt: {{bu_naam}}<BR/> \
+	Inwoners buurt: {{aant_inw_buurt}}<BR/> \
 	Vorige waarde: {{scaqi_prev}}<BR/> \
 	Actuele waarde: <B>{{scaqi}}</B><BR/> \
 	{{/each}}</div><BR/>";
 	
 		templateWijk		= handlebarsx.compile(templateWijkSource);				
 
+		sql = "select max(wijk.gm_naam) gm_naam, max(wijk.gm_code) gm_code, max(wijk.wk_naam) wk_naam, max(buurt.bu_code) bu_code, max(buurt.bu_naam) bu_naam, \
+  max(avg.avg_avg) ScAQI, \
+  max(avg_prev.avg_avg) ScAQI_prev, \
+  max(avg.retrieveddate) retrieveddate, \
+  max(wijk.aant_inw) aant_inw_wijk, \
+  max(buurt.aant_inw) aant_inw_buurt \
+from  grid_gem_cell cell \
+, grid_gem_cell_avg avg \
+, grid_gem_cell_avg avg_prev \
+, cbswijk2012 wijk \
+, cbsbuurt2012 buurt \
+where 1=1 \
+and cell.gid = avg.grid_gem_cell_gid \
+and cell.gid = avg_prev.grid_gem_cell_gid \
+and avg.retrieveddate >= current_timestamp - interval '10 minutes'  \
+and avg_prev.retrieveddate >= current_timestamp - interval '20 minutes' \
+and avg_prev.retrieveddate < current_timestamp - interval '10 minutes' \
+and avg.avg_type = 'SPMI' \
+and avg_prev.avg_type = 'SPMI' \
+and wijk.gm_code  = 'GM0772' \
+and wijk.wk_code  = cell.wk_code \
+and buurt.gm_code = wijk.gm_code \
+and buurt.bu_code = cell.bu_code \
+group by wijk.gm_naam, buurt.bu_naam \
+order by wijk.gm_naam, buurt.bu_naam ";
+
+/*
 		sql = "select gm_naam, max(wijk.gm_code) gm_code, max(wijk.wk_naam) wk_naam, \
   max(avg.avg_avg) ScAQI, \
   max(avg_prev.avg_avg) ScAQI_prev, \
@@ -104,6 +130,12 @@ and wijk.gm_code='GM0772' \
 and wijk.wk_code = cell.wk_code \
 group by wijk.gm_naam, wijk.wk_code \
 order by wijk.gm_naam, wijk.wk_code ";
+
+*/
+
+
+
+
 
 
 
@@ -138,6 +170,17 @@ order by aireas.airbox
 		var i,j;
 		var signal;	
 		var _outRecords;
+		
+		//var socket = require('socket.io-client')('https://openiod.org',{path: '/SCAPE604/socket.io'});
+		var socket = require('socket.io-client')('http://149.210.208.157:3010',{path: '/SCAPE604/socket.io'});
+		// emit web-socket for notification to apps
+		socket.on('connect', function () {
+			console.log('connected ');
+		});	
+		socket.on( 'info', function (data) {
+			console.log('info '+data.nrOfConnections);
+		});
+
 	
 		var _result = result.rows; //JSON.parse(result);
 
@@ -170,12 +213,18 @@ order by aireas.airbox
 					if (signalResult.direction == 'down') {
 						outRecord.message = " Index voor luchtkwaliteit is gedaald onder grenswaarde " + signalResult.signalValue;					
 					}
-					outRecord.gm_code 		= _record.gm_code;
-					outRecord.gm_naam 		= _record.gm_naam; 
-					outRecord.wk_naam 		= _record.wk_naam; 
-					outRecord.aant_inw		= parseInt(_record.aant_inw);
-					outRecord.scaqi 		= _scaqi;
-					outRecord.scaqi_prev 	= _scaqi_prev;
+					outRecord.gm_code 			= _record.gm_code;
+					outRecord.gm_naam 			= _record.gm_naam; 
+					outRecord.wk_naam 			= _record.wk_naam; 
+					outRecord.wk_code 			= _record.wk_code; 
+					outRecord.bu_naam 			= _record.bu_naam; 
+					outRecord.bu_code 			= _record.bu_code; 
+					outRecord.aant_inw_wijk		= parseInt(_record.aant_inw_wijk);
+					outRecord.aant_inw_buurt	= parseInt(_record.aant_inw_buurt);
+					outRecord.scaqi 			= _scaqi;
+					outRecord.scaqi_prev 		= _scaqi_prev;
+					outRecord.signalDateTime	= _outRecords.signalDateTime;
+					outRecord.signalDateTimeStr	= _outRecords.signalDateTimeStr;
 					if (outRecord.message) _outRecords.push(outRecord);
 					
 					socket.emit('aireassignal', {'signal': outRecord});
@@ -191,13 +240,6 @@ order by aireas.airbox
 		}
 		
 		
-		// emit web-socket for notification to apps
-		socket.on('connect', function () {
-			console.log('connected ');
-		});	
-		socket.on( 'info', function (data) {
-			console.log('info '+data.nrOfConnections);
-		});
 		for (i =0;i< apps.length;i++) {
 			var app = apps[i];
 			
@@ -220,7 +262,11 @@ order by aireas.airbox
 				outRecord.gm_code 			= _record.gm_code;
 				outRecord.gm_naam 			= _record.gm_naam; 
 				outRecord.wk_naam 			= _record.wk_naam; 
-				outRecord.aant_inw			= parseInt(_record.aant_inw);
+				outRecord.wk_code 			= _record.wk_code; 
+				outRecord.bu_naam 			= _record.bu_naam; 
+				outRecord.bu_code 			= _record.bu_code; 
+				outRecord.aant_inw_wijk		= parseInt(_record.aant_inw_wijk);
+				outRecord.aant_inw_buurt	= parseInt(_record.aant_inw_buurt);
 				outRecord.scaqi 			= _scaqi;
 				outRecord.scaqi_prev 		= _scaqi_prev;
 				outRecord.signalDateTime	= _outRecords.signalDateTime;
