@@ -80,6 +80,10 @@ module.exports = {
 				continue;
 			}
 			
+			if (_waardeDataRecord.state != 'H' ) {
+				console.log('Airbox state not equal "H" (skipped) for airbox '+_waardeDataRecord._id+ ' ' + _waardeDataRecord.state);
+				continue;
+			}  
 
 			// skip if measureddate < latest date - 15 minutes
 			tmpLatestMeasureDate 	= new Date(_waardeDataRecord.last_measurement.calibrated.when.$date);
