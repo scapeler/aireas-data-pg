@@ -66,7 +66,7 @@ module.exports = {
 		]
 
 		apps = [
-			{app: 'humansensor', messageType: 'aireassignal', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 15, 20, 25, 30] } ], signalDiffGt: 1 }
+			{app: 'humansensor', messageType: 'aireassignal', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [30, 75, 150] } ], signalDiffGt: 3 }
 		]
 
 		templateWijkSource	= "<h1>Informatie over daling of stijging meetwaarde luchtkwaliteit</h1><p>Datum: {{data.signalDateTimeStr}}</p> \
