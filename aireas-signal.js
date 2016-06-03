@@ -62,7 +62,8 @@ module.exports = {
 		sendMail 			= this.sendMail;
 
 		emails = [
-			{emailAddress: 'awiel@scapeler.com', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 15, 20, 25, 30] } ] }
+			{emailAddress: 'awiel@scapeler.com', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 20, 30] } ] },
+			{emailAddress: 'john@schmeitz-advies.nl', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 20, 30] } ] }
 		]
 
 		apps = [
