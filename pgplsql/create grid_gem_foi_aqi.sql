@@ -15,7 +15,7 @@ create table public.grid_gem_foi_aqi (
   avg_aqi_type varchar(60) NOT NULL,
   avg_type varchar(60) NOT NULL,
   avg_period varchar(24) NOT NULL,  -- 30min, 1hr, 8hr, 12hr, 24hr
-  avg_avg numeric NOT NULL,
+  avg_avg numeric,
   avg_aqi numeric NOT NULL,
   creation_date timestamp with time zone,
   CONSTRAINT grid_gem_foi_aqi_pkey PRIMARY KEY (gid)
