@@ -192,6 +192,30 @@ BEGIN
 	END IF;	
 
 
+    --
+	-- area AQI = max AQI per sensortype per area
+	--
+	IF (aqi_max_area > 0) THEN
+		EXECUTE 'INSERT INTO grid_gem_foi_aqi (grid_code, feature_of_interest, retrieveddate, avg_type, avg_period,
+			avg_aqi, avg_aqi_type, creation_date)  
+			SELECT $1, $2, $3, avg_type, $4, max(avg_aqi), $5, $6  
+			FROM  public.grid_gem_foi_aqi aqi 
+			, (select grid_code, avg_period, max(retrieveddate) retrieveddate from public.grid_gem_foi_aqi where date_part(''minute'', retrieveddate) = 1 group by grid_code, avg_period) actual  
+			where 1=1  
+			and avg_type <> ''overall''  
+			and date_part(''minute'', aqi.retrieveddate) = 1  
+			and aqi.avg_period = $4 
+			and actual.grid_code = aqi.grid_code  
+			and actual.avg_period = aqi.avg_period
+			and aqi.grid_code = $1 
+			and aqi.retrieveddate = $3 
+			group by avg_type, aqi.retrieveddate  
+			order by avg_type, aqi.retrieveddate '
+		USING grid.grid_code, 'overall', retrieveddate_selection, avg_period_param,
+			air.avg_aqi_type, current_timestamp;
+	END IF;	
+
+
 
 	
 	END IF;
