@@ -196,7 +196,7 @@ BEGIN
 --	air.avg_aqi := floor( ( (ae - ab) / (e-b) ) * (air.avg_avg - b) + ab);
 
 	air.avg_aqi := floor( ( (aqi_level.i_high - 0.001 - aqi_level.i_low) / (aqi_level.c_high - 0.001 - aqi_level.c_low) ) * (air.avg_avg - aqi_level.c_low) + aqi_level.i_low);
-9
+
 
 --	RAISE unique_violation USING MESSAGE = 'air record: '  || ' ' || air.avg_type || air.avg_avg;  --for debug purpose
 
