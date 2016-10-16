@@ -1,8 +1,8 @@
--- USE/TEST: select get_aireas_aqi_area('GM0772', 'EHV20141104:1'); 
+-- USE/TEST: select get_aireas_aqi_area('GM0772', 'EHV20141104:1', 'AiREAS_NL'); 
 -- select * from grid_gem_aqi order by  feature_of_interest, retrieveddate;
 -- delete from grid_gem_aqi; 
--- DROP FUNCTION get_aireas_aqi_area(CHARACTER VARYING(6), CHARACTER VARYING(15))
-CREATE OR REPLACE FUNCTION public.get_aireas_aqi_area( gm_code CHARACTER VARYING(6), grid_code CHARACTER VARYING(15))
+-- DROP FUNCTION get_aireas_aqi_area(CHARACTER VARYING(6), CHARACTER VARYING(15), aqi_type varchar(24))
+CREATE OR REPLACE FUNCTION public.get_aireas_aqi_area( gm_code CHARACTER VARYING(6), grid_code CHARACTER VARYING(15), aqi_type varchar(24))
   RETURNS  void AS
 $BODY$
 DECLARE
@@ -15,8 +15,11 @@ DECLARE
   
   aqi_max_airbox numeric;
   aqi_max_area numeric;
+  aqi_type varchar(24);
   
 BEGIN
+	aqi_type := $3;
+	
 	EXECUTE 'SELECT * FROM grid_gem WHERE gm_code = $1 AND grid_code = $2'
 		USING $1, $2
 		INTO grid;
@@ -26,8 +29,9 @@ BEGIN
 		from grid_gem_foi_aqi aqi
 		WHERE 1=1
 		AND aqi.grid_code = $1
-		AND aqi.retrieveddate = $2' 
-		USING grid.grid_code, retrieveddate_selection
+		AND aqi.retrieveddate = $2
+		AND aqi.avg_aqi_type = $3 ' 
+		USING grid.grid_code, retrieveddate_selection, aqi_type
 		INTO retrieveddate_already_calculated;
 --RAISE unique_violation USING MESSAGE = 'retrieveddate: '  || ' ' || retrieveddate_selection; --for debug purpose
 	IF (retrieveddate_already_calculated is null) THEN
@@ -47,8 +51,8 @@ BEGIN
 	   
 		-- Calculate per airbox the AQI for PM1, PM25, PM10, OZON, UFP, NO2
  		avg_period_param := '1hr';
-		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg ,avg_aqi,avg_aqi_type from get_aireas_aqi($1,$2,$3,$4) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric, avg_aqi numeric, avg_aqi_type varchar(60))'
-			USING 'PM1',retrieveddate_selection, grid_gem_foi.feature_of_interest, avg_period_param
+		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg ,avg_aqi,avg_aqi_type from get_aireas_aqi($1,$2,$3,$4,$5) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric, avg_aqi numeric, avg_aqi_type varchar(60))'
+			USING 'PM1',retrieveddate_selection, grid_gem_foi.feature_of_interest, avg_period_param, aqi_type
 			INTO air;
 		IF (air.retrieveddate = retrieveddate_selection AND air.avg_aqi > 0) THEN
 			EXECUTE 'INSERT INTO grid_gem_foi_aqi (grid_code, feature_of_interest, retrieveddate, avg_type, avg_period,
@@ -65,8 +69,8 @@ BEGIN
 
 		-- Calculate per airbox the AQI for PM1, PM25, PM10, OZON, UFP, NO2
  		avg_period_param := '1hr';
-		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg ,avg_aqi,avg_aqi_type from get_aireas_aqi($1,$2,$3,$4) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric, avg_aqi numeric, avg_aqi_type varchar(60))'
-			USING 'PM25',retrieveddate_selection, grid_gem_foi.feature_of_interest, avg_period_param
+		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg ,avg_aqi,avg_aqi_type from get_aireas_aqi($1,$2,$3,$4,$5) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric, avg_aqi numeric, avg_aqi_type varchar(60))'
+			USING 'PM25',retrieveddate_selection, grid_gem_foi.feature_of_interest, avg_period_param, aqi_type
 			INTO air;
 		IF (air.retrieveddate = retrieveddate_selection AND air.avg_aqi > 0) THEN
 			EXECUTE 'INSERT INTO grid_gem_foi_aqi (grid_code, feature_of_interest, retrieveddate, avg_type, avg_period,
@@ -83,8 +87,8 @@ BEGIN
 
 		-- Calculate per airbox the AQI for PM1, PM25, PM10, OZON, UFP, NO2
  		avg_period_param := '1hr';
-		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg ,avg_aqi,avg_aqi_type from get_aireas_aqi($1,$2,$3,$4) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric, avg_aqi numeric, avg_aqi_type varchar(60))'
-			USING 'PM10',retrieveddate_selection, grid_gem_foi.feature_of_interest, avg_period_param
+		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg ,avg_aqi,avg_aqi_type from get_aireas_aqi($1,$2,$3,$4,$5) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric, avg_aqi numeric, avg_aqi_type varchar(60))'
+			USING 'PM10',retrieveddate_selection, grid_gem_foi.feature_of_interest, avg_period_param, aqi_type
 			INTO air;
 		IF (air.retrieveddate = retrieveddate_selection AND air.avg_aqi > 0) THEN
 			EXECUTE 'INSERT INTO grid_gem_foi_aqi (grid_code, feature_of_interest, retrieveddate, avg_type, avg_period,
@@ -101,8 +105,8 @@ BEGIN
 
 		-- Calculate per airbox the AQI for PM1, PM25, PM10, OZON, UFP, NO2
  		avg_period_param := '1hr';
-		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg ,avg_aqi,avg_aqi_type from get_aireas_aqi($1,$2,$3,$4) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric, avg_aqi numeric, avg_aqi_type varchar(60))'
-			USING 'OZON',retrieveddate_selection, grid_gem_foi.feature_of_interest, avg_period_param
+		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg ,avg_aqi,avg_aqi_type from get_aireas_aqi($1,$2,$3,$4,$5) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric, avg_aqi numeric, avg_aqi_type varchar(60))'
+			USING 'OZON',retrieveddate_selection, grid_gem_foi.feature_of_interest, avg_period_param, aqi_type
 			INTO air;
 		IF (air.retrieveddate = retrieveddate_selection AND air.avg_aqi > 0) THEN
 			EXECUTE 'INSERT INTO grid_gem_foi_aqi (grid_code, feature_of_interest, retrieveddate, avg_type, avg_period,
@@ -119,8 +123,8 @@ BEGIN
 
 		-- Calculate per airbox the AQI for PM1, PM25, PM10, OZON, UFP, NO2
  		avg_period_param := '1hr';
-		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg ,avg_aqi,avg_aqi_type from get_aireas_aqi($1,$2,$3,$4) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric, avg_aqi numeric, avg_aqi_type varchar(60))'
-			USING 'UFP',retrieveddate_selection, grid_gem_foi.feature_of_interest, avg_period_param
+		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg ,avg_aqi,avg_aqi_type from get_aireas_aqi($1,$2,$3,$4,$5) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric, avg_aqi numeric, avg_aqi_type varchar(60))'
+			USING 'UFP',retrieveddate_selection, grid_gem_foi.feature_of_interest, avg_period_param, aqi_type
 			INTO air;
 		IF (air.retrieveddate = retrieveddate_selection AND air.avg_aqi > 0) THEN
 			EXECUTE 'INSERT INTO grid_gem_foi_aqi (grid_code, feature_of_interest, retrieveddate, avg_type, avg_period,
@@ -137,8 +141,8 @@ BEGIN
 
 		-- Calculate per airbox the AQI for PM1, PM25, PM10, OZON, UFP, NO2
  		avg_period_param := '1hr';
-		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg ,avg_aqi,avg_aqi_type from get_aireas_aqi($1,$2,$3,$4) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric, avg_aqi numeric, avg_aqi_type varchar(60))'
-			USING 'NO2',retrieveddate_selection, grid_gem_foi.feature_of_interest, avg_period_param
+		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg ,avg_aqi,avg_aqi_type from get_aireas_aqi($1,$2,$3,$4,$5) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric, avg_aqi numeric, avg_aqi_type varchar(60))'
+			USING 'NO2',retrieveddate_selection, grid_gem_foi.feature_of_interest, avg_period_param, aqi_type
 			INTO air;
 		IF (air.retrieveddate = retrieveddate_selection AND air.avg_aqi > 0) THEN
 			EXECUTE 'INSERT INTO grid_gem_foi_aqi (grid_code, feature_of_interest, retrieveddate, avg_type, avg_period,
@@ -200,13 +204,13 @@ BEGIN
 			avg_aqi, avg_aqi_type, creation_date)  
 			SELECT $1, $2, $3, avg_type, $4, max(avg_aqi), $5, $6  
 			FROM  public.grid_gem_foi_aqi aqi 
-			, (select grid_code, avg_period, max(retrieveddate) retrieveddate from public.grid_gem_foi_aqi where date_part(''minute'', retrieveddate) = 1 group by grid_code, avg_period) actual  
+			--, (select grid_code, avg_period, max(retrieveddate) retrieveddate from public.grid_gem_foi_aqi where date_part(''minute'', retrieveddate) = 1 group by grid_code, avg_period) actual  
 			where 1=1  
 			and avg_type <> ''overall''  
-			and date_part(''minute'', aqi.retrieveddate) = 1  
+			--and date_part(''minute'', aqi.retrieveddate) = 1  
 			and aqi.avg_period = $4 
-			and actual.grid_code = aqi.grid_code  
-			and actual.avg_period = aqi.avg_period
+			--and actual.grid_code = aqi.grid_code  
+			--and actual.avg_period = aqi.avg_period
 			and aqi.grid_code = $1 
 			and aqi.retrieveddate = $3 
 			group by avg_type, aqi.retrieveddate  
@@ -225,6 +229,6 @@ END;
 $BODY$
   LANGUAGE plpgsql VOLATILE
    ;
-ALTER FUNCTION public.get_aireas_aqi_area(gm_code CHARACTER VARYING(6), grid_code CHARACTER VARYING(15))
+ALTER FUNCTION public.get_aireas_aqi_area(gm_code CHARACTER VARYING(6), grid_code CHARACTER VARYING(15), aqi_type varchar(24) )
   OWNER TO postgres;
    

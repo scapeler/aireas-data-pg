@@ -1,6 +1,9 @@
--- DROP FUNCTION get_aireas_aqi(avg_type CHARACTER VARYING(60), retrieveddate TIMESTAMP WITH TIME ZONE, foi varchar(255), avg_period_param varchar(24) )
--- test: select get_aireas_aqi('OZON',timestamp '2016-10-08 18:54:03.994+02','25.cal', '1hr');
-CREATE OR REPLACE FUNCTION public.get_aireas_aqi( avg_type CHARACTER VARYING(60), retrieveddate TIMESTAMP WITH TIME ZONE, foi varchar(255), avg_period_param varchar(24) )
+-- DROP FUNCTION get_aireas_aqi(avg_type CHARACTER VARYING(60), retrieveddate TIMESTAMP WITH TIME ZONE, foi varchar(255), avg_period_param varchar(24), aqi_type varchar(24) )
+-- test: select get_aireas_aqi('OZON',timestamp '2016-10-08 18:54:03.994+02','25.cal', '1hr', 'AiREAS_NL');
+-- test: select get_aireas_aqi('OZON',timestamp '2016-10-08 18:54:03.994+02','25.cal', '1hr', 'AiREAS');
+-- test: select get_aireas_aqi('UFP',timestamp '2016-10-08 18:54:03.994+02','11.cal', '1hr', 'AiREAS');
+
+CREATE OR REPLACE FUNCTION public.get_aireas_aqi( avg_type CHARACTER VARYING(60), retrieveddate TIMESTAMP WITH TIME ZONE, foi varchar(255), avg_period_param varchar(24), aqi_type varchar(24) )
   RETURNS  record AS
 $BODY$
 DECLARE
@@ -11,7 +14,7 @@ DECLARE
   stmt varchar    :=  '';
   stmt_p1 varchar :=  'SELECT CAST($1 as varchar(60)) AS avg_type, max(retrieveddate) AS retrieveddate, ';
   stmt_p2 varchar := '';
-  stmt_p3 varchar := ', cast(null AS numeric ) avg_aqi, cast(''AiREAS'' AS varchar(60)) avg_aqi_type FROM aireas a1 
+  stmt_p3 varchar := ', cast(null AS numeric ) avg_aqi, cast($5 AS varchar(60)) avg_aqi_type FROM aireas a1 
 		WHERE 1=1 
 		 AND a1.retrieveddate <= $2 
 		 AND a1.retrieveddate >= $4 
@@ -25,10 +28,7 @@ DECLARE
 		 )';
   stmt_p4 varchar := '';
   air record;
-  b numeric;
-  e numeric;
-  ab numeric;
-  ae numeric;
+  aqi_level record;
   aqi numeric;
   
 
@@ -65,9 +65,76 @@ BEGIN
 --	RAISE unique_violation USING MESSAGE = 'param $4: '  || ' ' || avg_period; --for debug purpose
 	
 	EXECUTE stmt
-		USING $1, $2, $3, retrieveddata_start -- retrieveddata_start --avg_period
+		USING $1, $2, $3, retrieveddata_start, $5 
 		INTO air;
 
+	EXECUTE 'SELECT c_low, c_high, i_low, i_high FROM aireas_aqi_level WHERE aqi_type = $1 AND sensor_type = $2 AND $3 >= c_low AND $3 < c_high '
+		USING $5, $1, air.avg_avg
+		INTO aqi_level;   
+
+
+/*
+	IF ($5 = 'AiREAS_NL') THEN
+
+
+	-- avg_aqi_type ='AiREAS_NL'
+	CASE $1
+		WHEN 'OZON'  THEN 
+			WITH  temp (b, e, ab, ae) AS (VALUES (0,39,10,19), (40,99,51,100), (100,179,101,150), (180,239,151,200), (240,299,201,300), (300,550,301,500) ) 
+			  SELECT * FROM temp where temp.b <= air.avg_avg and temp.e+1 > air.avg_avg INTO aqi_high_low;
+
+			b  :=  aqi_high_low.b; 
+			e  :=  aqi_high_low.e; 
+			ab :=  aqi_high_low.ab; 
+			ae :=  aqi_high_low.ae; 
+		WHEN 'PM1'  THEN 
+			WITH  temp (b, e, ab, ae) AS (VALUES (0,13,10,19), (14,33,51,100), (34,60,101,150), (61,94,151,200), (95,99,201,300), (100,130,301,500) ) 
+			  SELECT * FROM temp where temp.b <= air.avg_avg and temp.e+1 > air.avg_avg INTO aqi_high_low;
+
+			b  :=  aqi_high_low.b; 
+			e  :=  aqi_high_low.e; 
+			ab :=  aqi_high_low.ab; 
+			ae :=  aqi_high_low.ae; 
+		WHEN 'PM25'  THEN 
+			WITH  temp (b, e, ab, ae) AS (VALUES (0,19,10,19), (20,49,51,100), (50,89,101,150), (90,139,151,200), (140,169,201,300), (170,300,301,500) ) 
+			  SELECT * FROM temp where temp.b <= air.avg_avg and temp.e+1 > air.avg_avg INTO aqi_high_low;
+
+			b  :=  aqi_high_low.b; 
+			e  :=  aqi_high_low.e; 
+			ab :=  aqi_high_low.ab; 
+			ae :=  aqi_high_low.ae; 
+		WHEN 'PM10'  THEN 
+			WITH  temp (b, e, ab, ae) AS (VALUES (0,29,10,19), (30,74,51,100), (75,124,101,150), (125,199,151,200), (200,249,201,300), (250,450,301,500) ) 
+			  SELECT * FROM temp where temp.b <= air.avg_avg and temp.e+1 > air.avg_avg INTO aqi_high_low;
+
+			b  :=  aqi_high_low.b; 
+			e  :=  aqi_high_low.e; 
+			ab :=  aqi_high_low.ab; 
+			ae :=  aqi_high_low.ae; 
+		WHEN 'UFP'  THEN 
+			WITH  temp (b, e, ab, ae) AS (VALUES (0,5,10,19), (6,14,51,100), (15,24,101,150), (25,39,151,200), (40,59,201,300), (60,140,301,500) ) 
+			  SELECT * FROM temp where temp.b <= air.avg_avg and temp.e+1 > air.avg_avg INTO aqi_high_low;
+
+			b  :=  aqi_high_low.b; 
+			e  :=  aqi_high_low.e; 
+			ab :=  aqi_high_low.ab; 
+			ae :=  aqi_high_low.ae; 
+		WHEN 'NO2'  THEN 
+			WITH  temp (b, e, ab, ae) AS (VALUES (0,29,10,19), (30,74,51,100), (75,124,101,150), (125,199,151,200), (200,249,201,300), (250,450,301,500) ) 
+			  SELECT * FROM temp where temp.b <= air.avg_avg and temp.e+1 > air.avg_avg INTO aqi_high_low;
+
+			b  :=  aqi_high_low.b; 
+			e  :=  aqi_high_low.e; 
+			ab :=  aqi_high_low.ab; 
+			ae :=  aqi_high_low.ae; 
+		ELSE 	b  :=  null; 
+			e  :=  null; 
+			ab :=  null; 
+			ae :=  null; 
+	END CASE;		
+
+	ELSE
+	-- avg_aqi_type ='AiREAS'
 	CASE $1
 		WHEN 'OZON'  THEN 
 			WITH  temp (b, e, ab, ae) AS (VALUES (0,39,0,50), (40,99,51,100), (100,179,101,150), (180,239,151,200), (240,299,201,300), (300,550,301,500) ) 
@@ -123,7 +190,13 @@ BEGIN
 			ae :=  null; 
 	END CASE;		
 
-	air.avg_aqi := floor( ( (ae - ab) / (e-b) ) * (air.avg_avg - b) + ab);
+	END IF;
+*/
+
+--	air.avg_aqi := floor( ( (ae - ab) / (e-b) ) * (air.avg_avg - b) + ab);
+
+	air.avg_aqi := floor( ( (aqi_level.i_high - 1 - aqi_level.i_low) / (aqi_level.c_high - 1 - aqi_level.c_low) ) * (air.avg_avg - aqi_level.c_low) + aqi_level.i_low);
+
 
 --	RAISE unique_violation USING MESSAGE = 'air record: '  || ' ' || air.avg_type || air.avg_avg;  --for debug purpose
 
@@ -145,6 +218,6 @@ END;
 $BODY$
   LANGUAGE plpgsql VOLATILE
    ;
-ALTER FUNCTION public.get_aireas_aqi(avg_type CHARACTER VARYING(60), retrieveddate TIMESTAMP WITH TIME ZONE, foi varchar(255), avg_period_param varchar(24) )
+ALTER FUNCTION public.get_aireas_aqi(avg_type CHARACTER VARYING(60), retrieveddate TIMESTAMP WITH TIME ZONE, foi varchar(255), avg_period_param varchar(24), aqi_type varchar(24) )
   OWNER TO postgres;
    
