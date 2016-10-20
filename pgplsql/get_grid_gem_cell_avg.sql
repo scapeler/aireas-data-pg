@@ -13,7 +13,7 @@ DECLARE
 		 AND a1.retrieveddate <= $2 
 		 AND a1.retrieveddate >= current_timestamp - INTERVAL ''00:30:00'' 
 		 AND a1.airbox = cellair.airbox
-		 AND ROUND(CAST(ST_Distance(GEOGRAPHY(a1.geom), GEOGRAPHY(cellair.airbox_geom)) AS NUMERIC), 5) < 40
+		 AND ROUND(CAST(ST_Distance(GEOGRAPHY(a1.geom), GEOGRAPHY(cellair.airbox_geom)) AS NUMERIC), 5) < 150
 		 AND cellair.factor_distance >= $4 
 		 AND cellair.factor_distance <= $5 ';
   stmt_p4 varchar := '';

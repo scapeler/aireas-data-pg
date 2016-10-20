@@ -66,6 +66,7 @@ module.exports = {
   			}
   			client.query(query, function(err, result) {
    		 		if(err) {
+					client.end();
    		   			return console.error('error running query', err);
     			}
     			console.log('sql result: ' + result);

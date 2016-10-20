@@ -1,8 +1,9 @@
--- USE/TEST: select get_aireas_aqi_area('GM0772', 'EHV20141104:1', 'AiREAS_NL'); 
+-- USE/TEST1: select get_aireas_aqi_area('GM0772', 'EHV20141104:1', 'AiREAS_NL', null); 
+-- USE/TEST2: select get_aireas_aqi_area('GM0772', 'EHV20141104:1', 'AiREAS_NL', timestamp '2016-10-08 18:54:03.994+02'); 
 -- select * from grid_gem_aqi order by  feature_of_interest, retrieveddate;
 -- delete from grid_gem_aqi; 
--- DROP FUNCTION get_aireas_aqi_area(CHARACTER VARYING(6), CHARACTER VARYING(15), aqi_type varchar(24))
-CREATE OR REPLACE FUNCTION public.get_aireas_aqi_area( gm_code CHARACTER VARYING(6), grid_code CHARACTER VARYING(15), aqi_type varchar(24))
+-- DROP FUNCTION get_aireas_aqi_area(CHARACTER VARYING(6), CHARACTER VARYING(15), aqi_type varchar(24),retrieveddate TIMESTAMP WITH TIME ZONE)
+CREATE OR REPLACE FUNCTION public.get_aireas_aqi_area( gm_code CHARACTER VARYING(6), grid_code CHARACTER VARYING(15), aqi_type varchar(24), retrieveddate TIMESTAMP WITH TIME ZONE)
   RETURNS  void AS
 $BODY$
 DECLARE
@@ -23,8 +24,14 @@ BEGIN
 	EXECUTE 'SELECT * FROM grid_gem WHERE gm_code = $1 AND grid_code = $2'
 		USING $1, $2
 		INTO grid;
-	EXECUTE 'SELECT max(retrieveddate) from aireas' 
-		INTO retrieveddate_selection;
+	
+	IF ($4 is null) THEN
+		EXECUTE 'SELECT max(retrieveddate) from aireas' 
+			INTO retrieveddate_selection;
+	ELSE 		
+		retrieveddate_selection := $4;
+	END IF;	
+		
 	EXECUTE 'SELECT max(aqi.retrieveddate) 
 		from grid_gem_foi_aqi aqi
 		WHERE 1=1
@@ -33,7 +40,9 @@ BEGIN
 		AND aqi.avg_aqi_type = $3 ' 
 		USING grid.grid_code, retrieveddate_selection, aqi_type
 		INTO retrieveddate_already_calculated;
---RAISE unique_violation USING MESSAGE = 'retrieveddate: '  || ' ' || retrieveddate_selection; --for debug purpose
+		
+--RAISE unique_violation USING MESSAGE = 'retrieveddate: '  || ' ' || retrieveddate_selection || ' ' || retrieveddate_already_calculated; --for debug purpose
+
 	IF (retrieveddate_already_calculated is null) THEN
 
 	aqi_max_area   := 0;
@@ -54,6 +63,10 @@ BEGIN
 		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg ,avg_aqi,avg_aqi_type from get_aireas_aqi($1,$2,$3,$4,$5) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric, avg_aqi numeric, avg_aqi_type varchar(60))'
 			USING 'PM1',retrieveddate_selection, grid_gem_foi.feature_of_interest, avg_period_param, aqi_type
 			INTO air;
+			
+		RAISE NOTICE 'DateR(%)', air.retrieveddate;	
+		RAISE NOTICE 'DateS(%)', retrieveddate_selection;	
+		RAISE NOTICE 'AQI(%)', air.avg_aqi;	
 		IF (air.retrieveddate = retrieveddate_selection AND air.avg_aqi > 0) THEN
 			EXECUTE 'INSERT INTO grid_gem_foi_aqi (grid_code, feature_of_interest, retrieveddate, avg_type, avg_period,
 				avg_avg, avg_aqi, avg_aqi_type, creation_date) 
@@ -61,6 +74,8 @@ BEGIN
 				$1, $2, $3, $4, $5, $6, $7, $8, $9)'
 			USING grid.grid_code, grid_gem_foi.feature_of_interest, retrieveddate_selection,air.avg_type, avg_period_param,
 			 air.avg_avg, air.avg_aqi, air.avg_aqi_type, current_timestamp;
+			 
+			 
 		END IF;	
 
 		IF (air.avg_aqi > aqi_max_airbox) THEN
@@ -206,7 +221,8 @@ BEGIN
 			FROM  public.grid_gem_foi_aqi aqi 
 			--, (select grid_code, avg_period, max(retrieveddate) retrieveddate from public.grid_gem_foi_aqi where date_part(''minute'', retrieveddate) = 1 group by grid_code, avg_period) actual  
 			where 1=1  
-			and avg_type <> ''overall''  
+			and avg_type <> ''overall''
+			and avg_aqi_type = $7   
 			--and date_part(''minute'', aqi.retrieveddate) = 1  
 			and aqi.avg_period = $4 
 			--and actual.grid_code = aqi.grid_code  
@@ -216,7 +232,7 @@ BEGIN
 			group by avg_type, aqi.retrieveddate  
 			order by avg_type, aqi.retrieveddate '
 		USING grid.grid_code, 'overall', retrieveddate_selection, avg_period_param,
-			air.avg_aqi_type, current_timestamp;
+			air.avg_aqi_type, current_timestamp, aqi_type;
 	END IF;	
 
 
@@ -229,6 +245,6 @@ END;
 $BODY$
   LANGUAGE plpgsql VOLATILE
    ;
-ALTER FUNCTION public.get_aireas_aqi_area(gm_code CHARACTER VARYING(6), grid_code CHARACTER VARYING(15), aqi_type varchar(24) )
+ALTER FUNCTION public.get_aireas_aqi_area(gm_code CHARACTER VARYING(6), grid_code CHARACTER VARYING(15), aqi_type varchar(24), retrieveddate TIMESTAMP WITH TIME ZONE )
   OWNER TO postgres;
    

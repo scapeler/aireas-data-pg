@@ -62,6 +62,7 @@ module.exports = {
 		var client = new pg.Client(sqlConnString);
 		client.connect(function(err) {
   			if(err) {
+				client.end();
   	 	 		return console.error('could not connect to postgres', err);
   			}
   			client.query(query, function(err, result) {
