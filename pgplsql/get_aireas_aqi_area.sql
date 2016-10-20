@@ -64,9 +64,9 @@ BEGIN
 			USING 'PM1',retrieveddate_selection, grid_gem_foi.feature_of_interest, avg_period_param, aqi_type
 			INTO air;
 			
-		RAISE NOTICE 'DateR(%)', air.retrieveddate;	
-		RAISE NOTICE 'DateS(%)', retrieveddate_selection;	
-		RAISE NOTICE 'AQI(%)', air.avg_aqi;	
+		--RAISE NOTICE 'DateR(%)', air.retrieveddate;	
+		--RAISE NOTICE 'DateS(%)', retrieveddate_selection;	
+		--RAISE NOTICE 'AQI(%)', air.avg_aqi;	
 		IF (air.retrieveddate = retrieveddate_selection AND air.avg_aqi > 0) THEN
 			EXECUTE 'INSERT INTO grid_gem_foi_aqi (grid_code, feature_of_interest, retrieveddate, avg_type, avg_period,
 				avg_avg, avg_aqi, avg_aqi_type, creation_date) 
