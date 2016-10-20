@@ -45,7 +45,7 @@ module.exports = {
 
 	calculateAireasAqi: function() {
 		var _sql;
-		_sql = "select get_aireas_aqi_area('GM0772', 'EHV20141104:1', 'AiREAS_NL');";
+		_sql = "select get_aireas_aqi_area('GM0772', 'EHV20141104:1', 'AiREAS_NL',null);";
 		this.executeSql(_sql, this.sqlCallBack);
 	},
 
