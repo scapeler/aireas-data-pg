@@ -72,6 +72,17 @@ insert into aireas_aqi_level (aqi_type, sensor_type, c_low, c_high, i_low, i_hig
 insert into aireas_aqi_level (aqi_type, sensor_type, c_low, c_high, i_low, i_high)  values ('AiREAS', 'NO2', 250,450,301,500);
 
 
+insert into aireas_aqi_level (aqi_type, sensor_type, c_low, c_high, i_low, i_high)  values ('AiREAS_NL', 'overall', 0,0,10,20);
+insert into aireas_aqi_level (aqi_type, sensor_type, c_low, c_high, i_low, i_high)  values ('AiREAS_NL', 'overall', 0,0,20,30);
+insert into aireas_aqi_level (aqi_type, sensor_type, c_low, c_high, i_low, i_high)  values ('AiREAS_NL', 'overall', 0,0,30,40);
+insert into aireas_aqi_level (aqi_type, sensor_type, c_low, c_high, i_low, i_high)  values ('AiREAS_NL', 'overall', 0,0,40,50);
+insert into aireas_aqi_level (aqi_type, sensor_type, c_low, c_high, i_low, i_high)  values ('AiREAS_NL', 'overall', 0,0,50,60);
+insert into aireas_aqi_level (aqi_type, sensor_type, c_low, c_high, i_low, i_high)  values ('AiREAS_NL', 'overall', 0,0,60,70);
+insert into aireas_aqi_level (aqi_type, sensor_type, c_low, c_high, i_low, i_high)  values ('AiREAS_NL', 'overall', 0,0,70,80);
+insert into aireas_aqi_level (aqi_type, sensor_type, c_low, c_high, i_low, i_high)  values ('AiREAS_NL', 'overall', 0,0,80,90);
+insert into aireas_aqi_level (aqi_type, sensor_type, c_low, c_high, i_low, i_high)  values ('AiREAS_NL', 'overall', 0,0,90,100);
+insert into aireas_aqi_level (aqi_type, sensor_type, c_low, c_high, i_low, i_high)  values ('AiREAS_NL', 'overall', 0,0,100,110);
+insert into aireas_aqi_level (aqi_type, sensor_type, c_low, c_high, i_low, i_high)  values ('AiREAS_NL', 'overall', 0,0,110,500);
 
 insert into aireas_aqi_level (aqi_type, sensor_type, c_low, c_high, i_low, i_high)  values ('AiREAS_NL', 'OZON', 0,15,10,20);
 insert into aireas_aqi_level (aqi_type, sensor_type, c_low, c_high, i_low, i_high)  values ('AiREAS_NL', 'OZON', 15,30,20,30);

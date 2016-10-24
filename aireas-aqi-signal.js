@@ -1,5 +1,5 @@
 /*
-** Module: node-apri-aireas-signal
+** Module: aireas-aqi-signal
 **
 **
 **
@@ -62,28 +62,60 @@ module.exports = {
 		sendMail 			= this.sendMail;
 
 		emails = [
-			{emailAddress: 'awiel@scapeler.com', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 20, 30] } ] },
-			{emailAddress: 'john@schmeitz-advies.nl', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 20, 30] } ] }
+			{emailAddress: 'awiel@scapeler.com', aqiAreas: [ {area_code: 'EHV20141104:1', fois: [], signalValues: [] } ] }
+			//,{emailAddress: 'john@schmeitz-advies.nl', aqiAreas: [ {area_code: 'EHV20141104:1', fois: [], signalValues: [] } ] }
 		]
 
 		apps = [
-			{app: 'humansensor', messageType: 'aireassignal', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [30, 75, 150] } ], signalDiffGt: 3 }
+			{app: 'humansensor', messageType: 'aireasaqisignal', aqiAreas: [ {area_code: 'EHV20141104:1', fois: [], signalValues: [] } ], signalDiffGt: 3 }
 		]
 
-		templateWijkSource	= "<h1>Informatie over daling of stijging meetwaarde luchtkwaliteit</h1><p>Datum: {{data.signalDateTimeStr}}</p> \
-    {{#each data}}<h2>Signaal voor wijk '{{wk_naam}}'</h2><p>{{message}}</p> \
-	Gemeente: {{gm_naam}} ({{gm_code}})<BR/> \
-	Wijk: {{wk_naam}}<BR/> \
-	Inwoners wijk: {{aant_inw_wijk}}<BR/> \
-	Buurt: {{bu_naam}}<BR/> \
-	Inwoners buurt: {{aant_inw_buurt}}<BR/> \
-	Vorige waarde: {{scaqi_prev}}<BR/> \
-	Actuele waarde: <B>{{scaqi}}</B><BR/> \
+		templateWijkSource	= "<h1>AiREAS AQI update</h1><p>Datum: {{data.signalDateTimeStr}}</p> \
+    {{#each data}}<h2>AiREAS AQI Signal for area '{{gm_naam}}, airbox: {{feature_of_interest}}'</h2><p>{{message}}</p> \
+	Area: {{gm_naam}} ({{grid_code}})<BR/> \
+	Sensor: {{avg_type}}<BR/> \
+	Previous AQI: {{avg_aqi_prev}}<BR/> \
 	{{/each}}</div><BR/>";
 	
 		templateWijk		= handlebarsx.compile(templateWijkSource);				
 
-		sql = "select max(wijk.gm_naam) gm_naam, max(wijk.gm_code) gm_code, max(wijk.wk_naam) wk_naam, max(buurt.bu_code) bu_code, max(buurt.bu_naam) bu_naam, \
+		sql = " SELECT act.grid_code, gg.grid_desc, gg.gm_naam, act.feature_of_interest, act.avg_aqi_type, act.avg_type, act.avg_aqi, prev.avg_aqi avg_aqi_prev, act.retrieveddate, prev.retrieveddate retrieveddate_prev \
+FROM public.grid_gem_foi_aqi act \
+, public.grid_gem_foi_aqi prev \
+, public.aireas_aqi_level actlvl \
+, public.aireas_aqi_level prevlvl \
+, public.grid_gem gg \
+, (select max(retrieveddate) retrieveddate from public.grid_gem_foi_aqi) max  \
+WHERE 1=1 \
+AND act.avg_aqi_type = 'AiREAS_NL' \
+AND act.avg_period = '1hr' \
+AND act.avg_type = 'overall' \
+AND gg.grid_code = act.grid_code \
+AND act.retrieveddate = max.retrieveddate \
+AND act.retrieveddate >= current_timestamp - interval '65 minutes' \
+AND date_part('minute', act.retrieveddate) = 1 \
+AND prev.retrieveddate >= current_timestamp - interval '125 minutes'  \
+AND prev.retrieveddate < current_timestamp - interval '65 minutes'  \
+AND date_part('minute', prev.retrieveddate) = 1 \
+AND act.grid_code = prev.grid_code \
+AND act.feature_of_interest = prev.feature_of_interest \
+AND act.avg_aqi_type = prev.avg_aqi_type \
+AND act.avg_type = prev.avg_type \
+AND act.avg_aqi > prev.avg_aqi \
+AND actlvl.aqi_type = act.avg_aqi_type \
+AND actlvl.sensor_type = act.avg_type \
+AND act.avg_aqi >= actlvl.i_low \
+AND act.avg_aqi < actlvl.i_high \
+AND prev.avg_aqi >= prevlvl.i_low \
+AND prev.avg_aqi < prevlvl.i_high \
+AND actlvl.i_low <> prevlvl.i_low \
+AND actlvl.aqi_type = prevlvl.aqi_type \
+AND actlvl.sensor_type = prevlvl.sensor_type ";
+
+/*
+		
+		
+		"select max(wijk.gm_naam) gm_naam, max(wijk.gm_code) gm_code, max(wijk.wk_naam) wk_naam, max(buurt.bu_code) bu_code, max(buurt.bu_naam) bu_naam, \
   max(avg.avg_avg) ScAQI, \
   max(avg_prev.avg_avg) ScAQI_prev, \
   max(avg.retrieveddate) retrieveddate, \
@@ -108,6 +140,7 @@ and buurt.gm_code = wijk.gm_code \
 and buurt.bu_code = cell.bu_code \
 group by wijk.gm_naam, buurt.bu_naam \
 order by wijk.gm_naam, buurt.bu_naam ";
+*/
 
 /*
 		sql = "select gm_naam, max(wijk.gm_code) gm_code, max(wijk.wk_naam) wk_naam, \
@@ -172,6 +205,61 @@ order by aireas.airbox
 		var signal;	
 		var _outRecords;
 		
+	
+		var _result = result.rows; //JSON.parse(result);
+		
+		// mailing notifications / signals
+		for (i =0;i< emails.length;i++) {
+			var email = emails[i];
+			console.log('AQI Signal function started for emailaddress: ' + email.emailAddress);
+			var aqiArea = email.aqiAreas[0];
+		
+			var _outRecords = [];
+			_outRecords.signalDateTime = new Date();
+			_outRecords.signalDateTimeStr = moment(_outRecords.signalDateTime).format("DD-MM-YYYY, HH:mm");
+				
+			for (j=0;j<_result.length;j++) {
+				var _record 		= _result[j];
+				var _avg_aqi 		= parseFloat(_record.avg_aqi);
+				var _avg_aqi_prev	= parseFloat(_record.avg_aqi_prev);
+				console.log('process record ' + (j+1) + ' ' + _avg_aqi_prev + ' -> ' + _avg_aqi + ' for ' + _record.gm_naam);
+			
+				var outRecord = {};
+				
+//				var signalResult = checkSignalValues(aqiArea.signalValues, _avg_aqi_prev, _avg_aqi);
+					
+//				if (signalResult.signalValue) { 
+//					if (signalResult.direction == 'up') {
+//						outRecord.message = " AQI increase to " + signalResult.signalValue;	
+//					}
+//					if (signalResult.direction == 'down') {
+//						outRecord.message = " AQI decrease to " + signalResult.signalValue;					
+//					}
+					outRecord.grid_code 			= _record.grid_code;
+					outRecord.grid_desc 			= _record.grid_desc;
+					outRecord.gm_naam 				= _record.gm_naam; 
+					outRecord.feature_of_interest	= _record.feature_of_interest; 
+					outRecord.avg_aqi_type			= _record.avg_aqi_type; 
+					outRecord.avg_type 				= _record.avg_type; 
+					outRecord.avg_aqi 				= _avg_aqi;
+					outRecord.avg_aqi_prev 			= _avg_aqi_prev;
+					outRecord.aqi_datetime			= _outRecords.signalDateTime;
+					outRecord.signalDateTimeStr		= _outRecords.signalDateTimeStr;
+	
+					outRecord.message = "AQI " + outRecord.avg_aqi_type + ": " + _avg_aqi;
+
+					if (outRecord.message) _outRecords.push(outRecord);
+									
+//				}
+
+			}
+
+			
+			if (_outRecords.length>0) {
+				sendMail(email.emailAddress, 'AiREAS AQI Signal from system: ' + options.systemCode , _outRecords );
+			}
+		}
+		
 		//var socket = require('socket.io-client')('https://openiod.org',{path: '/SCAPE604/socket.io'});
 		var socket = require('socket.io-client')('http://149.210.208.157:3010',{path: '/SCAPE604/socket.io'});
 		// emit web-socket for notification to apps
@@ -182,70 +270,12 @@ order by aireas.airbox
 			console.log('info '+data.nrOfConnections);
 		});
 
-	
-		var _result = result.rows; //JSON.parse(result);
-
-		// mailing notifications / signals
-		for (i =0;i< emails.length;i++) {
-			var email = emails[i];
-			console.log('Signal function started for emailaddress: ' + email.emailAddress);
-			var municipal = email.municipals[0];
-		
-			var _outRecords = [];
-			_outRecords.signalDateTime = new Date();
-			_outRecords.signalDateTimeStr = moment(_outRecords.signalDateTime).format("DD-MM-YYYY, HH:mm");
-				
-			for (j=0;j<_result.length;j++) {
-				var _record 	= _result[j];
-				var _scaqi 		= parseFloat(_record.scaqi);
-				var _scaqi_prev = parseFloat(_record.scaqi_prev);
-				console.log('process record ' + (j+1) + ' ' + _scaqi_prev + ' -> ' + _scaqi + ' for ' + _record.wk_naam);
-			
-				if (_scaqi == _scaqi_prev) continue;
-							
-				var outRecord = {};
-				
-				var signalResult = checkSignalValues(municipal.signalValues, _scaqi_prev, _scaqi);
-					
-				if (signalResult.signalValue) { 
-					if (signalResult.direction == 'up') {
-						outRecord.message = " Index voor luchtkwaliteit is gestegen boven grenswaarde " + signalResult.signalValue;	
-					}
-					if (signalResult.direction == 'down') {
-						outRecord.message = " Index voor luchtkwaliteit is gedaald onder grenswaarde " + signalResult.signalValue;					
-					}
-					outRecord.gm_code 			= _record.gm_code;
-					outRecord.gm_naam 			= _record.gm_naam; 
-					outRecord.wk_naam 			= _record.wk_naam; 
-					outRecord.wk_code 			= _record.wk_code; 
-					outRecord.bu_naam 			= _record.bu_naam; 
-					outRecord.bu_code 			= _record.bu_code; 
-					outRecord.aant_inw_wijk		= parseInt(_record.aant_inw_wijk);
-					outRecord.aant_inw_buurt	= parseInt(_record.aant_inw_buurt);
-					outRecord.scaqi 			= _scaqi;
-					outRecord.scaqi_prev 		= _scaqi_prev;
-					outRecord.signalDateTime	= _outRecords.signalDateTime;
-					outRecord.signalDateTimeStr	= _outRecords.signalDateTimeStr;
-					if (outRecord.message) _outRecords.push(outRecord);
-					
-					//socket.emit('aireassignal', {'signal': outRecord});
-					
-				}
-
-			}
-
-			
-			if (_outRecords.length>0) {
-				sendMail(email.emailAddress, 'AiREAS Signaal from system: ' + options.systemCode , _outRecords );
-			}
-		}
-		
 		
 		for (i =0;i< apps.length;i++) {
 			var app = apps[i];
 			
-			console.log('Signal function started for app: ' + app.app);
-			var municipal = app.municipals[0];
+			console.log('AQI Signal function started for app: ' + app.app);
+			var aqiArea = app.aqiAreas[0];
 			
 			var _outRecords = [];
 			_outRecords.signalDateTime = new Date();
@@ -253,39 +283,39 @@ order by aireas.airbox
 					
 			for (j=0;j<_result.length;j++) {
 				var _record 	= _result[j];
-				var _scaqi 		= parseFloat(_record.scaqi);
-				var _scaqi_prev = parseFloat(_record.scaqi_prev);
-				console.log('process record ' + (j+1) + ' ' + _scaqi_prev + ' -> ' + _scaqi + ' for ' + _record.wk_naam);
+				var _avg_aqi 		= parseFloat(_record.avg_aqi);
+				var _avg_aqi_prev	= parseFloat(_record.avg_aqi_prev);
+				console.log('process record ' + (j+1) + ' ' + _avg_aqi_prev + ' -> ' + _avg_aqi + ' for ' + _record.gm_naam);
 				
-				if (_scaqi == _scaqi_prev) continue;
-								
 				var outRecord = {};
-				outRecord.gm_code 			= _record.gm_code;
-				outRecord.gm_naam 			= _record.gm_naam; 
-				outRecord.wk_naam 			= _record.wk_naam; 
-				outRecord.wk_code 			= _record.wk_code; 
-				outRecord.bu_naam 			= _record.bu_naam; 
-				outRecord.bu_code 			= _record.bu_code; 
-				outRecord.aant_inw_wijk		= parseInt(_record.aant_inw_wijk);
-				outRecord.aant_inw_buurt	= parseInt(_record.aant_inw_buurt);
-				outRecord.scaqi 			= _scaqi;
-				outRecord.scaqi_prev 		= _scaqi_prev;
-				outRecord.signalDateTime	= _outRecords.signalDateTime;
-				outRecord.signalDateTimeStr	= _outRecords.signalDateTimeStr;
+				outRecord.grid_code 			= _record.grid_code;
+				outRecord.grid_desc 			= _record.grid_desc;
+				outRecord.gm_naam 				= _record.gm_naam; 
+				outRecord.feature_of_interest	= _record.feature_of_interest; 
+				outRecord.avg_aqi_type			= _record.avg_aqi_type; 
+				outRecord.avg_type 				= _record.avg_type; 
+				outRecord.avg_aqi 				= _avg_aqi;
+				outRecord.avg_aqi_prev 			= _avg_aqi_prev;
+				outRecord.aqi_datetime			= _outRecords.signalDateTime;
+				outRecord.signalDateTimeStr		= _outRecords.signalDateTimeStr;
 					
-				var signalResult = checkSignalValues(municipal.signalValues, _scaqi_prev, _scaqi);
+//				var signalResult = checkSignalValues(aqiArea.signalValues, _avg_aqi_prev, _avg_aqi);
 						
-				if (signalResult.signalValue) { 
-					if (signalResult.direction == 'up') {
-						outRecord.message = "Index voor luchtkwaliteit is gestegen boven grenswaarde " + signalResult.signalValue+ "";	
-					}
-					if (signalResult.direction == 'down') {
-						outRecord.message = "Index voor luchtkwaliteit is gedaald onder grenswaarde " + signalResult.signalValue+ "";					
-					}
-					socket.emit(app.messageType, {'signal': outRecord});
-				}
+//				if (signalResult.signalValue) { 
+//					if (signalResult.direction == 'up') {
+//						outRecord.message = " AQI increase to " + signalResult.signalValue;	
+//					}
+//					if (signalResult.direction == 'down') {
+//						outRecord.message = " AQI decrease to " + signalResult.signalValue;					
+//					}
+//					socket.emit(app.messageType, {'signal': outRecord});
+//				}
+
+				outRecord.message = "AQI " + outRecord.avg_aqi_type + ": " + _avg_aqi;	
+				socket.emit(app.messageType, {'signal': outRecord});
 				
-				var _scaciDiff			= Math.round((_scaqi - _scaqi_prev)*10)/10;
+/*
+				var _scaciDiff			= Math.round((_avgAqi - _avgAqi_prev)*10)/10;
 				var _scaciDiffDirection	= _scaciDiff<0?'down':'up';
 				//console.log(_scaciDiffDirection);
 				_scaciDiff				= _scaciDiff<0?_scaciDiff*-1:_scaciDiff;
@@ -301,6 +331,7 @@ order by aireas.airbox
 					socket.emit(app.messageType, {'signal': outRecord});
 					console.log('websocket signal sent: '+ app.messageType);
 				}
+*/
 			}
 
 		}
@@ -321,6 +352,7 @@ order by aireas.airbox
 	
 	executeSql: function(query, callback) {
 		console.log('sql start: ');
+		//console.log(query);
 		var client = new pg.Client(sqlConnString);
 		client.connect(function(err) {
   			if(err) {
@@ -346,14 +378,14 @@ order by aireas.airbox
 		});
 
 		transporter.sendMail({
-    		from: 'awiel@scapeler.com',
+    		from: 'info@scapeler.com',
     		to: to_email,
     		subject: subject,
     		html: templateResultHtml
 		});
 	},
 
-	checkSignalValues: function(signalValues, scaqi_prev, scaqi) { 
+	checkSignalValues: function(signalValues, avgAqi_prev, avgAqi) { 
 		var result = {};
 		if (signalValues == null || signalValues == [] ) {
 			signalValues = [ 10 ];  //default signalValue
@@ -361,16 +393,16 @@ order by aireas.airbox
 	
 		for (var i=0; i<signalValues.length;i++) {
 			var _signalValue = signalValues[i];
-			if (scaqi_prev < _signalValue && _signalValue <= scaqi ) {   // prev  signal  act
+			if (avgAqi_prev < _signalValue && _signalValue <= avgAqi ) {   // prev  signal  act
 				result.direction = 'up';
 				result.signalValue = _signalValue;
-				console.log(' up found for signal ' + _signalValue );
+				console.log(' increase found for signal ' + _signalValue );
 				break;
 			}
-			if (scaqi < _signalValue && _signalValue <= scaqi_prev ) {   //  act   signal  prev
+			if (avgAqi < _signalValue && _signalValue <= avgAqi_prev ) {   //  act   signal  prev
 				result.direction = 'down';
 				result.signalValue = _signalValue;
-				console.log(' down found for signal ' + _signalValue );
+				console.log(' decrease found for signal ' + _signalValue );
 				break;
 			}
 		}

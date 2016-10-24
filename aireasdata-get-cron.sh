@@ -17,6 +17,7 @@ cd  $SYSTEMPATH/$SYSTEMCODE/scape-aireas
 /usr/local/bin/node index.js aireas2grid.js >>$LOGFILE
 /usr/local/bin/node index.js aireas2aqi.js >>$LOGFILE
 /usr/local/bin/node index.js aireas2aqiAiREASNL.js >>$LOGFILE
+/usr/local/bin/node index.js aireas-aqi-signal.js >>$LOGFILE
 /usr/local/bin/node index.js aireas-signal.js >>$LOGFILE
 
 echo "End   procedure on: " `date` >>$LOGFILE
