@@ -39,9 +39,13 @@ var fs 				= require('fs');
 var pg 				= require('pg');
 var nodemailer 		= require('nodemailer');
 
+var http 			= require('http');
+
 var sqlConnString;
-var transporter, emails, apps, templateWijkSource, templateWijk, sql;
-var checkSignalValues, sendMail;
+var transporter, emails, servers, apps, templateWijkSource, templateWijk, sql;
+var checkSignalValues, sendMail, sendServer;
+
+var testSession		= true;
 
 // **********************************************************************************
 
@@ -60,9 +64,15 @@ module.exports = {
 		transporter 		= nodemailer.createTransport();
 		checkSignalValues 	= this.checkSignalValues;
 		sendMail 			= this.sendMail;
+		sendServer			= this.sendServer;
 
 		emails = [
 			{emailAddress: 'awiel@scapeler.com', aqiAreas: [ {area_code: 'EHV20141104:1', fois: [], signalValues: [] } ] }
+			//,{emailAddress: 'john@schmeitz-advies.nl', aqiAreas: [ {area_code: 'EHV20141104:1', fois: [], signalValues: [] } ] }
+		]
+
+		servers = [
+			{name: 'italie', url: {protocol:'http', domain: 'italieproject.it', port: '80', path: '/'}, methode: 'POST', aqiAreas: [ {area_code: 'EHV20141104:1', fois: [], signalValues: [] } ] }
 			//,{emailAddress: 'john@schmeitz-advies.nl', aqiAreas: [ {area_code: 'EHV20141104:1', fois: [], signalValues: [] } ] }
 		]
 
@@ -79,11 +89,13 @@ module.exports = {
 	
 		templateWijk		= handlebarsx.compile(templateWijkSource);				
 
-		sql = " SELECT act.grid_code, gg.grid_desc, gg.gm_naam, act.feature_of_interest, act.avg_aqi_type, act.avg_type, act.avg_aqi, prev.avg_aqi avg_aqi_prev, act.retrieveddate, prev.retrieveddate retrieveddate_prev \
+		sql = " SELECT act.grid_code, gg.grid_desc, gg.gm_naam, act.feature_of_interest, act.avg_aqi_type, act.avg_type, act.avg_aqi, prev.avg_aqi avg_aqi_prev, act.retrieveddate, prev.retrieveddate retrieveddate_prev, actlvl.aqi_class, prevlvl.aqi_class aqi_class_prev, actmainclass.aqi_color, prevmainclass.aqi_color aqi_color_prev \
 FROM public.grid_gem_foi_aqi act \
 , public.grid_gem_foi_aqi prev \
 , public.aireas_aqi_level actlvl \
 , public.aireas_aqi_level prevlvl \
+, public.aireas_aqi_class actmainclass \
+, public.aireas_aqi_class prevmainclass \
 , public.grid_gem gg \
 , (select max(retrieveddate) retrieveddate from public.grid_gem_foi_aqi) max  \
 WHERE 1=1 \
@@ -94,9 +106,8 @@ AND gg.grid_code = act.grid_code \
 AND act.retrieveddate = max.retrieveddate \
 AND act.retrieveddate >= current_timestamp - interval '65 minutes' \
 AND date_part('minute', act.retrieveddate) = 1 \
-AND prev.retrieveddate >= current_timestamp - interval '125 minutes'  \
-AND prev.retrieveddate < current_timestamp - interval '65 minutes'  \
-AND date_part('minute', prev.retrieveddate) = 1 \
+AND prev.retrieveddate >= act.retrieveddate - interval '65 minutes'  \
+AND prev.retrieveddate < act.retrieveddate - interval '55 minutes'  \
 AND act.grid_code = prev.grid_code \
 AND act.feature_of_interest = prev.feature_of_interest \
 AND act.avg_aqi_type = prev.avg_aqi_type \
@@ -110,7 +121,14 @@ AND prev.avg_aqi >= prevlvl.i_low \
 AND prev.avg_aqi < prevlvl.i_high \
 AND actlvl.i_low <> prevlvl.i_low \
 AND actlvl.aqi_type = prevlvl.aqi_type \
-AND actlvl.sensor_type = prevlvl.sensor_type ";
+AND actlvl.sensor_type = prevlvl.sensor_type \
+AND actlvl.aqi_class = actmainclass.aqi_class \
+AND actmainclass.aqi_sub_class is null \
+AND prevlvl.aqi_class = prevmainclass.aqi_class \
+AND prevmainclass.aqi_sub_class is null \
+AND actlvl.aqi_type = actmainclass.aqi_type \
+AND prevlvl.aqi_type = prevmainclass.aqi_type \
+ ";
 
 /*
 		
@@ -222,9 +240,11 @@ order by aireas.airbox
 				var _record 		= _result[j];
 				var _avg_aqi 		= parseFloat(_record.avg_aqi);
 				var _avg_aqi_prev	= parseFloat(_record.avg_aqi_prev);
-				console.log('process record ' + (j+1) + ' ' + _avg_aqi_prev + ' -> ' + _avg_aqi + ' for ' + _record.gm_naam);
+				console.log('process record ' + (j+1) + ' ' + _avg_aqi_prev + ' -> ' + _avg_aqi + ' for ' + _record.gm_naam + ' is ' + _record.aqi_class + ' was ' + _record.aqi_class_prev );
 			
 				var outRecord = {};
+				
+				if (_record.aqi_class != _record.aqi_class_prev) {
 				
 //				var signalResult = checkSignalValues(aqiArea.signalValues, _avg_aqi_prev, _avg_aqi);
 					
@@ -243,6 +263,10 @@ order by aireas.airbox
 					outRecord.avg_type 				= _record.avg_type; 
 					outRecord.avg_aqi 				= _avg_aqi;
 					outRecord.avg_aqi_prev 			= _avg_aqi_prev;
+					outRecord.aqi_class 			= _record.aqi_class;
+					outRecord.aqi_class_prev 		= _record.aqi_class_prev;
+					outRecord.aqi_color		 		= _record.aqi_color;
+					outRecord.aqi_color_prev 		= _record.aqi_color_prev;
 					outRecord.aqi_datetime			= _outRecords.signalDateTime;
 					outRecord.signalDateTimeStr		= _outRecords.signalDateTimeStr;
 	
@@ -252,6 +276,8 @@ order by aireas.airbox
 									
 //				}
 
+				}
+
 			}
 
 			
@@ -259,6 +285,74 @@ order by aireas.airbox
 				sendMail(email.emailAddress, 'AiREAS AQI Signal from system: ' + options.systemCode , _outRecords );
 			}
 		}
+		
+
+		// push notifications / signals /alerts to server
+		for (i =0;i< servers.length;i++) {
+			var server = servers[i];
+			console.log('AQI Signal function started for server: ' + server.name);
+			var aqiArea = server.aqiAreas[0];
+		
+			var _outRecords = [];
+			_outRecords.signalDateTime = new Date();
+			_outRecords.signalDateTimeStr = moment(_outRecords.signalDateTime).format("DD-MM-YYYY, HH:mm");
+				
+			for (j=0;j<_result.length;j++) {
+				var _record 		= _result[j];
+				var _avg_aqi 		= parseFloat(_record.avg_aqi);
+				var _avg_aqi_prev	= parseFloat(_record.avg_aqi_prev);
+				console.log('process record ' + (j+1) + ' ' + _avg_aqi_prev + ' -> ' + _avg_aqi + ' for ' + _record.gm_naam + ' is ' + _record.aqi_class + ' was ' + _record.aqi_class_prev );
+			
+				var outRecord = {};
+
+				if (testSession | _record.aqi_class != _record.aqi_class_prev) {
+
+				
+//				var signalResult = checkSignalValues(aqiArea.signalValues, _avg_aqi_prev, _avg_aqi);
+					
+//				if (signalResult.signalValue) { 
+//					if (signalResult.direction == 'up') {
+//						outRecord.message = " AQI increase to " + signalResult.signalValue;	
+//					}
+//					if (signalResult.direction == 'down') {
+//						outRecord.message = " AQI decrease to " + signalResult.signalValue;					
+//					}
+					outRecord.grid_code 			= _record.grid_code;
+					outRecord.grid_desc 			= _record.grid_desc;
+					outRecord.gm_naam 				= _record.gm_naam; 
+					outRecord.feature_of_interest	= _record.feature_of_interest; 
+					outRecord.avg_aqi_type			= _record.avg_aqi_type; 
+					outRecord.avg_type 				= _record.avg_type; 
+					outRecord.avg_aqi 				= _avg_aqi;
+					outRecord.avg_aqi_prev 			= _avg_aqi_prev;
+					outRecord.aqi_class 			= _record.aqi_class;
+					outRecord.aqi_class_prev 		= _record.aqi_class_prev;
+					outRecord.aqi_color		 		= _record.aqi_color;
+					outRecord.aqi_color_prev 		= _record.aqi_color_prev;					
+					outRecord.aqi_datetime			= _outRecords.signalDateTime;
+					outRecord.signalDateTimeStr		= _outRecords.signalDateTimeStr;
+	
+					outRecord.message = "AQI " + outRecord.avg_aqi_type + ": " + _avg_aqi;
+
+					if (outRecord.message) _outRecords.push(outRecord);
+									
+//				}
+
+				}
+
+			}
+
+			
+			if (_outRecords.length>0) {
+				sendServer(server, 'AiREAS AQI Signal from system: ' + options.systemCode , _outRecords );
+			}
+		}
+
+
+
+
+
+
 		
 		//var socket = require('socket.io-client')('https://openiod.org',{path: '/SCAPE604/socket.io'});
 		var socket = require('socket.io-client')('http://149.210.208.157:3010',{path: '/SCAPE604/socket.io'});
@@ -285,9 +379,12 @@ order by aireas.airbox
 				var _record 	= _result[j];
 				var _avg_aqi 		= parseFloat(_record.avg_aqi);
 				var _avg_aqi_prev	= parseFloat(_record.avg_aqi_prev);
-				console.log('process record ' + (j+1) + ' ' + _avg_aqi_prev + ' -> ' + _avg_aqi + ' for ' + _record.gm_naam);
+				console.log('process record ' + (j+1) + ' ' + _avg_aqi_prev + ' -> ' + _avg_aqi + ' for ' + _record.gm_naam + ' is ' + _record.aqi_class + ' was ' + _record.aqi_class_prev );
 				
 				var outRecord = {};
+				
+				if (_record.aqi_class != _record.aqi_class_prev) {
+
 				outRecord.grid_code 			= _record.grid_code;
 				outRecord.grid_desc 			= _record.grid_desc;
 				outRecord.gm_naam 				= _record.gm_naam; 
@@ -296,6 +393,10 @@ order by aireas.airbox
 				outRecord.avg_type 				= _record.avg_type; 
 				outRecord.avg_aqi 				= _avg_aqi;
 				outRecord.avg_aqi_prev 			= _avg_aqi_prev;
+				outRecord.aqi_class 			= _record.aqi_class;
+				outRecord.aqi_class_prev 		= _record.aqi_class_prev;
+				outRecord.aqi_color		 		= _record.aqi_color;
+				outRecord.aqi_color_prev 		= _record.aqi_color_prev;
 				outRecord.aqi_datetime			= _outRecords.signalDateTime;
 				outRecord.signalDateTimeStr		= _outRecords.signalDateTimeStr;
 					
@@ -332,6 +433,8 @@ order by aireas.airbox
 					console.log('websocket signal sent: '+ app.messageType);
 				}
 */
+
+				}
 			}
 
 		}
@@ -384,6 +487,49 @@ order by aireas.airbox
     		html: templateResultHtml
 		});
 	},
+
+	sendServer: function(server, subject, data) {
+		console.log('Sending push message to: ' + server.name + ' Subject: ' +
+			subject + ' Date: ' + data.signalDateTimeStr );
+		//todo
+		
+		//create JSON
+		
+		var post_data = JSON.stringify({
+			data : data
+		});
+		
+		
+		var post_options = {
+			host: server.url.domain,
+			port: server.url.port,
+			path: server.url.path,
+			method: server.methode,
+			headers: {
+				'Content-Type': 'application/json',
+				'Content-Length': Buffer.byteLength(post_data)
+			}
+		};
+		//POST message
+		// Set up the request
+		var post_req = http.request(post_options, function(res) {
+			res.setEncoding('utf8');
+			res.on('data', function (chunk) {
+				console.log('Response: ' + chunk);
+			});
+		});
+
+		post_req.on('error', function (err) {
+			console.log('ERROR: ' + err);
+		});
+		
+		// post the data
+		console.log(post_data);
+		post_req.write(post_data);
+		post_req.end();
+	
+	},
+
 
 	checkSignalValues: function(signalValues, avgAqi_prev, avgAqi) { 
 		var result = {};
