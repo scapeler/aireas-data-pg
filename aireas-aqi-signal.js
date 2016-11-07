@@ -72,7 +72,7 @@ module.exports = {
 		]
 
 		servers = [
-			{name: 'italie', url: {protocol:'http', domain: 'italieproject.it', port: '80', path: '/'}, methode: 'POST', aqiAreas: [ {area_code: 'EHV20141104:1', fois: [], signalValues: [] } ] }
+			{name: 'italie', url: {protocol:'http', domain: 'italyproject.it', port: '80', path: '/'}, methode: 'POST', aqiAreas: [ {area_code: 'EHV20141104:1', fois: [], signalValues: [] } ] }
 			//,{emailAddress: 'john@schmeitz-advies.nl', aqiAreas: [ {area_code: 'EHV20141104:1', fois: [], signalValues: [] } ] }
 		]
 
@@ -89,8 +89,9 @@ module.exports = {
 	
 		templateWijk		= handlebarsx.compile(templateWijkSource);				
 
-		sql = " SELECT act.grid_code, gg.grid_desc, gg.gm_naam, act.feature_of_interest, act.avg_aqi_type, act.avg_type, act.avg_aqi, prev.avg_aqi avg_aqi_prev, act.retrieveddate, prev.retrieveddate retrieveddate_prev, actlvl.aqi_class, prevlvl.aqi_class aqi_class_prev, actmainclass.aqi_color, prevmainclass.aqi_color aqi_color_prev \
+		sql = " SELECT act.grid_code, gg.grid_desc, gg.gm_naam, act.feature_of_interest, act.avg_aqi_type, act.avg_type, act.avg_aqi, prev.avg_aqi avg_aqi_prev, act.retrieveddate, prev.retrieveddate retrieveddate_prev, to_char(act.retrieveddate, 'YYYY-MM-DD') || 'T' || to_char(act.retrieveddate, 'HH24:MI:SS') || to_char(extract('timezone_hour' from act.retrieveddate),'S00') ||':' || to_char(extract('timezone_minute' from act.retrieveddate),'FM00') as isodatetime, actlvl.aqi_class, prevlvl.aqi_class aqi_class_prev, actmainclass.aqi_color, prevmainclass.aqi_color aqi_color_prev, ab.airbox_location, ab.airbox_location_desc, ab.airbox_location_type, ab.airbox_postcode, ab.lat, ab.lng, '4326' as srid, ab.region, ab.identifier  \
 FROM public.grid_gem_foi_aqi act \
+, public.airbox ab \
 , public.grid_gem_foi_aqi prev \
 , public.aireas_aqi_level actlvl \
 , public.aireas_aqi_level prevlvl \
@@ -102,6 +103,7 @@ WHERE 1=1 \
 AND act.avg_aqi_type = 'AiREAS_NL' \
 AND act.avg_period = '1hr' \
 AND act.avg_type = 'overall' \
+AND act.feature_of_interest = ab.airbox \
 AND gg.grid_code = act.grid_code \
 AND act.retrieveddate = max.retrieveddate \
 AND act.retrieveddate >= current_timestamp - interval '65 minutes' \
@@ -287,7 +289,7 @@ order by aireas.airbox
 		}
 		
 
-		// push notifications / signals /alerts to server
+		// push notifications / signals / alerts / events to server
 		for (i =0;i< servers.length;i++) {
 			var server = servers[i];
 			console.log('AQI Signal function started for server: ' + server.name);
@@ -317,6 +319,8 @@ order by aireas.airbox
 //					if (signalResult.direction == 'down') {
 //						outRecord.message = " AQI decrease to " + signalResult.signalValue;					
 //					}
+
+
 					outRecord.grid_code 			= _record.grid_code;
 					outRecord.grid_desc 			= _record.grid_desc;
 					outRecord.gm_naam 				= _record.gm_naam; 
@@ -328,9 +332,21 @@ order by aireas.airbox
 					outRecord.aqi_class 			= _record.aqi_class;
 					outRecord.aqi_class_prev 		= _record.aqi_class_prev;
 					outRecord.aqi_color		 		= _record.aqi_color;
-					outRecord.aqi_color_prev 		= _record.aqi_color_prev;					
+					outRecord.aqi_color_prev 		= _record.aqi_color_prev;
+					outRecord.aqi_isodatetime		= _record.isodatetime;
+					outRecord.foiLocation			= _record.airbox_location;
+					outRecord.foiLocationDesc		= _record.airbox_location_desc;
+					outRecord.foiLocationType		= _record.airbox_location_type;
+					outRecord.zipCode				= _record.airbox_postcode;
+					outRecord.lat					= _record.lat;
+					outRecord.lng					= _record.lng;
+					outRecord.srid					= _record.srid;
+					outRecord.foiRegion				= _record.region;
+					outRecord.foiIdentifier			= _record.identifier;
+					outRecord.countryCode			= 'NL';
 					outRecord.aqi_datetime			= _outRecords.signalDateTime;
 					outRecord.signalDateTimeStr		= _outRecords.signalDateTimeStr;
+					
 	
 					outRecord.message = "AQI " + outRecord.avg_aqi_type + ": " + _avg_aqi;
 
@@ -494,9 +510,57 @@ order by aireas.airbox
 		//todo
 		
 		//create JSON
+		var eventObject 				= {};
+		eventObject.source 				= {};
+		eventObject.source.server		= 'test';
+		eventObject.source.name			= 'AiREAS';
+		eventObject.source.desc			= 'AiREAS AQI events';
+		eventObject.source.version		= '0.1';
+		eventObject.source.dateTime		= data[0].aqi_isodatetime;
+		eventObject.source.identifier	= 'http://wiki.aireas.com/index.php/aireas_aqi_events';
+		
+		
+		eventObject.events 				= [];
+		
+		for (var i=0;i<data.length;i++) {
+			var event 					= {};
+			var _dataRec 				= data[i];
+			event.foi 					= {};
+			event.foi.identifier 		= _dataRec.foiIdentifier;
+			event.foi.code 				= _dataRec.feature_of_interest;
+			event.foi.address 			= _dataRec.foiLocation;
+			event.foi.zipCode 			= _dataRec.zipCode;
+			event.foi.city	 			= _dataRec.gm_naam;
+			event.foi.locationDesc 		= _dataRec.foiLocationDesc;
+			event.foi.locationType 		= _dataRec.foiLocationType;
+			event.foi.region 			= _dataRec.foiRegion;
+			event.foi.countryCode 		= _dataRec.countryCode;
+			event.foi.lat 				= _dataRec.lat;
+			event.foi.lon 				= _dataRec.lng;
+			event.foi.srid 				= _dataRec.srid;
+			event.aqiType 				= _dataRec.avg_aqi_type;
+			event.observedProp			= _dataRec.avg_type;
+			event.event					= {};
+			event.event.type			= _dataRec.event_type;
+			event.event.value			= _dataRec.avg_aqi;
+			event.event.valuePrev		= _dataRec.avg_aqi_prev;
+			event.event.evClass			= _dataRec.aqi_class;
+			event.event.evClassPrev		= _dataRec.aqi_class_prev;
+			event.event.color			= _dataRec.aqi_color;
+			event.event.colorPrev		= _dataRec.aqi_color_prev;
+			event.event.isoDateTime		= _dataRec.aqi_isodatetime;
+			event.event.message			= _dataRec.message;
+			event.area					= {};
+			event.area.code				= _dataRec.grid_code;
+			event.area.desc				= _dataRec.grid_desc;
+			event.area.name				= _dataRec.gm_naam;
+			eventObject.events.push(event);
+		}
+
+				
 		
 		var post_data = JSON.stringify({
-			data : data
+			AiREAS_AQI_Events : eventObject
 		});
 		
 		

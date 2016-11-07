@@ -4,6 +4,11 @@ SELECT * FROM public.airbox order by mutation_date desc;
 
 -- insert into table airbox, airbox_id_ecn, feature_of_interest, 
 
+insert into airbox (airbox, identifier, airbox_location, airbox_location_desc, region, airbox_location_type, airbox_postcode, airbox_X, airbox_Y, geom, mutation_date, creation_date ) values  
+	('overall','http://wiki.aireas.com/index.php/airbox_overall', '','identifier for cumulated airboxes info',  '???',
+	'', '', null, null, ST_GeomFromText('POINT(4.67472565 52.7845936833333)',4326), CURRENT_TIMESTAMP,CURRENT_TIMESTAMP ) ;
+	
+
 update airbox set (identifier, airbox_location, airbox_location_desc, region, airbox_location_type, airbox_postcode, airbox_X, airbox_Y ) = 
 	('http://wiki.aireas.com/index.php/airbox_0001', 'Eij-erven 41','Aan woonstraat aan rand van de stad, bij parkje',  'EHV',
 	'stadsachtergrond', '5646JM', 163804, 380995) 
