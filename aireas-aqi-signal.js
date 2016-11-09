@@ -72,7 +72,7 @@ module.exports = {
 		]
 
 		servers = [ //http://wesense.smart-applications.area.pi.cnr.it:8080/gbwesense-service-webapp/webapi/alerts/new
-			{name: 'wesense', url: {protocol:'http', domain: 'wesense.smart-applications.area.pi.cnr.it', port: '8080', path: '/gbwesense-service-webapp/webapi/alerts/new'}, methode: 'POST', aqiAreas: [ {area_code: 'EHV20141104:1', foi: [], signalValues: [] } ] }
+			{name: 'wesense', url: {protocol:'http', domain: 'wesense.smart-applications.area.pi.cnr.it', port: '8080', path: '/gbwesense-service-webapp/webapi/alerts/new'}, methode: 'POST', aqiAreas: [ {area_code: 'EHV20141104:1', foi: [], signalValues: [] } ], message: 'The air quality in this area is OVER the threshold! Have you any information on what is happening here? You can directly contribute to the monitoring through WeSense!', token:'K0689ka6s7p96j7NoVeY6ACT5Df01o9tOO1SW34849W3160LX357R4vva768UP8eZPIu1a21o1r8Gf4OutjCQi0ACq0GqD93' }
 			//,{emailAddress: 'john@schmeitz-advies.nl', aqiAreas: [ {area_code: 'EHV20141104:1', foi: [], signalValues: [] } ] }
 		]
 
@@ -335,6 +335,7 @@ order by aireas.airbox
 //						outRecord.message = " AQI decrease to " + signalResult.signalValue;					
 //					}
 
+					outRecord.event_type; 'treshold exceeded';
 
 					outRecord.grid_code 			= _record.grid_code;
 					outRecord.grid_desc 			= _record.grid_desc;
@@ -362,10 +363,13 @@ order by aireas.airbox
 					outRecord.aqi_datetime			= _outRecords.signalDateTime;
 					outRecord.signalDateTimeStr		= _outRecords.signalDateTimeStr;
 					
-	
-					outRecord.message = "AQI " + outRecord.avg_aqi_type + ": " + _avg_aqi;
-
-					if (outRecord.message) _outRecords.push(outRecord);
+					if (servers[i].message != undefined) {
+						outRecord.message = servers[i].message;
+					} else {
+						outRecord.message = "AQI " + outRecord.avg_aqi_type + ": " + _avg_aqi;
+					}
+					
+					_outRecords.push(outRecord);
 									
 //				}
 
@@ -527,14 +531,14 @@ order by aireas.airbox
 		var eventObject 				= {};
 		eventObject.source 				= {};
 		eventObject.source.server		= 'test';
-		// new attribute eventObject.source.status		= 'test';  
+		eventObject.source.status		= 'test';  
 		eventObject.source.name			= 'AiREAS';
-		// new attribute eventObject.source.desc			= 'AiREAS AQI events';
-		eventObject.source.version		= '0.1';
+		eventObject.source.desc			= 'AiREAS AQI events';
+		eventObject.source.version		= '0.2';
 		eventObject.source.dateTime		= data[0]!=undefined?data[0].aqi_isodatetime:'test';
-		// new attribute eventObject.source.identifier	= 'http://wiki.aireas.com/index.php/aireas_aqi_events';
+		eventObject.source.identifier	= 'http://wiki.aireas.com/index.php/aireas_aqi_events';
 		if (process.argv[3] == 'testserver') {
-			// new attribute eventObject.source.status		= 'test';
+			eventObject.source.status		= 'test';
 		}
 
 		
@@ -560,7 +564,7 @@ order by aireas.airbox
 			event.aqiType 				= _dataRec.avg_aqi_type;
 			event.observedProp			= _dataRec.avg_type;
 			event.event					= {};
-			// new attribute event.event.type			= _dataRec.event_type;
+			event.event.type			= _dataRec.event_type; 'treshold exceeded';
 			event.event.value			= _dataRec.avg_aqi;
 			event.event.valuePrev		= _dataRec.avg_aqi_prev;
 			event.event.evClass			= _dataRec.aqi_class;
@@ -580,34 +584,34 @@ order by aireas.airbox
 		if (data.length == 0 && process.argv[3] == 'testserver') {
 			var event 					= {};
 			event.foi 					= {};
-			event.foi.identifier 		= 'test-identifier';
-			event.foi.code 				= 'test-identifier';
-			event.foi.address 			= 'test';
-			event.foi.zipCode 			= 'test';
-			event.foi.city	 			= 'test';
-			event.foi.locationDesc 		= 'test';
-			event.foi.locationType 		= 'test';
-			event.foi.region 			= 'test';
-			event.foi.countryCode 		= 'test';
-			event.foi.lat 				= 0;
-			event.foi.lon 				= 0;
-			event.foi.srid 				= 4326;
-			event.aqiType 				= 'test';
-			event.observedProp			= 'test';
+			event.foi.identifier 		= 'http://wiki.aireas.com/index.php/airbox_0019';
+			event.foi.code 				= '19.cal';
+			event.foi.address 			= 'Finisterelaan 45';
+			event.foi.zipCode 			= '5627TE';
+			event.foi.city	 			= 'Eindhoven';
+			event.foi.locationDesc 		= 'Rand van woonwijk, nabij A2/A50 (meest nabijgelegen rijbaan 104 m tot straatlantaarn (woningen en wal ertussen))';
+			event.foi.locationType 		= 'woonwijk';
+			event.foi.region 			= 'EHV';
+			event.foi.countryCode 		= 'NL';
+			event.foi.lat 				= 51.4914155166667;
+			event.foi.lon 				= 5.43919825;
+			event.foi.srid 				= '4326';
+			event.aqiType 				= 'AiREAS_NL';
+			event.observedProp			= 'overall';
 			event.event					= {};
-			// new attribute event.event.type			= 'test';
+			event.event.type			= 'treshold exceeded';
 			event.event.value			= 52;
 			event.event.valuePrev		= 43;
-			event.event.evClass			= 'test';
-			event.event.evClassPrev		= 'test';
-			event.event.color			= 'test';
-			event.event.colorPrev		= 'test';
-			event.event.isoDateTime		= 'test';
-			event.event.message			= 'test';
+			event.event.evClass			= 'Moderate';
+			event.event.evClassPrev		= 'Good';
+			event.event.color			= '#ffff04';
+			event.event.colorPrev		= '#00b0f0';
+			event.event.isoDateTime		= '2016-11-09T17:01:01+01:00';
+			event.event.message			= 'The air quality in this area is OVER the threshold! Have you any information on what is happening here? You can directly contribute to the monitoring through WeSense!';
 			event.area					= {};
-			event.area.code				= 'test';
-			event.area.desc				= 'test';
-			event.area.name				= 'test';
+			event.area.code				= 'EHV20141104:1';
+			event.area.desc				= 'Grid Eindhoven 2014-11-05 variant 1';
+			event.area.name				= 'Eindhoven';
 			eventObject.events.push(event);
 		}
 		
@@ -616,10 +620,8 @@ order by aireas.airbox
 				
 		
 		var post_data = JSON.stringify({
-//			AiREAS_AQI_Events : eventObject
 			data : eventObject
 		});
-		
 		
 		var post_options = {
 			host: server.url.domain,
@@ -628,17 +630,17 @@ order by aireas.airbox
 			method: server.methode,
 			headers: {
 				'Content-Type': 'application/json',
-				'Content-Length': Buffer.byteLength(post_data)
+				'Content-Length': Buffer.byteLength(post_data),
+				'Token': server.token
 			}
 		};
 		//POST message
 		// Set up the request
 		console.log('Open http request for http://' + server.url.domain + ':' + server.url.port + '/' + server.url.path);
 		var post_req = http.request(post_options, function(res) {
-			
 			res.setEncoding('utf8');
 			res.on('data', function (chunk) {
-				console.log('Response: ' + chunk);
+				console.log('Response: ' + res.statusCode + ' ' + chunk);
 			});
 		});
 
