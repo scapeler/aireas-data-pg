@@ -67,18 +67,33 @@ module.exports = {
 		sendServer			= this.sendServer;
 
 		emails = [
-			{emailAddress: 'awiel@scapeler.com', aqiAreas: [ {area_code: 'EHV20141104:1', fois: [], signalValues: [] } ] }
-			//,{emailAddress: 'john@schmeitz-advies.nl', aqiAreas: [ {area_code: 'EHV20141104:1', fois: [], signalValues: [] } ] }
+			{emailAddress: 'awiel@scapeler.com', aqiAreas: [ {area_code: 'EHV20141104:1', foi: [], signalValues: [] } ] }
+			//,{emailAddress: 'john@schmeitz-advies.nl', aqiAreas: [ {area_code: 'EHV20141104:1', foi: [], signalValues: [] } ] }
 		]
 
-		servers = [
-			{name: 'italie', url: {protocol:'http', domain: 'italyproject.it', port: '80', path: '/'}, methode: 'POST', aqiAreas: [ {area_code: 'EHV20141104:1', fois: [], signalValues: [] } ] }
-			//,{emailAddress: 'john@schmeitz-advies.nl', aqiAreas: [ {area_code: 'EHV20141104:1', fois: [], signalValues: [] } ] }
+		servers = [ //http://wesense.smart-applications.area.pi.cnr.it:8080/gbwesense-service-webapp/webapi/alerts/new
+			{name: 'wesense', url: {protocol:'http', domain: 'wesense.smart-applications.area.pi.cnr.it', port: '8080', path: '/gbwesense-service-webapp/webapi/alerts/new'}, methode: 'POST', aqiAreas: [ {area_code: 'EHV20141104:1', foi: [], signalValues: [] } ] }
+			//,{emailAddress: 'john@schmeitz-advies.nl', aqiAreas: [ {area_code: 'EHV20141104:1', foi: [], signalValues: [] } ] }
 		]
 
 		apps = [
-			{app: 'humansensor', messageType: 'aireasaqisignal', aqiAreas: [ {area_code: 'EHV20141104:1', fois: [], signalValues: [] } ], signalDiffGt: 3 }
+			{app: 'humansensor', messageType: 'aireasaqisignal', aqiAreas: [ {area_code: 'EHV20141104:1', foi: [], signalValues: [] } ], signalDiffGt: 3 }
 		]
+		
+		
+		if (process.argv[3] == 'testserver') {
+			emails 	= [];
+			apps	= [];
+			var _testserver = process.argv[4];
+			var _servers = [];
+			for (var i=0;i<servers.length;i++) {
+				if (servers[i].name == _testserver) {
+					_servers.push(servers[i]);
+				}
+			}
+			servers = _servers;
+			console.log('Test server: ' +  servers[0].name);
+		};
 
 		templateWijkSource	= "<h1>AiREAS AQI update</h1><p>Datum: {{data.signalDateTimeStr}}</p> \
     {{#each data}}<h2>AiREAS AQI Signal for area '{{gm_naam}}, airbox: {{feature_of_interest}}'</h2><p>{{message}}</p> \
@@ -358,8 +373,7 @@ order by aireas.airbox
 
 			}
 
-			
-			if (_outRecords.length>0) {
+			if (_outRecords.length>0 || process.argv[3] == 'testserver' ) {
 				sendServer(server, 'AiREAS AQI Signal from system: ' + options.systemCode , _outRecords );
 			}
 		}
@@ -513,18 +527,23 @@ order by aireas.airbox
 		var eventObject 				= {};
 		eventObject.source 				= {};
 		eventObject.source.server		= 'test';
+		// new attribute eventObject.source.status		= 'test';  
 		eventObject.source.name			= 'AiREAS';
-		eventObject.source.desc			= 'AiREAS AQI events';
+		// new attribute eventObject.source.desc			= 'AiREAS AQI events';
 		eventObject.source.version		= '0.1';
-		eventObject.source.dateTime		= data[0].aqi_isodatetime;
-		eventObject.source.identifier	= 'http://wiki.aireas.com/index.php/aireas_aqi_events';
+		eventObject.source.dateTime		= data[0]!=undefined?data[0].aqi_isodatetime:'test';
+		// new attribute eventObject.source.identifier	= 'http://wiki.aireas.com/index.php/aireas_aqi_events';
+		if (process.argv[3] == 'testserver') {
+			// new attribute eventObject.source.status		= 'test';
+		}
+
 		
 		
 		eventObject.events 				= [];
 		
 		for (var i=0;i<data.length;i++) {
-			var event 					= {};
 			var _dataRec 				= data[i];
+			var event 					= {};
 			event.foi 					= {};
 			event.foi.identifier 		= _dataRec.foiIdentifier;
 			event.foi.code 				= _dataRec.feature_of_interest;
@@ -541,7 +560,7 @@ order by aireas.airbox
 			event.aqiType 				= _dataRec.avg_aqi_type;
 			event.observedProp			= _dataRec.avg_type;
 			event.event					= {};
-			event.event.type			= _dataRec.event_type;
+			// new attribute event.event.type			= _dataRec.event_type;
 			event.event.value			= _dataRec.avg_aqi;
 			event.event.valuePrev		= _dataRec.avg_aqi_prev;
 			event.event.evClass			= _dataRec.aqi_class;
@@ -556,11 +575,49 @@ order by aireas.airbox
 			event.area.name				= _dataRec.gm_naam;
 			eventObject.events.push(event);
 		}
+		
+		
+		if (data.length == 0 && process.argv[3] == 'testserver') {
+			var event 					= {};
+			event.foi 					= {};
+			event.foi.identifier 		= 'test-identifier';
+			event.foi.code 				= 'test-identifier';
+			event.foi.address 			= 'test';
+			event.foi.zipCode 			= 'test';
+			event.foi.city	 			= 'test';
+			event.foi.locationDesc 		= 'test';
+			event.foi.locationType 		= 'test';
+			event.foi.region 			= 'test';
+			event.foi.countryCode 		= 'test';
+			event.foi.lat 				= 0;
+			event.foi.lon 				= 0;
+			event.foi.srid 				= 4326;
+			event.aqiType 				= 'test';
+			event.observedProp			= 'test';
+			event.event					= {};
+			// new attribute event.event.type			= 'test';
+			event.event.value			= 52;
+			event.event.valuePrev		= 43;
+			event.event.evClass			= 'test';
+			event.event.evClassPrev		= 'test';
+			event.event.color			= 'test';
+			event.event.colorPrev		= 'test';
+			event.event.isoDateTime		= 'test';
+			event.event.message			= 'test';
+			event.area					= {};
+			event.area.code				= 'test';
+			event.area.desc				= 'test';
+			event.area.name				= 'test';
+			eventObject.events.push(event);
+		}
+		
+		
 
 				
 		
 		var post_data = JSON.stringify({
-			AiREAS_AQI_Events : eventObject
+//			AiREAS_AQI_Events : eventObject
+			data : eventObject
 		});
 		
 		
@@ -576,7 +633,9 @@ order by aireas.airbox
 		};
 		//POST message
 		// Set up the request
+		console.log('Open http request for http://' + server.url.domain + ':' + server.url.port + '/' + server.url.path);
 		var post_req = http.request(post_options, function(res) {
+			
 			res.setEncoding('utf8');
 			res.on('data', function (chunk) {
 				console.log('Response: ' + chunk);
@@ -588,7 +647,8 @@ order by aireas.airbox
 		});
 		
 		// post the data
-		console.log(post_data);
+		console.log('Post options: ' + post_options);
+		console.log('Post data: ' + post_data);
 		post_req.write(post_data);
 		post_req.end();
 	
