@@ -62,8 +62,8 @@ module.exports = {
 //		tmpLatestMeasureDateStr = _waardeDataRecord.last_measurement.calibrated.when.$date
 		latestMeasureDate = new Date(0);
 		for(i=0;i<tmpArray.length-1;i++) { 
-			if (_waardeDataRecord.last_measurement && _waardeDataRecord.last_measurement.calibrated && _waardeDataRecord.last_measurement.calibrated.when && _waardeDataRecord.last_measurement.calibrated.when.$date) {
-				tmpLatestMeasureDate 	= new Date(_waardeDataRecord.last_measurement.calibrated.when.$date);
+			if (tmpArray[i].last_measurement && tmpArray[i].last_measurement.calibrated && tmpArray[i].last_measurement.calibrated.when && tmpArray[i].last_measurement.calibrated.when.$date) {
+				tmpLatestMeasureDate 	= new Date(tmpArray[i].last_measurement.calibrated.when.$date);
 				if (latestMeasureDate.getTime() < tmpLatestMeasureDate.getTime()) {
 					latestMeasureDate = tmpLatestMeasureDate;
 				}
