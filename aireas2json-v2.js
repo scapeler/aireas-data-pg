@@ -95,7 +95,6 @@ module.exports = {
 				continue;
 			}  
 
-/*
 			// skip if measureddate < latest date - 15 minutes
 			tmpLatestMeasureDate 	= new Date(_waardeDataRecord.last_measurement.calibrated.when.$date);
 			if (tmpLatestMeasureDate.getTime() < latestMeasureDate.getTime()- 900000) {
@@ -103,7 +102,7 @@ module.exports = {
 				console.log('Measurement values too old for airbox '+_waardeDataRecord._id);
 				continue;  // skip 'old' measurement
 			}  
-*/
+
 
 			_dataRecord			= {};
 
