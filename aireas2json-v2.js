@@ -58,15 +58,25 @@ module.exports = {
 		
 		// find latest measured datetime, actual measurements can't be older than this datetime - 15 minutes. They maybe in maintenance or defect of ....
 		var latestMeasureDate, tmpLatestMeasureDate, tmpLatestMeasureDateStr;
-		tmpLatestMeasureDateStr = tmpArray[0].utctimestamp+'Z';
-		latestMeasureDate = new Date(tmpLatestMeasureDateStr);
-		for(i=0;i<tmpArray.length-1;i++) {  
-			tmpLatestMeasureDateStr = tmpArray[i].utctimestamp+'Z';
-			tmpLatestMeasureDate 	= new Date(tmpLatestMeasureDateStr);
-			if (latestMeasureDate.getTime() < tmpLatestMeasureDate.getTime()) {
-				latestMeasureDate = tmpLatestMeasureDate;
+//		tmpLatestMeasureDateStr = tmpArray[0].utctimestamp+'Z';
+//		tmpLatestMeasureDateStr = _waardeDataRecord.last_measurement.calibrated.when.$date
+		latestMeasureDate = new Date(0);
+		for(i=0;i<tmpArray.length-1;i++) { 
+			if (_waardeDataRecord.last_measurement && _waardeDataRecord.last_measurement.calibrated && _waardeDataRecord.last_measurement.calibrated.when && _waardeDataRecord.last_measurement.calibrated.when.$date) {
+				tmpLatestMeasureDate 	= new Date(_waardeDataRecord.last_measurement.calibrated.when.$date);
+				if (latestMeasureDate.getTime() < tmpLatestMeasureDate.getTime()) {
+					latestMeasureDate = tmpLatestMeasureDate;
+				}
+
+//				tmpLatestMeasureDateStr = tmpArray[i].utctimestamp+'Z';
+//				tmpLatestMeasureDate 	= new Date(tmpLatestMeasureDateStr);
+//				if (latestMeasureDate.getTime() < tmpLatestMeasureDate.getTime()) {
+//					latestMeasureDate = tmpLatestMeasureDate;
+//				}
 			}
 		}
+		
+		console.log('Actual measure datetime is '+latestMeasureDate.toISOString();
 		
 		for(i=0;i<tmpArray.length-1;i++) {  
 		
@@ -87,7 +97,7 @@ module.exports = {
 
 			// skip if measureddate < latest date - 15 minutes
 			tmpLatestMeasureDate 	= new Date(_waardeDataRecord.last_measurement.calibrated.when.$date);
-			if (tmpLatestMeasureDate.getTime() < latestMeasureDate.getTime()- 54000000) {
+			if (tmpLatestMeasureDate.getTime() < latestMeasureDate.getTime()- 900000) {
 			
 				console.log('Measurement values too old for airbox '+_waardeDataRecord._id);
 				continue;  // skip 'old' measurement
