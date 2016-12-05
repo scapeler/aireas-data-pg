@@ -331,8 +331,7 @@ order by aireas.airbox
 			
 				var outRecord = {};
 
-				if (testSession | _record.aqi_class != _record.aqi_class_prev) {
-
+				if (testSession || _record.aqi_class != _record.aqi_class_prev) {
 				
 //				var signalResult = checkSignalValues(aqiArea.signalValues, _avg_aqi_prev, _avg_aqi);
 					
@@ -378,12 +377,9 @@ order by aireas.airbox
 						outRecord.message = "AQI " + outRecord.avg_aqi_type + ": " + _avg_aqi;
 					}
 					
-					_outRecords.push(outRecord);
-									
+					_outRecords.push(outRecord);									
 //				}
-
 				}
-
 			}
 
 			if (_outRecords.length>0 || process.argv[3] == 'testserver' ) {
