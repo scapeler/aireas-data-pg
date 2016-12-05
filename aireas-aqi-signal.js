@@ -40,6 +40,7 @@ var pg 				= require('pg');
 var nodemailer 		= require('nodemailer');
 
 var http 			= require('http');
+var https 			= require('https');
 
 var sqlConnString;
 var transporter, emails, servers, apps, templateWijkSource, templateWijk, sql;
@@ -645,13 +646,24 @@ order by aireas.airbox
 		};
 		//POST message
 		// Set up the request
-		console.log('Open http request for http://' + server.url.domain + ':' + server.url.port + '/' + server.url.path);
-		var post_req = http.request(post_options, function(res) {
-			res.setEncoding('utf8');
-			res.on('data', function (chunk) {
-				console.log('Response: ' + res.statusCode + ' ' + chunk);
+		console.log('Request for ' + server.url.protocol + '://' + server.url.domain + ':' + server.url.port + '/' + server.url.path);
+		
+		var post_req;
+		if (server.url.protocol == 'https') {
+			post_req = https.request(post_options, function(res) {
+				res.setEncoding('utf8');
+				res.on('data', function (chunk) {
+					console.log('Response: ' + res.statusCode + ' ' + chunk);
+				});
 			});
-		});
+		} else {
+			post_req = http.request(post_options, function(res) {
+				res.setEncoding('utf8');
+				res.on('data', function (chunk) {
+					console.log('Response: ' + res.statusCode + ' ' + chunk);
+				});
+			});
+		}
 
 		post_req.on('error', function (err) {
 			console.log('ERROR: ' + err);
