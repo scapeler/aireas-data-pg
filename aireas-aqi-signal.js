@@ -71,11 +71,13 @@ module.exports = {
 			//,{emailAddress: 'john@schmeitz-advies.nl', aqiAreas: [ {area_code: 'EHV20141104:1', foi: [], signalValues: [] } ] }
 		]
 
-// http://146.48.99.107:8080/gbwesense-service-webapp/webapi/alerts/new
-// oud: wesense.smart-applications.area.pi.cnr.it
+//// http://146.48.99.107:8080/gbwesense-service-webapp/webapi/alerts/new
+//// oud: wesense.smart-applications.area.pi.cnr.it
+//// http://wesense.smart-applications.area.pi.cnr.it:8080/gbwesense-service-webapp/webapi/alerts/new
+// https://wesense.smart-applications.area.pi.cnr.it:8453/gbwesense-service-webapp/webapi/alerts/new
 
-		servers = [ //http://wesense.smart-applications.area.pi.cnr.it:8080/gbwesense-service-webapp/webapi/alerts/new
-			{name: 'wesense', url: {protocol:'http', domain: '146.48.99.107', port: '8080', path: '/gbwesense-service-webapp/webapi/alerts/new'}, methode: 'POST', aqiAreas: [ {area_code: 'EHV20141104:1', foi: [], signalValues: [] } ], message: 'The air quality in this area is OVER the threshold! Have you any information on what is happening here? You can directly contribute to the monitoring through WeSense!', token:'K0689ka6s7p96j7NoVeY6ACT5Df01o9tOO1SW34849W3160LX357R4vva768UP8eZPIu1a21o1r8Gf4OutjCQi0ACq0GqD93' }
+		servers = [ 
+			{name: 'wesense', url: {protocol:'https', domain: 'wesense.smart-applications.area.pi.cnr.it', port: '8453', path: '/gbwesense-service-webapp/webapi/alerts/new'}, methode: 'POST', aqiAreas: [ {area_code: 'EHV20141104:1', foi: [], signalValues: [] } ], message: 'The air quality in this area is OVER the threshold! Have you any information on what is happening here? You can directly contribute to the monitoring through WeSense!', token:'K0689ka6s7p96j7NoVeY6ACT5Df01o9tOO1SW34849W3160LX357R4vva768UP8eZPIu1a21o1r8Gf4OutjCQi0ACq0GqD93' }
 			//,{emailAddress: 'john@schmeitz-advies.nl', aqiAreas: [ {area_code: 'EHV20141104:1', foi: [], signalValues: [] } ] }
 		]
 
@@ -322,6 +324,9 @@ order by aireas.airbox
 				var _avg_aqi 		= parseFloat(_record.avg_aqi);
 				var _avg_aqi_prev	= parseFloat(_record.avg_aqi_prev);
 				console.log('process record ' + (j+1) + ' ' + _avg_aqi_prev + ' -> ' + _avg_aqi + ' for ' + _record.gm_naam + ' is ' + _record.aqi_class + ' was ' + _record.aqi_class_prev );
+
+				if (server.name == 'wesense' && _record.feature_of_interest == 'overall' ) continue;  // skip overall signals like city signal. only airbox for wesense!
+				//if (server.name == 'wesense' && _record.feature_of_interest == 'overall' ) continue;  // skip overall signals like city signal. only airbox for wesense!
 			
 				var outRecord = {};
 
@@ -581,6 +586,7 @@ order by aireas.airbox
 			event.area.desc				= _dataRec.grid_desc;
 			event.area.name				= _dataRec.gm_naam;
 			eventObject.events.push(event);
+			console.log(' Event treshold: ' + event.foi.code + ' is: ' + event.event.value +' ' + event.event.evClass + ' was: ' + event.event.valuePrev +' ' + event.event.evClassPrev );
 		}
 		
 		
