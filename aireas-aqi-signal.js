@@ -319,6 +319,12 @@ order by aireas.airbox
 			var _outRecords = [];
 			_outRecords.signalDateTime = new Date();
 			_outRecords.signalDateTimeStr = moment(_outRecords.signalDateTime).format("DD-MM-YYYY, HH:mm");
+			
+			if (process.argv[4] == server.name && process.argv[3] == 'testserver' ) {
+				testSession = true;
+			} else {
+				testSession = false; 
+			}
 				
 			for (j=0;j<_result.length;j++) {
 				var _record 		= _result[j];
@@ -331,7 +337,7 @@ order by aireas.airbox
 			
 				var outRecord = {};
 
-				if (testSession || _record.aqi_class != _record.aqi_class_prev) {
+				if (testSession == true || _record.aqi_class != _record.aqi_class_prev) {
 				
 //				var signalResult = checkSignalValues(aqiArea.signalValues, _avg_aqi_prev, _avg_aqi);
 					
