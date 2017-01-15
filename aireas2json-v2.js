@@ -115,7 +115,7 @@ module.exports = {
 			if (_waardeDataRecord.name == '29.cal') continue;  //temporary skip because of wrong measurements
 			if (_waardeDataRecord.name == '37.cal') continue;  //temporary skip because of wrong measurements
 			*/
-			if (_waardeDataRecord.name == '12.cal') { _waardeDataRecord.last_measurement.calibrated.readings.UFP = ''; };  //temporary skip UFP because of wrong measurements
+			if (_waardeDataRecord._id == 12) { _waardeDataRecord.last_measurement.calibrated.readings.UFP = ''; };  //temporary skip UFP because of wrong measurements
 
 
 			_dataRecord.airbox 	= _waardeDataRecord._id+'.cal';
@@ -143,6 +143,7 @@ module.exports = {
 			_dataRecord.PM1Float 		= _waardeDataRecord.last_measurement.calibrated.readings.PM1;
 			_dataRecord.PM25Float 		= _waardeDataRecord.last_measurement.calibrated.readings.PM25;
 			_dataRecord.PM10Float 		= _waardeDataRecord.last_measurement.calibrated.readings.PM10;
+			if (_waardeDataRecord.name == '12.cal') {
 			_dataRecord.UFPFloat 		= _waardeDataRecord.last_measurement.calibrated.readings.UFP;
 			if (_dataRecord.UFPFloat > 0) _dataRecord.UFPFloat = Math.round(_dataRecord.UFPFloat / 1000); // in units of 1000
 			_dataRecord.OZONFloat 		= _waardeDataRecord.last_measurement.calibrated.readings.Ozon;
