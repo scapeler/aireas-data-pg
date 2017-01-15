@@ -115,6 +115,8 @@ module.exports = {
 			if (_waardeDataRecord.name == '29.cal') continue;  //temporary skip because of wrong measurements
 			if (_waardeDataRecord.name == '37.cal') continue;  //temporary skip because of wrong measurements
 			*/
+			if (_waardeDataRecord.name == '12.cal') { _waardeDataRecord.last_measurement.calibrated.readings.UFP = ''; };  //temporary skip UFP because of wrong measurements
+
 
 			_dataRecord.airbox 	= _waardeDataRecord._id+'.cal';
 			
