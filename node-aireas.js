@@ -96,17 +96,19 @@ app.get('/'+_systemCode+'/data/aireas/:getFunction/:airbox', function(req, res) 
 			if (req.query.format == 'csv') {
 				var csvFile		= '';
 				for (var i=0;i<result.rows.length;i++) {
+					var _tmpDate	= new Date(result.rows[i].retrieveddate);
+					var _tmpDateISO = _tmpDate.toISOString();
 					var outRecord	= '' +
 						' "' + result.rows[i].airbox + '"' + 
-						';"' + result.rows[i].retrieveddate + '"' + 
+						';"' + _tmpDateISO + '"' + 
 						';"' + 'pm25' + '"' + 
-						';' + result.rows[i].pm25float + '' ;
+						';' + result.rows[i].pm25float + '\n' ;
 					csvFile += outRecord; 	 
 					var outRecord	= '' +
 						' "' + result.rows[i].airbox + '"' + 
-						';"' + result.rows[i].retrieveddate + '"' + 
+						';"' + _tmpDateISO + '"' + 
 						';"' + 'pm10' + '"' + 
-						';' + result.rows[i].pm10float + '' ;
+						';' + result.rows[i].pm10float + '\n' ;
 					csvFile += outRecord; 	 
 				}
 				res.contentType('text/csv');
