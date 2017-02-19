@@ -93,7 +93,7 @@ app.get('/'+_systemCode+'/data/aireas/:getFunction/:airbox', function(req, res) 
   if (	req.params.getFunction == 'getAllMeasures' 		|| 
   		req.params.getFunction == 'getLastWeekMeasures') {
 		apriAireasGetPg.getMeasures({airbox: req.params.airbox, getFunction: req.params.getFunction }, function(err, result) {
-			if (req.params.format == 'csv') {
+			if (req.query.format == 'csv') {
 				var csvFile		= '';
 				for (var i=0;i<result.rows.length;i++) {
 					var outRecord	= '' +
