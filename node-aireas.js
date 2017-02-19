@@ -93,8 +93,28 @@ app.get('/'+_systemCode+'/data/aireas/:getFunction/:airbox', function(req, res) 
   if (	req.params.getFunction == 'getAllMeasures' 		|| 
   		req.params.getFunction == 'getLastWeekMeasures') {
 		apriAireasGetPg.getMeasures({airbox: req.params.airbox, getFunction: req.params.getFunction }, function(err, result) {
-			res.contentType('application/json');
- 			res.send(result.rows);
+			if (req.params.format == 'csv') {
+				var csvFile		= '';
+				for (var i=0;i<result.rows.length;i++) {
+					var outRecord	= '' +
+						' "' + result.rows[i].airbox + '"' + 
+						';"' + result.rows[i].retrieveddate + '"' + 
+						';"' + 'pm25' + '"' + 
+						';' + result.rows[i].pm25float + '' ;
+					csvFile += outRecord; 	 
+					var outRecord	= '' +
+						' "' + result.rows[i].airbox + '"' + 
+						';"' + result.rows[i].retrieveddate + '"' + 
+						';"' + 'pm10' + '"' + 
+						';' + result.rows[i].pm10float + '' ;
+					csvFile += outRecord; 	 
+				}
+				res.contentType('text/csv');
+				res.send(csvFile);
+			} else {
+				res.contentType('application/json');
+ 				res.send(result.rows);
+			}
 		});
 		return;
   }
