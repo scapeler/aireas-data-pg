@@ -442,6 +442,36 @@ app.get('/'+_systemCode+'/data/aireas/:getFunction/:airbox', function(req, res) 
 		});
 		return;
   }
+  
+	if (req.params.getFunction == 'getGridApriSensorInfo') {
+		apriAireasGetPg.getGridApriSensorInfo({ }, req.query, function(err, result) {
+			var _outRecords = [];
+			var _result = result.rows; //JSON.parse(result);
+			for (var i=0;i<_result.length;i++) {
+				var outRecord = {};
+				outRecord.geometry = JSON.parse(_result[i].geom);
+				outRecord.type = 'Feature';
+
+				outRecord.properties = {};
+				outRecord.properties.area_code 		= _result[i].area_code;
+				outRecord.properties.location_desc	= _result[i].location_desc; 
+				outRecord.properties.avg_datetime	= _result[i].avg_datetime;
+
+				outRecord.properties.avg_type 		= _result[i].avg_type;
+				outRecord.properties.avg_avg		= parseFloat(_result[i].avg_avg);
+
+				outRecord.properties.cell_x 		= parseFloat(_result[i].cell_x);
+				outRecord.properties.cell_y 		= parseFloat(_result[i].cell_y);
+
+				_outRecords.push(outRecord);
+			}
+			var outRecords = JSON.stringify(_outRecords);
+			res.contentType('application/json');
+ 			res.send(outRecords);
+		});
+		return;
+  }
+  
 
   res.contentType('text/plain');
   res.send('Wrong get function: ' + req.params.getFunction);

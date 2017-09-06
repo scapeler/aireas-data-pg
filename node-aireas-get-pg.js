@@ -346,7 +346,47 @@ module.exports = {
 
         return;
 
-    }
+    },
+	
+	getGridApriSensorInfo: function (param, req_query, callback) {
+		
+		if (req_query.avgType == undefined) {
+			req_query.avgType = 'SDS011_PM25';
+		}
+
+		var querySelect = " select area.area_code, area.location_desc, " +
+			" to_char(gcu.avg_datetime AT TIME ZONE 'UTC', 'YYYY-MM-DDT')||to_char(gcu.avg_datetime AT TIME ZONE 'UTC','HH24:MI:SS.MSZ') AS avg_datetime" +
+			" , ST_AsGeoJSON(ST_Transform(gcu.union_geom, 4326)) geom "+
+			" , ST_AsGeoJSON(ST_Transform(ST_Centroid(gcu.union_geom), 4326)) centroid "+
+			" , gc.cell_x " +
+			" , gc.cell_y " +
+			" , gcu.avg_type " +
+			" , gcu.avg_avg ";			
+
+		var avgDateTimeMaxConstraintStr = "";  // 2014-11-09T09:30:01.376Z
+
+		if ( req_query.avgdatetimemax) {  //todo
+			console.log('req_query: ' + req_query );
+			avgDateTimeMaxConstraintStr = " and gcu2.avg_datetime AT TIME ZONE 'UTC' <= timestamp '" + req_query.avgdatetimemax + "' ";  //'2014-11-09T06:00:01.376Z' ";
+
+		}
+
+		var queryFrom = " from as_area area, as_gridcell gc, as_gridcell_union gcu  ";
+		var queryWhere = " where area.area_code = 'LDEUR20170901:1' and area.area_code = gc.area_code and gc.gid = gcu.gridcell_gid ";
+			queryWhere += " and gcu.avg_type = '" + req_query.avgType + "' ";
+			queryWhere += " and gcu.avg_datetime = (select max(avg_datetime) from as_gridcell_union gcu2 where 1=1 " + avgDateTimeMaxConstraintStr + ")";
+		var queryGroupBy = ""; 
+		var queryOrderBy = ""; 
+
+		console.log('Postgres sql start execute');
+		var query = querySelect + queryFrom + queryWhere + queryGroupBy + queryOrderBy;
+		console.log('Query: ' + query);
+		executeSql(query, callback);
+
+        return;
+	}
+	
+
 	
 
 	
