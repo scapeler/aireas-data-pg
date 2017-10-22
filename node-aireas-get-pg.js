@@ -353,6 +353,9 @@ module.exports = {
 		if (req_query.avgType == undefined) {
 			req_query.avgType = 'SDS011_PM25';
 		}
+		if (req_query.areaCode == undefined) {
+			req_query.areaCode = 'LDSTU20171022:1';
+		}
 
 		var querySelect = " select area.area_code, area.location_desc, " +
 			" to_char(gcu.avg_datetime AT TIME ZONE 'UTC', 'YYYY-MM-DDT')||to_char(gcu.avg_datetime AT TIME ZONE 'UTC','HH24:MI:SS.MSZ') AS avg_datetime" +
@@ -372,7 +375,7 @@ module.exports = {
 		}
 
 		var queryFrom = " from as_area area, as_gridcell gc, as_gridcell_union gcu  ";
-		var queryWhere = " where area.area_code = 'LDEUR20170901:1' and area.area_code = gc.area_code and gc.gid = gcu.gridcell_gid ";
+		var queryWhere = " where area.area_code = '" + req_query.areaCode + "' and area.area_code = gc.area_code and gc.gid = gcu.gridcell_gid ";
 			queryWhere += " and gcu.avg_type = '" + req_query.avgType + "' ";
 			queryWhere += " and gcu.avg_datetime = (select max(avg_datetime) from as_gridcell_union gcu2 where 1=1 " + avgDateTimeMaxConstraintStr + ")";
 		var queryGroupBy = ""; 
