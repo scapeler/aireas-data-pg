@@ -361,8 +361,8 @@ module.exports = {
 			" to_char(gcu.avg_datetime AT TIME ZONE 'UTC', 'YYYY-MM-DDT')||to_char(gcu.avg_datetime AT TIME ZONE 'UTC','HH24:MI:SS.MSZ') AS avg_datetime" +
 			" , ST_AsGeoJSON(ST_Transform(gcu.union_geom, 4326)) geom "+
 			" , ST_AsGeoJSON(ST_Transform(ST_Centroid(gcu.union_geom), 4326)) centroid "+
-			" , gc.cell_x " +
-			" , gc.cell_y " +
+		//	" , gc.cell_x " +
+		//	" , gc.cell_y " +
 			" , gcu.avg_type " +
 			" , gcu.avg_avg ";			
 
@@ -374,10 +374,10 @@ module.exports = {
 
 		}
 
-		var queryFrom = " from as_area area, as_gridcell gc, as_gridcell_union gcu  ";
-		var queryWhere = " where area.area_code = '" + req_query.areaCode + "' and area.area_code = gc.area_code and gc.gid = gcu.gridcell_gid ";
+		var queryFrom = " from as_area area, as_gridcell_union gcu  ";
+		var queryWhere = " where area.area_code = '" + req_query.areaCode + "' and gcu.area_code = '" + req_query.areaCode + "' ";
 			queryWhere += " and gcu.avg_type = '" + req_query.avgType + "' ";
-			queryWhere += " and gcu.avg_datetime = (select max(avg_datetime) from as_gridcell gc2, as_gridcell_union gcu2 where 1=1 and gcu2.gridcell_gid = gc2.gid and gc2.area_code = area.area_code " + avgDateTimeMaxConstraintStr + ")";
+			queryWhere += " and gcu.avg_datetime = (select avg_datetime from as_gridcell_union gcu2 where gcu2.area_code = '" + req_query.areaCode + "' and gcu.avg_type = '" + req_query.avgType + "' " + avgDateTimeMaxConstraintStr + " order by gcu2.avg_datetime desc limit 1 )";
 		var queryGroupBy = ""; 
 		var queryOrderBy = ""; 
 
