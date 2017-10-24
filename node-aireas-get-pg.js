@@ -377,7 +377,7 @@ module.exports = {
 		var queryFrom = " from as_area area, as_gridcell_union gcu  ";
 		var queryWhere = " where area.area_code = '" + req_query.areaCode + "' and gcu.area_code = '" + req_query.areaCode + "' ";
 			queryWhere += " and gcu.avg_type = '" + req_query.avgType + "' ";
-			queryWhere += " and gcu.avg_datetime = (select avg_datetime from as_gridcell_union gcu2 where gcu2.area_code = '" + req_query.areaCode + "' and gcu.avg_type = '" + req_query.avgType + "' " + avgDateTimeMaxConstraintStr + " order by gcu2.avg_datetime desc limit 1 )";
+			queryWhere += " and gcu.avg_datetime = (select avg_datetime from as_gridcell_union gcu2 where gcu2.area_code = '" + req_query.areaCode + "' and gcu2.avg_type = '" + req_query.avgType + "' " + avgDateTimeMaxConstraintStr + " order by gcu2.avg_datetime desc limit 1 )";
 		var queryGroupBy = ""; 
 		var queryOrderBy = ""; 
 
