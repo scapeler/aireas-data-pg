@@ -19,6 +19,8 @@ var pg 		= require('pg');
 var aireasFolder, aireasUrl, aireasFileName, aireasLocalPathRoot, fileFolder, 
 	tmpFolder, tmpFolderName, localPath, fileFolderName, resultsFolder, resultsFolderName;
 var dataRecords;
+var _files =[];
+var _fileIndex = 0;
 
 // **********************************************************************************
 
@@ -52,13 +54,16 @@ module.exports = {
 //    	console.log("Local AiREAS data: " + localPath );
 
 		var executeFile = this.executeFile;
+		
+		
 
 		fs.readdir(tmpFolder, function (err, files) {
     		if (err) {
         		throw err;
     		}
-
-    		files.map(function (file) {
+			_files = files;
+			_fileIndex = 0;
+    		/*files.map(function (file) {
         		return path.join(tmpFolder, file);
     		}).filter(function (file) {
         		return fs.statSync(file).isFile();
@@ -73,6 +78,9 @@ module.exports = {
 				}
 				//}
     		});
+    		*/
+    		
+    		executeFile(_files[_fileIndex],path.extname(_files[_fileIndex]));
 		});
 
 	},  // end of init
@@ -112,6 +120,8 @@ module.exports = {
             		}
             		//console.log('sql result: ' + result);
             		client.end();
+            		_fileIndex++;
+            		if (_fileIndex < _files.length) executeFile(_files[_fileIndex],path.extname(_files[_fileIndex]));
             	});
             });
         };
