@@ -21,19 +21,24 @@ var aireasFolder, aireasUrl, aireasFileName, aireasLocalPathRoot, fileFolder,
 var dataRecords;
 var _files =[];
 var _fileIndex = 0;
+var executeFile;
+var _tmpFolder;
+//var client;
 
 // **********************************************************************************
 
 module.exports = {
 
 	init: function (options) {
+
+		executeFile = this.executeFile;
 	
 		sqlConnString = options.configParameter.databaseType + '://' + 
 			options.configParameter.databaseAccount + ':' + 
 			options.configParameter.databasePassword + '@' + 
 			options.configParameter.databaseServer + '/' +
 			options.systemCode + '_' + options.configParameter.databaseName;
-			
+		
 		aireasLocalPathRoot = options.systemFolderParent+'/aireas/';
 		fileFolderName 		= 'aireas-hist-v2';
 		tmpFolderName 		= 'tmp';
@@ -46,6 +51,7 @@ module.exports = {
 		tmpFolder 			= aireasFolder 			+ tmpFolderName 	+ "/";
 		resultsFolder 		= aireasFolder 			+ resultsFolderName + "/";
 
+		_tmpFolder			= tmpFolder;
 		// create subfolders
 		try {fs.mkdirSync(resultsFolder );} catch (e) {};//console.log('ERROR: no tmp folder found, batch run aborted.'); return } ;
 
@@ -53,7 +59,6 @@ module.exports = {
 //    	var _datFile	= fs.readFileSync(localPath);
 //    	console.log("Local AiREAS data: " + localPath );
 
-		var executeFile = this.executeFile;
 		
 		
 
@@ -79,24 +84,41 @@ module.exports = {
 				//}
     		});
     		*/
+
+//			client = new pg.Client(sqlConnString);
+//			client.connect(function(err) {
+//               	if(err) {
+//                   	return console.error('could not connect to postgres', err);
+//               	}
+//				console.error('postgres connected');	
+	    		executeFile(_files[_fileIndex],path.extname(_files[_fileIndex]));
+//           }); //end of connect sql client
     		
-    		executeFile(_files[_fileIndex],path.extname(_files[_fileIndex]));
 		});
+
 
 	},  // end of init
 	
 	
 	executeFile: function(file, extention) {
-
+		console.log(file);
+		console.log(extention);
+		console.log(file.substring(0,14));
+		if (file.substring(0,14) !="aireas-hist-v2") {
+			console.log("skip file");
+			_fileIndex++;		
+			executeFile(_files[_fileIndex],path.extname(_files[_fileIndex]));
+		}
 		var i, j, _dataRecord, _waardeDataRecord, inpRecordArray,
 			inpRecordPM1, inpRecordPM25, inpRecordPM10, 
 			inpRecordUFP, inpRecordOZON, inpRecordHUM, inpRecordCELC;
 
-		var _datFile	= fs.readFileSync(file);
+
+		var _datFile	= fs.readFileSync(path.join(_tmpFolder,file));
 		var inRecord1 = "" + _datFile; //.toString();
 		var inRecord = JSON.parse(inRecord1);
 		
-		
+		//console.dir(inRecord.content);
 		tmpArray = inRecord.content;
 		
 		if (tmpArray==null) return;
@@ -111,17 +133,19 @@ module.exports = {
                	if(err) {
                    	return console.error('could not connect to postgres', err);
                	}
+				//console.log(query);
+				//console.dir(client);
                	client.query(query, function(err, result) {
+               		console.log('query uitgevoerd');
                    	if(err) {
 						console.log('error running query ' + err + ' : ' + result);
 						console.error('error running query', err);
 						client.end();
                    		return;
             		}
-            		//console.log('sql result: ' + result);
+            		console.log('sql result: ' + result);
             		client.end();
-            		_fileIndex++;
-            		if (_fileIndex < _files.length) executeFile(_files[_fileIndex],path.extname(_files[_fileIndex]));
+					callback(err,result);
             	});
             });
         };
@@ -130,8 +154,10 @@ module.exports = {
 			if (err) {
 				console.log('ERROR:','sql error:', err, result);
 			} else {
-				//console.log('Query','sql result:', result);
+				console.log('Query','sql result:', result);
 			}
+            		_fileIndex++;
+            		if (_fileIndex < _files.length) executeFile(_files[_fileIndex],path.extname(_files[_fileIndex]));
 		};
 		
 		var convertGPS2LatLng = function(gpsValue){
@@ -141,6 +167,13 @@ module.exports = {
 			return result;
 		};
 
+	var writeFile = function(path, fileName, content ) {
+		var _path = path;
+		try {
+			fs.mkdirSync(_path);
+		} catch (e) {} ;
+		fs.writeFileSync(_path + "/" + fileName, content);
+	};
 						
 		
 /* not for history data
@@ -156,9 +189,10 @@ module.exports = {
 			}
 		}
 */
-		
+		console.log("verwerk "+tmpArray.length+" records");
 		for(i=0;i<tmpArray.length-1;i++) {  
-		
+//		for(i=0;i<10-1;i++) {  
+			console.log(i);
 			_waardeDataRecord	= tmpArray[i];	
 
 			//skip if no measurements available
@@ -247,7 +281,7 @@ module.exports = {
 			outputRecord = "\nINSERT INTO aireas_hist ( airbox, retrieveddatechar, measuredatechar, retrieveddate, measuredate, " + 
 				" gpslat, gpslng, lat, lng, pm1, pm25, pm10, ufp, ozon, hum, celc, no2, " + 
 				" gpslatfloat, gpslngfloat, pm1float, pm25float, pm10float, ufpfloat, ozonfloat, humfloat, celcfloat, no2float, " + 
-				" geom28992, geom ) VALUES (" +
+				" geom28992, geom ) \n VALUES (" +
 					"'" + 	_dataRecord.airbox 			+ "', " +
 					"'" + 	_dataRecord.retrievedDate 	+ "', " +
 					"'" + 	_dataRecord.measureDate 	+ "', " +
@@ -282,10 +316,16 @@ module.exports = {
 
 			outputFile=outputFile.concat(outputRecord);
 			
-			executeSql(outputFile, sqlCallBack);
-			outputFile = '';  // clear memory
 
 		}
+		tmpArray=[];
+		console.log(outputFile);
+		outputFile=outputFile.concat('commit;\n');
+		
+		//writeFile (_tmpFolder, 'test'+file, outputFile );
+		
+		executeSql(outputFile, sqlCallBack);
+		//outputFile = '';  // clear memory
 	
 //		this.createExportFile();
 
@@ -355,14 +395,6 @@ module.exports = {
 */
 
 
-/*
-	writeFile: function(path, fileName, content ) {
-		var _path = path;
-		try {
-			fs.mkdirSync(_path);
-		} catch (e) {} ;
-		fs.writeFileSync(_path + "/" + fileName, content);
-	}
-*/
+
 
 } // end of module.exports
