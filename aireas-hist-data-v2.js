@@ -25,7 +25,7 @@ var airboxes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
 //var airboxes = ['33'];
 
 
-var year = 2015;
+var year = 2016;
 var beginTime 	= new Date(year,0).getTime();  // set beginTime of selection to 1-1-YYYY,00:00:00
 var endTime 	= new Date(year+1,0).getTime()-1000;  // set beginTime of selection to 31-12-YYYY,23:59:59
 

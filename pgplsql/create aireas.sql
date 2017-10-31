@@ -64,6 +64,13 @@ CREATE INDEX aireas_airbox_idx
   USING btree
   (airbox COLLATE pg_catalog."default");
 
+-- Index: aireas_airbox_retrieveddate_idx
+-- DROP INDEX public.aireas_airbox_retrieveddate_idx;
+CREATE INDEX aireas_airbox_retrieveddate_idx
+    ON public.aireas USING btree
+    (airbox, retrieveddate)
+    TABLESPACE pg_default;  
+
 -- Index: public.aireas_geom_gist
 
 -- DROP INDEX public.aireas_geom_gist;
