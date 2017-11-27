@@ -31,7 +31,9 @@
 		systemVersion,
 		systemVersionL1,
 		systemVersionL2,
-		systemVersionL3;
+		systemVersionL3,
+		twitterConfigStr,
+		twitterConfig;
 
 
 module.exports = {
@@ -52,6 +54,10 @@ module.exports = {
 		systemConfigStr 			= fs.readFileSync(systemConfigLocalPath + "apri-system.json");
 		systemConfig 				= JSON.parse(systemConfigStr);
 
+        twitterConfigStr            = fs.readFileSync(systemConfigLocalPath + "twitter/apri-twitter-token.json");
+        twitterConfig               = JSON.parse(twitterConfigStr);
+
+        
 		// IMPORTANT: SYSTEM CONFIGURATION VALUES !!!
 		systemName 					= systemConfig.system.systemName;
 		systemCode 					= systemConfig.system.systemCode;
@@ -123,6 +129,10 @@ module.exports = {
 
 	getConfigParameter: function () {
 		return parameter;
+	},
+	
+	getTwitterConfig: function () {
+    	return twitterConfig;
 	}
 
 

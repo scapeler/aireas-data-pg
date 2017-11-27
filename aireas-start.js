@@ -22,7 +22,8 @@ module.exports = {
 			var options = {
 				systemFolderParent: apriConfig.getSystemFolderParent(),
 				configParameter: apriConfig.getConfigParameter(),
-				systemCode: apriConfig.getSystemCode()
+				systemCode: apriConfig.getSystemCode(),
+	            twitterConfig: apriConfig.getTwitterConfig()
 			};
 			apriModule.init(options);
 		}

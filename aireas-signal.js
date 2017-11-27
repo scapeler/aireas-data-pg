@@ -38,9 +38,12 @@ var moment 			= require('moment');
 var fs 				= require('fs');
 var pg 				= require('pg');
 var nodemailer 		= require('nodemailer');
+var Twit 			= require('twit');
+var twitterConfig;
+var Twitter;
 
 var sqlConnString;
-var transporter, emails, apps, templateWijkSource, templateWijk, sql;
+var transporter, emails, apps, twitterApps, templateWijkSource, templateWijk, twitterTemplateWijkSource, twitterTemplateWijk, sql;
 var checkSignalValues, sendMail;
 
 // **********************************************************************************
@@ -50,6 +53,9 @@ module.exports = {
 	init: function (options) {
 	
 		console.log('execute init');
+		
+		twitterConfig 	= options.twitterConfig;
+		Twitter 		= new Twit(twitterConfig.ApriSensor);
 	
 		sqlConnString = options.configParameter.databaseType + '://' + 
 			options.configParameter.databaseAccount + ':' + 
@@ -64,24 +70,45 @@ module.exports = {
 		emails = [
 			{emailAddress: 'awiel@scapeler.com', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 20, 30] } ] },
 			{emailAddress: 'john@schmeitz-advies.nl', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [ 20, 30] } ] }
-		]
+		];
 
+		//websocket apps
 		apps = [
-			{app: 'humansensor', messageType: 'aireassignal', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [30, 75, 150] } ], signalDiffGt: 3 }
-		]
+			{app: 'humansensor', messageType: 'aireassignal', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel'], signalValues: [30, 75, 150] } ], signalDiffGt: 3 },
+			
+		];
+		
+		twitterApps = [
+		    {app: 'ApriSensor', messageType: 'aireassignal', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel' ] } ], signalValues: [30, 75, 150], signalDiffGt: 3  }
+		];
 
-		templateWijkSource	= "<h1>Informatie over daling of stijging meetwaarde luchtkwaliteit</h1><p>Datum: {{data.signalDateTimeStr}}</p> \
-    {{#each data}}<h2>Signaal voor wijk '{{wk_naam}}'</h2><p>{{message}}</p> \
-	Gemeente: {{gm_naam}} ({{gm_code}})<BR/> \
-	Wijk: {{wk_naam}}<BR/> \
-	Inwoners wijk: {{aant_inw_wijk}}<BR/> \
-	Buurt: {{bu_naam}}<BR/> \
-	Inwoners buurt: {{aant_inw_buurt}}<BR/> \
-	Vorige waarde: {{scaqi_prev}}<BR/> \
-	Actuele waarde: <B>{{scaqi}}</B><BR/> \
-	{{/each}}</div><BR/>";
+		templateWijkSource	= "<h1>Informatie over daling of stijging meetwaarde luchtkwaliteit</h1><p>Datum: {{data.signalDateTimeStr}}</p> " +
+"{{#each data}}<h2>Signaal voor wijk '{{wk_naam}}'</h2><p>{{message}}</p> " +
+	"Gemeente: {{gm_naam}} ({{gm_code}})<BR/> " +
+	"Wijk: {{wk_naam}}<BR/> " +
+	"Inwoners wijk: {{aant_inw_wijk}}<BR/> " +
+	"Buurt: {{bu_naam}}<BR/> " +
+	"Inwoners buurt: {{aant_inw_buurt}}<BR/> "+
+	"Vorige waarde: {{scaqi_prev}}<BR/> "+
+	"Actuele waarde: <B>{{scaqi}}</B><BR/> "+
+	"{{/each}}</div><BR/>";
 	
 		templateWijk		= handlebarsx.compile(templateWijkSource);				
+
+		twitterTemplateWijkSource	= "Informatie over daling of stijging meetwaarde luchtkwaliteit\nDatum: {{data.signalDateTimeStr}}\n \
+    {{#each data}}Signaal voor wijk '{{wk_naam}}'\n{{message}}\n \
+	Gemeente: {{gm_naam}} ({{gm_code}})\n \
+	Wijk: {{wk_naam}}\n \
+	Inwoners wijk: {{aant_inw_wijk}}\n \
+	Buurt: {{bu_naam}}\n \
+	Inwoners buurt: {{aant_inw_buurt}}\n \
+	Vorige waarde: {{scaqi_prev}}\n \
+	Actuele waarde: {{scaqi}}\n \
+	{{/each}}\n\n";
+	
+		twitterTemplateWijk		= handlebarsx.compile(twitterTemplateWijkSource);				
+
+
 
 		sql = "select max(wijk.gm_naam) gm_naam, max(wijk.gm_code) gm_code, max(wijk.wk_naam) wk_naam, max(buurt.bu_code) bu_code, max(buurt.bu_naam) bu_naam, \
   max(avg.avg_avg) ScAQI, \
@@ -303,7 +330,94 @@ order by aireas.airbox
 				}
 			}
 
-		}
+		}  //end of apps section
+		
+		
+		for (i =0;i< twitterApps.length;i++) {
+			var app = twitterApps[i];
+			
+			console.log('Signal function started for twitter app: ' + app.app);
+			var municipal = app.municipals[0];
+			
+			var _outRecords = [];
+			_outRecords.signalDateTime = new Date();
+			_outRecords.signalDateTimeStr = moment(_outRecords.signalDateTime).format("DD-MM-YYYY, HH:mm");
+					
+			for (j=0;j<_result.length;j++) {
+				var _record 	= _result[j];
+				var _scaqi 		= parseFloat(_record.scaqi);
+				var _scaqi_prev = parseFloat(_record.scaqi_prev);
+				console.log('process record ' + (j+1) + ' ' + _scaqi_prev + ' -> ' + _scaqi + ' for ' + _record.wk_naam);
+				
+				if (_scaqi == _scaqi_prev) continue;
+								
+				var outRecord = {};
+				outRecord.gm_code 			= _record.gm_code;
+				outRecord.gm_naam 			= _record.gm_naam; 
+				outRecord.wk_naam 			= _record.wk_naam; 
+				outRecord.wk_code 			= _record.wk_code; 
+				outRecord.bu_naam 			= _record.bu_naam; 
+				outRecord.bu_code 			= _record.bu_code; 
+				outRecord.aant_inw_wijk		= parseInt(_record.aant_inw_wijk);
+				outRecord.aant_inw_buurt	= parseInt(_record.aant_inw_buurt);
+				outRecord.scaqi 			= _scaqi;
+				outRecord.scaqi_prev 		= _scaqi_prev;
+				outRecord.signalDateTime	= _outRecords.signalDateTime;
+				outRecord.signalDateTimeStr	= _outRecords.signalDateTimeStr;
+					
+				var signalResult = checkSignalValues(municipal.signalValues, _scaqi_prev, _scaqi);
+						
+				if (signalResult.signalValue) { 
+					if (signalResult.direction == 'up') {
+						outRecord.message = "Index voor luchtkwaliteit is gestegen boven grenswaarde " + signalResult.signalValue+ "";	
+					}
+					if (signalResult.direction == 'down') {
+						outRecord.message = "Index voor luchtkwaliteit is gedaald onder grenswaarde " + signalResult.signalValue+ "";					
+					}
+					socket.emit(app.messageType, {'signal': outRecord});
+				}
+				
+				var _scaciDiff			= Math.round((_scaqi - _scaqi_prev)*10)/10;
+				var _scaciDiffDirection	= _scaciDiff<0?'down':'up';
+				//console.log(_scaciDiffDirection);
+				_scaciDiff				= _scaciDiff<0?_scaciDiff*-1:_scaciDiff;
+				//console.log(_scaciDiff);
+				//console.log(app.signalDiffGt);
+				if (_scaciDiff >= app.signalDiffGt) {
+					if (_scaciDiffDirection == 'up') {
+						outRecord.message = "Index voor luchtkwaliteit is gestegen met " + _scaciDiff + "";					
+					}
+					if (_scaciDiffDirection == 'down') {
+						outRecord.message = "Index voor luchtkwaliteit is gedaald met " + _scaciDiff + "";	
+					}
+					
+
+					// twitter function
+					var tweetMsg = twitterTemplateWijk({
+				  		data: data
+					});
+					
+					{status: tweetMsg } // this is the tweet message
+					T.post('statuses/update', tweet, tweeted) // this is how we actually post a tweet ,again takes three params 
+  						// 'statuses/update' , tweet message and a call back function
+
+					
+//					socket.emit(app.messageType, {'signal': outRecord});
+					console.log('twitter signal sent: '+ app.messageType);
+				}
+			}
+
+		};  // end of twitter signals
+		
+		function tweeted(err, data, response) {
+  			if(err){
+    			console.log("Twitter, something went wrong!");
+  			} else {
+    			console.log("Twitter tweet sent");
+  			}
+		}; // this is the call back function which does something if the post was successful or unsuccessful.					
+		
+		
 		setTimeout(function(e) {
 			console.log('disconnect socket client');
 			socket.disconnect();
