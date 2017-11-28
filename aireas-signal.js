@@ -400,7 +400,7 @@ order by aireas.airbox
 					
 					tweet = {status: tweetMsg } // this is the tweet message
 					console.log(tweet);
-					j = result.length;
+					//j = result.length;
 					Twitter.post('statuses/update', tweet, tweeted); // this is how we actually post a tweet ,again takes three params 
   						// 'statuses/update' , tweet message and a call back function
 
