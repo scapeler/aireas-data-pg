@@ -43,7 +43,7 @@ var twitterConfig;
 var Twitter;
 
 var sqlConnString;
-var transporter, emails, apps, twitterApps, templateWijkSource, templateWijk, twitterTemplateWijkSource, twitterTemplateWijk, sql;
+var transporter, emails, apps, twitterApps, templateWijkSource, templateWijk, twitterTemplateWijkSource, twitterTemplateWijk, tweet, sql;
 var checkSignalValues, sendMail;
 
 // **********************************************************************************
@@ -79,7 +79,7 @@ module.exports = {
 		];
 		
 		twitterApps = [
-		    {app: 'ApriSensor', messageType: 'aireassignal', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel' ] } ], signalValues: [30, 75, 150], signalDiffGt: 3  }
+		    {app: 'ApriSensor', messageType: 'aireassignal', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel' ] } ], signalValues: [20, 30, 75, 150], signalDiffGt: 3  }
 		];
 
 		templateWijkSource	= "<h1>Informatie over daling of stijging meetwaarde luchtkwaliteit</h1><p>Datum: {{data.signalDateTimeStr}}</p> " +
@@ -95,16 +95,17 @@ module.exports = {
 	
 		templateWijk		= handlebarsx.compile(templateWijkSource);				
 
-		twitterTemplateWijkSource	= "Informatie over daling of stijging meetwaarde luchtkwaliteit\nDatum: {{data.signalDateTimeStr}}\n \
-    {{#each data}}Signaal voor wijk '{{wk_naam}}'\n{{message}}\n \
-	Gemeente: {{gm_naam}} ({{gm_code}})\n \
-	Wijk: {{wk_naam}}\n \
-	Inwoners wijk: {{aant_inw_wijk}}\n \
-	Buurt: {{bu_naam}}\n \
-	Inwoners buurt: {{aant_inw_buurt}}\n \
-	Vorige waarde: {{scaqi_prev}}\n \
-	Actuele waarde: {{scaqi}}\n \
-	{{/each}}\n\n";
+		twitterTemplateWijkSource	= "Signaal meetwaarde luchtkwaliteit\nDatum: {{data.signalDateTimeStr}}\n" +
+//    "Signaal voor wijk '{{data.wk_naam}}'\n" +
+    "{{data.message}}\n" +
+	"Gemeente: {{data.gm_naam}} ({{data.gm_code}})\n" +
+	"Buurt: {{data.bu_naam}}\n" +
+	"Inwoners: {{data.aant_inw_buurt}}\n" +
+	"Vorige waarde: {{data.scaqi_prev}}\n" +
+	"Actuele waarde: {{data.scaqi}}";
+//    Signaal voor wijk '{{data.wk_naam}}'\n{{data.message}}\n\
+//	Wijk: {{data.wk_naam}}\n \
+//	Inwoners wijk: {{data.aant_inw_wijk}}\n \
 	
 		twitterTemplateWijk		= handlebarsx.compile(twitterTemplateWijkSource);				
 
@@ -394,11 +395,13 @@ order by aireas.airbox
 
 					// twitter function
 					var tweetMsg = twitterTemplateWijk({
-				  		data: data
+				  		data: outRecord
 					});
 					
-					{status: tweetMsg } // this is the tweet message
-					T.post('statuses/update', tweet, tweeted) // this is how we actually post a tweet ,again takes three params 
+					tweet = {status: tweetMsg } // this is the tweet message
+					console.log(tweet);
+					j = result.length;
+					Twitter.post('statuses/update', tweet, tweeted); // this is how we actually post a tweet ,again takes three params 
   						// 'statuses/update' , tweet message and a call back function
 
 					
@@ -412,6 +415,7 @@ order by aireas.airbox
 		function tweeted(err, data, response) {
   			if(err){
     			console.log("Twitter, something went wrong!");
+    			console.log(err);
   			} else {
     			console.log("Twitter tweet sent");
   			}
