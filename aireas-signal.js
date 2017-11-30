@@ -55,7 +55,7 @@ module.exports = {
 		console.log('execute init');
 		
 		twitterConfig 	= options.twitterConfig;
-		Twitter 		= new Twit(twitterConfig.ApriSensor);
+		Twitter 		= new Twit(twitterConfig.AireasSignalEHV);
 	
 		sqlConnString = options.configParameter.databaseType + '://' + 
 			options.configParameter.databaseAccount + ':' + 
@@ -79,7 +79,7 @@ module.exports = {
 		];
 		
 		twitterApps = [
-		    {app: 'ApriSensor', messageType: 'aireassignal', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel' ] } ], signalValues: [20, 30, 75, 150], signalDiffGt: 3  }
+		    {app: 'AireasSignalEHV', messageType: 'aireassignal', municipals: [ {municipal_code: 'GM0772', areas: ['Wijk 11 Stadsdeel Centrum', 'Wijk 12 Stadsdeel Stratum', 'Wijk 13 Stadsdeel Tongelre', 'Wijk 14 Stadsdeel Woensel-Zuid', 'Wijk 15 Stadsdeel Woensel-Noord', 'Wijk 16 Stadsdeel Strijp', 'Wijk 17 Stadsdeel Gestel' ] } ], signalValues: [20, 30, 75, 150], signalDiffGt: 3  }
 		];
 
 		templateWijkSource	= "<h1>Informatie over daling of stijging meetwaarde luchtkwaliteit</h1><p>Datum: {{data.signalDateTimeStr}}</p> " +
