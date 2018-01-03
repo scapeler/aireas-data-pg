@@ -118,7 +118,7 @@ BEGIN
 			aqi_max_airbox := air.avg_aqi;
 		END IF;
 
-		-- Calculate per airbox the AQI for PM1, PM25, PM10, OZON, UFP, NO2
+/*		-- Calculate per airbox the AQI for PM1, PM25, PM10, OZON, UFP, NO2
  		avg_period_param := '1hr';
 		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg ,avg_aqi,avg_aqi_type from get_aireas_aqi($1,$2,$3,$4,$5) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric, avg_aqi numeric, avg_aqi_type varchar(60))'
 			USING 'OZON',retrieveddate_selection, grid_gem_foi.feature_of_interest, avg_period_param, aqi_type
@@ -135,7 +135,7 @@ BEGIN
 		IF (air.avg_aqi > aqi_max_airbox) THEN
 			aqi_max_airbox := air.avg_aqi;
 		END IF;
-
+*/
 		-- Calculate per airbox the AQI for PM1, PM25, PM10, OZON, UFP, NO2
  		avg_period_param := '1hr';
 		EXECUTE 'SELECT avg_type,retrieveddate,avg_avg ,avg_aqi,avg_aqi_type from get_aireas_aqi($1,$2,$3,$4,$5) AS (avg_type varchar(60), retrieveddate TIMESTAMP WITH TIME ZONE, avg_avg numeric, avg_aqi numeric, avg_aqi_type varchar(60))'
